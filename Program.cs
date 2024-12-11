@@ -1,7 +1,15 @@
+using tl2_proyecto_2024_nachoNota.Database;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var cadenaConexion = builder.Configuration.GetConnectionString("MySqlConnection")!.ToString();
+builder.Services.AddSingleton<string>(cadenaConexion);
+
+builder.Services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
+builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
 
 var app = builder.Build();
 
