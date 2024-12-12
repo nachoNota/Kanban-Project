@@ -1,4 +1,5 @@
 using tl2_proyecto_2024_nachoNota.Database;
+using tl2_proyecto_2024_nachoNota.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddSingleton<string>(cadenaConexion);
 
 builder.Services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
 builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
+
+builder.Services.AddScoped<ITableroRepository, TableroRepository>();
 
 var app = builder.Build();
 

@@ -49,7 +49,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         }
         public Usuario GetById(int id)
         {
-            Usuario usuario = null;
+            Usuario? usuario = null;
 
             using(var connection = _connectionProvider.getConnection())
             {
