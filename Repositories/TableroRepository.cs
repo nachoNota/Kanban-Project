@@ -19,7 +19,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             var tableros = new List<Tablero>();
 
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "SELECT * FROM tablero";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -46,7 +46,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             Tablero tablero = null;
 
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "SELECT * FROM tablero WHERE id_tablero = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -72,7 +72,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         public IEnumerable<Tablero> GetByUser(int idUsuario)
         {
             var tableros = new List<Tablero>();
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "SELECT * FROM tablero WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -97,7 +97,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         }
         public void Create(Tablero tablero)
         {
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "INSERT INTO tablero(id_usuario, titulo, descripcion) VALUES (@id_usuario, @titulo, @desc)";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -114,7 +114,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void Delete(int id)
         {
-            using (var connection = _connectionProvider.getConnection())
+            using (var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "DELETE FROM tablero WHERE id_tablero = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -129,7 +129,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void Update(int id, Tablero tablero)
         {
-            using (var connection = _connectionProvider.getConnection())
+            using (var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "UPDATE tablero SET id_usuario = @id_usuario, titulo = @titulo, descripcion = @desc" +
                                     "WHERE id_tablero = @id";

@@ -11,7 +11,7 @@ namespace tl2_proyecto_2024_nachoNota.Database
             _connectionString = connectionString;
         }
 
-        public MySqlConnection getConnection()
+        public MySqlConnection GetConnection()
         {
             return new MySqlConnection(_connectionString);
         }

@@ -1,0 +1,15 @@
+﻿@model List<tl2_proyecto_2024_nachoNota.Models.Tarea>
+
+
+@foreach(var tarea in Model)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="@Url.Action("GetImagen", "Tarea", new {id = tarea.Id})" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@tarea.Titulo</h5>
+            <p class="card-text">@tarea.Descripcion</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+}
+

@@ -22,7 +22,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             var usuarios = new List<Usuario>();
             
-            using (var connection = _connectionProvider.getConnection())
+            using (var connection = _connectionProvider.GetConnection())
             {
 
                 connection.Open();
@@ -51,7 +51,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             Usuario? usuario = null;
 
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "SELECT * FROM usuario WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -76,7 +76,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void ChangePassword(int id, string pass)
         {
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "UPDATE usuario SET contrasenia = @pass WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -92,7 +92,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void Create(Usuario usuario)
         {
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "INSERT INTO usuario(nombre_usuario, contrasenia, id_rol) VALUES (@nombre, @contra, @id_rol)";
                 var command = _commandFactory.CreateCommand(commandText, connection);
@@ -109,7 +109,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void Update(int id, Usuario usuario)
         {
-            using (var connection = _connectionProvider.getConnection())
+            using (var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "UPDATE usuario SET nombre_usuario = @nombre, " +
                                         "contrasenia = @pass," +
@@ -130,7 +130,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void Delete(int id)
         {
-            using(var connection = _connectionProvider.getConnection())
+            using(var connection = _connectionProvider.GetConnection())
             {
                 string commandText = "DELETE FROM usuario WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);

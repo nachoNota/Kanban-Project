@@ -6,13 +6,27 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var cadenaConexion = builder.Configuration.GetConnectionString("MySqlConnection")!.ToString();
+string cadenaConexion = builder.Configuration.GetConnectionString("MySqlConnection")!.ToString();
+if (cadenaConexion is null)
+{
+    Console.WriteLine("La cadena de conexión no se encuentra.");
+}
+else
+{
+    Console.WriteLine("Cadena de conexión encontrada: " + cadenaConexion);
+}
+
 builder.Services.AddSingleton<string>(cadenaConexion);
 
 builder.Services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
 builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
 
 builder.Services.AddScoped<ITableroRepository, TableroRepository>();
+builder.Services.AddScoped<ITareaRepository, TareaRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ITablaRepository, TablaRepository>();
+builder.Services.AddScoped<IRolRepository, RolRepository>();
+
 
 var app = builder.Build();
 

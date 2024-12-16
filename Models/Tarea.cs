@@ -15,5 +15,20 @@
         public string? Titulo { get; set; }
         public string? Descripcion { get; set; }
         public byte[]? Imagen { get; set; }
+
+        public void AsignarId(int id)
+        {
+            this.id = id;
+        }
+
+        public void AsignarUsuario(int idUsuario)
+        {
+            this.idUsuario = idUsuario;
+        }
+
+        public void AsignarTabla(int idTabla)
+        {
+            this.idTabla = idTabla;
+        }
     }
 }
