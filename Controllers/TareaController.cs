@@ -18,7 +18,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return View(_tareaRepository.GetAll());
         }
 
-        public FileResult GetImagen(int id)
+        public FileResult? GetImagen(int id)
         {
             Tarea tarea = _tareaRepository.GetById(id);
             

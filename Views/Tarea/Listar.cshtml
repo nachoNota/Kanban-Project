@@ -4,8 +4,9 @@
 @foreach(var tarea in Model)
 {
     <div class="card" style="width: 18rem;">
-        <img src="@Url.Action("GetImagen", "Tarea", new {id = tarea.Id})" class="card-img-top" alt="...">
-        <div class="card-body">
+        <img src="@Url.Action("GetImagen", "Tarea", new {id = tarea.Id})" class="card-img-top"
+                                                                        draggable="false" alt="Imagen de la tarea">
+        <div class="card-body user-select-none">
             <h5 class="card-title">@tarea.Titulo</h5>
             <p class="card-text">@tarea.Descripcion</p>
             <a href="#" class="btn btn-primary">Go somewhere</a>

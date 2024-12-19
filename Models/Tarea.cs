@@ -9,11 +9,11 @@
         private string? descripcion;
         private byte[]? imagen;
 
-        public int Id { get; }
+        public int Id { get => id; set => id = value; }
         public int IdUsuario { get; }
         public int IdTabla { get; }
-        public string? Titulo { get; set; }
-        public string? Descripcion { get; set; }
+        public string? Titulo { get => titulo; set => titulo = value; }
+        public string? Descripcion { get => descripcion; set => descripcion = value; }
         public byte[]? Imagen { get; set; }
 
         public void AsignarId(int id)
