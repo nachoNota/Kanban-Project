@@ -74,6 +74,33 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             return usuario;
         }
 
+        public Usuario GetUser(string nombreUsuario, string contrasenia)
+        {
+            Usuario usuario = null;
+
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                string commandText = "SELECT * FROM usuario WHERE nombre_usuario = @usu AND password = @contra";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@usu", nombreUsuario);
+                command.Parameters.AddWithValue("@contra", contrasenia);
+
+                using(var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        usuario = new Usuario();
+                        usuario.AsignarId(reader.GetInt32("id_usuario"));
+                        usuario.AsignarRol(reader.GetInt32("id_rol"));
+                        usuario.NombreUsuario = reader.GetString("nombre_usuario");
+                        usuario.Password = reader.GetString("contrasenia");
+                    }
+                }
+                connection.Close();
+            }
+            return usuario;
+        }
+
         public void ChangePassword(int id, string pass)
         {
             using(var connection = _connectionProvider.GetConnection())

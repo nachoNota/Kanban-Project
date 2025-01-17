@@ -37,7 +37,30 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
             return roles;
         }
-        
+        public Rol GetById(int idRol)
+        {
+            Rol? rol = null;
+
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                string commandText = "SELECT * FROM rol WHERE id_rol = @id";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@id", idRol);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        rol = new Rol();
+                        rol.AsignarId(reader.GetInt32("id_rol"));
+                        rol.NombreRol = reader.GetString("rol");
+                    }
+                }
+                connection.Close();
+            }
+
+            return rol;
+        }
         public void Create(string nombreRol)
         {
             using(var connection = _connectionProvider.GetConnection())
