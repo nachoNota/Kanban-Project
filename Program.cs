@@ -7,14 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 string cadenaConexion = builder.Configuration.GetConnectionString("MySqlConnection")!.ToString();
-if (cadenaConexion is null)
-{
-    Console.WriteLine("La cadena de conexión no se encuentra.");
-}
-else
-{
-    Console.WriteLine("Cadena de conexión encontrada: " + cadenaConexion);
-}
 
 builder.Services.AddSingleton<string>(cadenaConexion);
 

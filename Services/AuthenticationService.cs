@@ -6,7 +6,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
 {
     interface IAuthenticationService
     {
-        bool Login(string nombreUsuario, string contrasenia, [FromServices] IRolRepository rolRepository);
+        bool Login(string nombreUsuario, string contrasenia);
         void Logout();
         bool IsAuthenticated();
     }
@@ -14,16 +14,19 @@ namespace tl2_proyecto_2024_nachoNota.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IRolRepository _rolRepository;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly HttpContext context;
 
-        public AuthenticationService(IUsuarioRepository usuarioRepository, IHttpContextAccessor contextAccessor)
+        public AuthenticationService(IUsuarioRepository usuarioRepository, IHttpContextAccessor contextAccessor,
+                                    IRolRepository rolRepository)
         {
             _usuarioRepository = usuarioRepository;
             _contextAccessor = contextAccessor;
             context = _contextAccessor.HttpContext;
+            _rolRepository = rolRepository;
         }
-        public bool Login(string nombreUsuario, string contrasenia, [FromServices] IRolRepository rolRepository)
+        public bool Login(string nombreUsuario, string contrasenia)
         {
             Usuario usuario = _usuarioRepository.GetUser(nombreUsuario, contrasenia);
 
@@ -31,7 +34,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
 
             context.Session.SetString("IsAuthenticated", "true");
             context.Session.SetString("User", nombreUsuario);
-            Rol rol = rolRepository.GetById(usuario.IdRol);
+            Rol rol = _rolRepository.GetById(usuario.IdRol);
             context.Session.SetString("AccessLevel", rol.ToString());
 
             return true;
