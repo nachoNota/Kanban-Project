@@ -4,7 +4,7 @@ using tl2_proyecto_2024_nachoNota.Repositories;
 
 namespace tl2_proyecto_2024_nachoNota.Services
 {
-    interface IAuthenticationService
+    public interface IAuthenticationService
     {
         bool Login(string nombreUsuario, string contrasenia);
         void Logout();

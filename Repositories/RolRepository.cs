@@ -43,6 +43,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
             using (var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "SELECT * FROM rol WHERE id_rol = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 command.Parameters.AddWithValue("@id", idRol);

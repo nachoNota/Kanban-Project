@@ -1,11 +1,20 @@
 using tl2_proyecto_2024_nachoNota.Database;
 using tl2_proyecto_2024_nachoNota.Repositories;
+using tl2_proyecto_2024_nachoNota.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// Habilitar servicios de sesiones
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de expiración de la sesión
+    options.Cookie.HttpOnly = true; // Solo accesible desde HTTP, no JavaScript
+    options.Cookie.IsEssential = true; // Necesario incluso si el usuario no acepta cookies
+});
 
+builder.Services.AddHttpContextAccessor();
+
+// Add services to the container.
 string cadenaConexion = builder.Configuration.GetConnectionString("MySqlConnection")!.ToString();
 
 builder.Services.AddSingleton<string>(cadenaConexion);
@@ -18,9 +27,13 @@ builder.Services.AddScoped<ITareaRepository, TareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ITablaRepository, TablaRepository>();
 builder.Services.AddScoped<IRolRepository, RolRepository>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -31,16 +44,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Login}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
 
 app.Run();

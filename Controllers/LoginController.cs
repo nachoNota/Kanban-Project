@@ -38,7 +38,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            loginVM.ErrorMessage = "Acceso invalido, asegurese de escribir todo correctamente.";
+            loginVM.ErrorMessage = "Acceso inválido, asegúrese de escribir todo correctamente.";
             loginVM.IsAuthenticated = false;
             return View("Index", loginVM);
         }

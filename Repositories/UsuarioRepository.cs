@@ -53,6 +53,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
                 string commandText = "SELECT * FROM usuario WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 command.Parameters.AddWithValue("@id", id);
@@ -80,7 +81,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
             using(var connection = _connectionProvider.GetConnection())
             {
-                string commandText = "SELECT * FROM usuario WHERE nombre_usuario = @usu AND password = @contra";
+                connection.Open();
+                string commandText = "SELECT * FROM usuario WHERE nombre_usuario = @usu AND contrasenia = @contra";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 command.Parameters.AddWithValue("@usu", nombreUsuario);
                 command.Parameters.AddWithValue("@contra", contrasenia);
@@ -105,6 +107,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "UPDATE usuario SET contrasenia = @pass WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
@@ -121,6 +125,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "INSERT INTO usuario(nombre_usuario, contrasenia, id_rol) VALUES (@nombre, @contra, @id_rol)";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
@@ -138,6 +144,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "UPDATE usuario SET nombre_usuario = @nombre, " +
                                         "contrasenia = @pass," +
                                         "id_rol = @id_rol " +
@@ -159,6 +167,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "DELETE FROM usuario WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
