@@ -34,6 +34,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
 
             context.Session.SetString("IsAuthenticated", "true");
             context.Session.SetString("User", nombreUsuario);
+            context.Session.SetInt32("IdUsuario", usuario.Id);
             Rol rol = _rolRepository.GetById(usuario.IdRol);
             context.Session.SetString("AccessLevel", rol.ToString());
 
@@ -54,6 +55,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
         {
             context.Session.Remove("IsAuthenticated");
             context.Session.Remove("User");
+            context.Session.Remove("IdUsuario");
             context.Session.Remove("AccessLevel");
         }
     }

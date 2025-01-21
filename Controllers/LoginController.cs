@@ -35,7 +35,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             bool loginExitoso = _authentication.Login(loginVM.nombreUsuario, loginVM.contrasenia);
             if (loginExitoso)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Listar", "Tablero");
             }
 
             loginVM.ErrorMessage = "Acceso inválido, asegúrese de escribir todo correctamente.";

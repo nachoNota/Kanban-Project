@@ -21,6 +21,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "SELECT * FROM tablero";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 
@@ -28,11 +30,11 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     while (reader.Read())
                     {
-                        var tablero = new Tablero();
-                        tablero.AsignarId(reader.GetInt32("id_tablero"));
-                        tablero.AsignarUsuario(reader.GetInt32("id_usuario"));
-                        tablero.Titulo = reader.GetString("titulo");
-                        tablero.Descripcion = reader.GetString("descripcion");
+                        int idTablero = reader.GetInt32("id_tablero");
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        string titulo = reader.GetString("titulo");
+                        var tablero = new Tablero(idTablero, idUsuario, titulo);
+                        
                         tableros.Add(tablero);
                     }
                 }
@@ -42,12 +44,45 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             return tableros;
         }
 
+        public IEnumerable<Tablero> GetAllByUser(int idUsuario)
+        {
+            var tableros = new List<Tablero>();
+
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                
+                string commandText = "SELECT * FROM tablero WHERE id_usuario = @idUser";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@idUser", idUsuario);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int idTablero = reader.GetInt32("id_tablero");
+                        int idUsu = reader.GetInt32("id_usuario");
+                        string titulo = reader.GetString("titulo");
+                        var tablero = new Tablero(idTablero, idUsu, titulo);
+
+                        tableros.Add(tablero);
+                    }
+                }
+                connection.Close();
+            }
+
+            return tableros;
+
+        }
+
         public Tablero GetById(int id)
         {
             Tablero tablero = null;
 
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "SELECT * FROM tablero WHERE id_tablero = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 command.Parameters.AddWithValue("@id", id);
@@ -56,11 +91,10 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     if (reader.Read())
                     {
-                        tablero = new Tablero();
-                        tablero.AsignarId(reader.GetInt32("id_tablero"));
-                        tablero.AsignarUsuario(reader.GetInt32("id_usuario"));
-                        tablero.Titulo = reader.GetString("titulo");
-                        tablero.Descripcion = reader.GetString("descripcion");
+                        int idTablero = reader.GetInt32("id_tablero");
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        string titulo = reader.GetString("titulo");
+                        tablero = new Tablero(idTablero, idUsuario, titulo);
                     }
                 }
                 connection.Close();
@@ -74,6 +108,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             var tableros = new List<Tablero>();
             using(var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
+
                 string commandText = "SELECT * FROM tablero WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 command.Parameters.AddWithValue("@id", idUsuario);
@@ -82,11 +118,11 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     while (reader.Read())
                     {
-                        var tablero = new Tablero();
-                        tablero.AsignarId(reader.GetInt32("id_tablero"));
-                        tablero.AsignarUsuario(reader.GetInt32("id_usuario"));
-                        tablero.Titulo = reader.GetString("titulo");
-                        tablero.Descripcion = reader.GetString("descripcion");
+                        int idTablero = reader.GetInt32("id_tablero");
+                        int idUsu = reader.GetInt32("id_usuario");
+                        string titulo = reader.GetString("titulo");
+
+                        var tablero = new Tablero(idTablero, idUsuario, titulo);
                         tableros.Add(tablero);
                     }
                 }
@@ -99,12 +135,13 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using(var connection = _connectionProvider.GetConnection())
             {
-                string commandText = "INSERT INTO tablero(id_usuario, titulo, descripcion) VALUES (@id_usuario, @titulo, @desc)";
+                connection.Open();
+
+                string commandText = "INSERT INTO tablero(id_usuario, titulo) VALUES (@id_usuario, @titulo)";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@id_usuario", tablero.IdUsuario);
                 command.Parameters.AddWithValue("@titulo", tablero.Titulo);
-                command.Parameters.AddWithValue("@desc", tablero.Descripcion);
                 
                 command.ExecuteNonQuery();
 
@@ -116,6 +153,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
+                connection.Open();
                 string commandText = "DELETE FROM tablero WHERE id_tablero = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
@@ -131,13 +169,13 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
             using (var connection = _connectionProvider.GetConnection())
             {
-                string commandText = "UPDATE tablero SET id_usuario = @id_usuario, titulo = @titulo, descripcion = @desc" +
+                connection.Open();
+                string commandText = "UPDATE tablero SET id_usuario = @id_usuario, titulo = @titulo" +
                                     "WHERE id_tablero = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@id_usuario", tablero.IdUsuario);
                 command.Parameters.AddWithValue("@titulo", tablero.Titulo);
-                command.Parameters.AddWithValue("@desc", tablero.Descripcion);
                 command.Parameters.AddWithValue("@id", tablero.Id);
 
                 command.ExecuteNonQuery();
@@ -145,5 +183,6 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 connection.Close();
             }
         }
+
     }
 }

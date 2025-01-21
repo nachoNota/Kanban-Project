@@ -5,21 +5,16 @@
         private int id;
         private int idUsuario;
         private string titulo;
-        private string? descripcion;
 
         public int Id { get; }
         public int IdUsuario { get; }
         public string Titulo { get; set; }
-        public string? Descripcion { get; set; }
 
-        public void AsignarId(int id)
+        public Tablero(int id, int idUsuario, string titulo)
         {
-            this.id = id;
-        }
-
-        public void AsignarUsuario(int idUsuario)
-        {
-            this.idUsuario = idUsuario;
+            Id = id;
+            IdUsuario = idUsuario;
+            Titulo = titulo;
         }
     }
 }

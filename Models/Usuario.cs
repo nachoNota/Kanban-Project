@@ -12,14 +12,12 @@
         public string NombreUsuario { get; set; }
         public string Password { get; set; }
 
-        public void AsignarId(int id)
+        public Usuario(int id, int idRol, string nombreUsuario, string password)
         {
-            this.id = id;
-        }
-
-        public void AsignarRol(int idRol)
-        {
-            this.idRol = idRol;
+            Id = id;
+            IdRol = idRol;
+            NombreUsuario = nombreUsuario;
+            Password = password;
         }
     }
 }

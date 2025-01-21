@@ -6,6 +6,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
     public interface ITableroRepository
     {
         IEnumerable<Tablero> GetAll();
+        IEnumerable<Tablero> GetAllByUser(int idUsuario);
         Tablero GetById(int id);
         IEnumerable<Tablero> GetByUser(int idUsuario);
         void Create(Tablero tablero);

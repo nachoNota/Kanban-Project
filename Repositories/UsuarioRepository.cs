@@ -34,11 +34,12 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     while (reader.Read())
                     {
-                        var usuario = new Usuario();
-                        usuario.AsignarId(reader.GetInt32("id_usuario"));
-                        usuario.AsignarRol(reader.GetInt32("id_rol"));
-                        usuario.NombreUsuario = reader.GetString("nombre_usuario");
-                        usuario.Password = reader.GetString("contrasenia");
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        int idRol = reader.GetInt32("id_rol");
+                        string nombreUsuario = reader.GetString("nombre_usuario");
+                        string pass = reader.GetString("contrasenia");
+                        var usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass);
+                        
                         usuarios.Add(usuario);
                     }
                 }
@@ -62,11 +63,11 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     if (reader.Read())
                     {
-                        usuario = new Usuario();
-                        usuario.AsignarId(reader.GetInt32("id_usuario"));
-                        usuario.AsignarRol(reader.GetInt32("id_rol"));
-                        usuario.NombreUsuario = reader.GetString("nombre_usuario");
-                        usuario.Password = reader.GetString("contrasenia");
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        int idRol = reader.GetInt32("id_rol");
+                        string nombreUsuario = reader.GetString("nombre_usuario");
+                        string pass = reader.GetString("contrasenia");
+                        usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass);
                     }
                 }
                 connection.Close();
@@ -91,11 +92,11 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     if (reader.Read())
                     {
-                        usuario = new Usuario();
-                        usuario.AsignarId(reader.GetInt32("id_usuario"));
-                        usuario.AsignarRol(reader.GetInt32("id_rol"));
-                        usuario.NombreUsuario = reader.GetString("nombre_usuario");
-                        usuario.Password = reader.GetString("contrasenia");
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        int idRol = reader.GetInt32("id_rol");
+                        string nombre = reader.GetString("nombre_usuario");
+                        string pass = reader.GetString("contrasenia");
+                        usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass);
                     }
                 }
                 connection.Close();
