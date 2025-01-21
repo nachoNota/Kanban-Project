@@ -30,7 +30,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public ActionResult Eliminar(int idTablero)
         {
             _tableroRepository.Delete(idTablero);
-            return View("Listar");
+            return RedirectToAction("Listar");
         }
 
     }
