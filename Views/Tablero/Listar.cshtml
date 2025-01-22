@@ -12,20 +12,20 @@
         {
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card mover mover-hover8">
-                    <div class="card-body">
+                    <div class="card-body borde-letras" style="background-color: @tablero.Color;">
                         <h5 class="card-title">@tablero.Titulo</h5>
                     </div>
                     <div class="card-footer">
-                        <!-- Botón que activa el modal -->
+                        <!-- boton que activa el modal -->
                         <button class="btn btn-outline-danger"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalEliminar-@tablero.Id">
                             <i class="bi bi-trash"></i>
                         </button>
-                        <!-- Botón que activa el canvas -->
+                        <!-- boton que activa el canvas -->
                         <button class="btn btn-outline-primary ms-2"
                                 data-bs-toggle="offcanvas"
-                                data-bs-target="#offcanvasRight"
+                                data-bs-target="#offcanvasRight-@tablero.Id"
                                 aria-controls="offcanvasRight">
                             <i class="bi bi-arrow-repeat"></i>
                         </button>
@@ -36,7 +36,7 @@
 
             <!-- Incluir la vista parcial del modal -->
             @await Html.PartialAsync("Eliminar", tablero.Id)
-            @await Html.PartialAsync("Actualizar", tablero)
+            @await Html.PartialAsync("Modificar", tablero)
         }
 
         <div class="col-sm-6 col-md-4 col-lg-3">
@@ -55,3 +55,9 @@
 
     
 </div>
+<style>
+.borde-letras {
+        color: #212529; /* Color del texto */
+        text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white; /* Sombra en todas las direcciones para simular un borde */
+}
+</style>

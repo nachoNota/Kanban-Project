@@ -53,3 +53,8 @@ body {
     transform: translateY(-8px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
+
+.borde-letras {
+    color: #212529; /* Color del texto */
+    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white; /* Sombra en todas las direcciones para simular un borde */
+}

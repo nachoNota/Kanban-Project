@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using ZstdSharp.Unsafe;
 
@@ -24,6 +25,20 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             int usuario = idUsuario.Value;
             return View(_tableroRepository.GetAllByUser(usuario));
+        }
+
+        public ActionResult Modificar(int idTablero)
+        {
+            var tablero = _tableroRepository.GetById(idTablero);
+            return PartialView(tablero);
+        }
+
+        [HttpPost]
+        public ActionResult Modificar(Tablero tablero)
+        {
+            var tableroNuevo = new Tablero(tablero.Id, tablero.IdUsuario, tablero.Titulo, tablero.Color, tablero.Descripcion);
+            _tableroRepository.Update(tableroNuevo);
+            return RedirectToAction("Listar");
         }
 
         [HttpPost]

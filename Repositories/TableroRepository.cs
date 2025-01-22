@@ -33,7 +33,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idTablero = reader.GetInt32("id_tablero");
                         int idUsuario = reader.GetInt32("id_usuario");
                         string titulo = reader.GetString("titulo");
-                        var tablero = new Tablero(idTablero, idUsuario, titulo);
+                        string color = reader.GetString("color");
+                        string desc = reader.GetString("descripcion");
+                        var tablero = new Tablero(idTablero, idUsuario, titulo, color, desc);
                         
                         tableros.Add(tablero);
                     }
@@ -63,7 +65,11 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idTablero = reader.GetInt32("id_tablero");
                         int idUsu = reader.GetInt32("id_usuario");
                         string titulo = reader.GetString("titulo");
-                        var tablero = new Tablero(idTablero, idUsu, titulo);
+                        string color = reader.GetString("color");
+                        string? desc = reader.IsDBNull(reader.GetOrdinal("descripcion"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("descripcion"));
+                        var tablero = new Tablero(idTablero, idUsu, titulo, color, desc);
 
                         tableros.Add(tablero);
                     }
@@ -94,7 +100,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idTablero = reader.GetInt32("id_tablero");
                         int idUsuario = reader.GetInt32("id_usuario");
                         string titulo = reader.GetString("titulo");
-                        tablero = new Tablero(idTablero, idUsuario, titulo);
+                        string color = reader.GetString("color");
+                        string desc = reader.GetString("descripcion");
+                        tablero = new Tablero(idTablero, idUsuario, titulo, color, desc);
                     }
                 }
                 connection.Close();
@@ -121,8 +129,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idTablero = reader.GetInt32("id_tablero");
                         int idUsu = reader.GetInt32("id_usuario");
                         string titulo = reader.GetString("titulo");
-
-                        var tablero = new Tablero(idTablero, idUsuario, titulo);
+                        string color = reader.GetString("color");
+                        string desc = reader.GetString("descripcion");
+                        var tablero = new Tablero(idTablero, idUsuario, titulo, color, desc);
                         tableros.Add(tablero);
                     }
                 }
@@ -137,12 +146,15 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             {
                 connection.Open();
 
-                string commandText = "INSERT INTO tablero(id_usuario, titulo) VALUES (@id_usuario, @titulo)";
+                string commandText = "INSERT INTO tablero(id_usuario, titulo, color, descripcion) " +
+                    "               VALUES (@id_usuario, @titulo, @color, @desc)";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@id_usuario", tablero.IdUsuario);
                 command.Parameters.AddWithValue("@titulo", tablero.Titulo);
-                
+                command.Parameters.AddWithValue("@color", tablero.Color);
+                command.Parameters.AddWithValue("@desc", tablero.Descripcion);
+
                 command.ExecuteNonQuery();
 
                 connection.Close();
@@ -165,18 +177,20 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
         }
 
-        public void Update(int id, Tablero tablero)
+        public void Update(Tablero tablero)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 connection.Open();
-                string commandText = "UPDATE tablero SET id_usuario = @id_usuario, titulo = @titulo" +
-                                    "WHERE id_tablero = @id";
+                string commandText = "UPDATE tablero SET titulo = @titulo, color = @color," +
+                                    "descripcion = @desc WHERE id_tablero = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
-                command.Parameters.AddWithValue("@id_usuario", tablero.IdUsuario);
                 command.Parameters.AddWithValue("@titulo", tablero.Titulo);
+                command.Parameters.AddWithValue("@desc", tablero.Descripcion);
+                command.Parameters.AddWithValue("@color", tablero.Color);
                 command.Parameters.AddWithValue("@id", tablero.Id);
+
 
                 command.ExecuteNonQuery();
 

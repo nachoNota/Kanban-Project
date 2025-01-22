@@ -1,0 +1,30 @@
+﻿@model tl2_proyecto_2024_nachoNota.Models.Tablero
+
+<div class="offcanvas offcanvas-end bg-body-secondary" tabindex="-1" id="offcanvasRight-@Model.Id" aria-labelledby="offcanvasRightLabel-@Model.Id">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasRightLabel-@Model.Id">Actualizar tablero</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form action="/" method="post">
+
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Titulo</label>
+                <input type="text" class="form-control border border-secondary-subtle" id="titulo" value="@Model.Titulo">
+            </div>
+            <div class="mb-3">
+                <label for="colorElegido" class="form-label">Elegir color de fondo</label>
+                <input type="color" class="form-control form-control-color border border-secondary-subtle"
+                id="colorElegido" value="@Model.Color" title="Elegi el fondo que quieras para tu tablero">
+            </div>
+            <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Descripcion (opcional)</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">
+                    @Model.Descripcion
+                </textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+
+        </form>
+    </div>
+</div>
