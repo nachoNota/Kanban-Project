@@ -9,7 +9,7 @@
         private string? descripcion;
 
         public int Id { get; }
-        public int IdUsuario { get; }
+        public int IdUsuario { get; set; }
         public string Titulo { get; set; }
         public string Color { get; set; }
         public string? Descripcion { get; set ; }
@@ -17,6 +17,14 @@
         public Tablero()
         {
 
+        }
+
+        public Tablero(int idUsuario, string titulo, string color, string? descripcion)
+        {
+            IdUsuario = idUsuario;
+            Titulo = titulo;
+            Color = color;
+            Descripcion = descripcion;
         }
 
         public Tablero(int id, int idUsuario, string titulo, string color, string desc)
@@ -27,5 +35,7 @@
             Color = color;
             Descripcion = desc;
         }
+
+
     }
 }

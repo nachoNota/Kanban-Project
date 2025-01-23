@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
+using tl2_proyecto_2024_nachoNota.ViewModels;
 using ZstdSharp.Unsafe;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
@@ -24,20 +25,45 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
 
             int usuario = idUsuario.Value;
+            ViewData["RolUsuario"] = HttpContext.Session.GetString("AccessLevel").ToString();
             return View(_tableroRepository.GetAllByUser(usuario));
+        }
+
+        public ActionResult Crear()
+        {
+            var tablero = new Tablero();
+            return View(tablero);
+        }
+
+        [HttpPost]
+        public ActionResult Crear(Tablero tablero)
+        {
+            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+
+            if (idUsuario is null)
+            {
+                return RedirectToAction("Index", "Login");
+            }
+
+            tablero.IdUsuario = idUsuario.Value;
+            _tableroRepository.Create(tablero);
+            return RedirectToAction("Listar");   
         }
 
         public ActionResult Modificar(int idTablero)
         {
             var tablero = _tableroRepository.GetById(idTablero);
-            return PartialView(tablero);
+            var tableroVM = new TableroModificar(tablero);
+            return PartialView(tableroVM);
         }
 
         [HttpPost]
-        public ActionResult Modificar(Tablero tablero)
+        public ActionResult Modificar(TableroModificar tableroVM)
         {
-            var tableroNuevo = new Tablero(tablero.Id, tablero.IdUsuario, tablero.Titulo, tablero.Color, tablero.Descripcion);
-            _tableroRepository.Update(tableroNuevo);
+            var tablero = new Tablero(tableroVM.Id, tableroVM.IdUsuario, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
+
+          //  var tableroNuevo = new Tablero(tablero.Id, tablero.IdUsuario, tablero.Titulo, tablero.Color, tablero.Descripcion);
+            _tableroRepository.Update(tablero);
             return RedirectToAction("Listar");
         }
 

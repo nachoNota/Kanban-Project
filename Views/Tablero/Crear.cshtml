@@ -1,0 +1,26 @@
+﻿@model tl2_proyecto_2024_nachoNota.Models.Tablero
+
+
+<div class="offcanvas offcanvas-end bg-dark bg-gradient" tabindex="-1" id="offcanvasCrear" aria-labelledby="offcanvasCrearLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title text-light" id="offcanvasCrearLabel">Crear un nuevo tablero</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+<form asp-action="Crear" method="post">
+    <div class="mb-3">
+        <label asp-for="Titulo" class="form-label text-light"></label>
+        <input asp-for="Titulo" class="form-control border border-secondary-subtle" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Color" class="form-label text-light"></label>
+        <input asp-for="Color" value="#ffffff" type="color" class="form-control form-control-color border border-secondary-subtle" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Descripcion" class="form-label text-light"></label>
+        <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Crear</button>
+</form>
+    </div>
+</div>

@@ -58,3 +58,7 @@ body {
     color: #212529; /* Color del texto */
     text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white; /* Sombra en todas las direcciones para simular un borde */
 }
+
+.cursor{
+    cursor:pointer;
+}

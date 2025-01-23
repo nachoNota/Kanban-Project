@@ -36,7 +36,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
             context.Session.SetString("User", nombreUsuario);
             context.Session.SetInt32("IdUsuario", usuario.Id);
             Rol rol = _rolRepository.GetById(usuario.IdRol);
-            context.Session.SetString("AccessLevel", rol.ToString());
+            context.Session.SetString("AccessLevel", rol.NombreRol);
 
             return true;
         }
