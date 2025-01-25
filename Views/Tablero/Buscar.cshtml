@@ -1,0 +1,22 @@
+﻿@model IEnumerable<tl2_proyecto_2024_nachoNota.>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Filtrar usuarios</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Buscar" asp-controller="Usuario" class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Busca por nombre de usuario" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+                
+                @if()
+            </div>
+
+
+        </div>
+    </div>
+</div>

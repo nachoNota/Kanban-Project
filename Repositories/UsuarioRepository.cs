@@ -104,6 +104,35 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             return usuario;
         }
 
+        public IEnumerable<Usuario> SearchByName(string nombreUsuario)
+        {
+            var usuarios = new List<Usuario>();
+            
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT * FROM usuario WHERE nombre_usuario LIKE '%@nombre%'";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@nombre", nombreUsuario);
+
+                using(var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        int idRol = reader.GetInt32("id_rol");
+                        string nombre = reader.GetString("nombre_usuario");
+                        string pass = reader.GetString("contrasenia");
+                        var usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass);
+                        usuarios.Add(usuario);
+                    }
+                }
+                connection.Close();
+            }
+
+            return usuarios;
+        }
+        
         public void ChangePassword(int id, string pass)
         {
             using(var connection = _connectionProvider.GetConnection())
@@ -180,5 +209,6 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 connection.Close();
             }
         }
+
     }
 }

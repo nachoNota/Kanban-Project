@@ -1,6 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
 @model List<tl2_proyecto_2024_nachoNota.Models.Tablero>
 
 
@@ -38,11 +36,11 @@
                         @if (string.Equals(rol.ToString(), "admin"))
                         {
                             <button class="btn btn-outline-primary ms-auto"
-                                    data-bs-toggle="offcanvas"
-                                    data-bs-target="#offcanvasRight-@tablero.Id"
-                                    aria-controls="offcanvasRight">
+                                     data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                     data-bs-toggle="tooltip" data-bs-placement="bottom" title="Asignar tablero a otro usuario">
                                 <i class="bi bi-person-up fs-5"></i>
                             </button>
+
                         }
                     </div>
 
@@ -52,6 +50,7 @@
 
             @await Html.PartialAsync("Eliminar", tablero.Id)
             @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroModificar(tablero))
+            @await Html.PartialAsync("Buscar", tablero.Id);
         }
 
         <div class="col-sm-6 col-md-4 col-lg-3">
@@ -69,6 +68,8 @@
     </div>
     
 </div>
+
+<!-- Modal -->
 
 @await Html.PartialAsync("Crear", new tl2_proyecto_2024_nachoNota.Models.Tablero())
 
