@@ -11,5 +11,15 @@
         public int IdUsuario { get; }
         public int IdTablero { get; }
         public string Titulo { get; set; }
+        public int IdTabla { get; }
+
+        public Tabla(int id, int idUsuario, int idTabla, string titulo)
+        {
+            Id = id;
+            IdUsuario = idUsuario;
+            IdTabla = idTabla;
+            Titulo = titulo;
+        }
+
     }
 }

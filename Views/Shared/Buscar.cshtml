@@ -1,4 +1,4 @@
-﻿@model IEnumerable<tl2_proyecto_2024_nachoNota.>
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.BuscarViewModel
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -10,10 +10,13 @@
             <div class="modal-body">
                 <form asp-action="Buscar" asp-controller="Usuario" class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Busca por nombre de usuario" aria-label="Search">
+                    <input type="hidden" asp-route-idTablero="@Model.IdTablero"/>
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
                 
-                @if()
+                @if(Model.Usuarios != null){
+                    @await Html.PartialAsync("UsuariosLista", Model.Usuarios);
+                }
             </div>
 
 

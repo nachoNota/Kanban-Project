@@ -10,9 +10,11 @@
         {
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card mover mover-hover8">
-                    <div class="card-body borde-letras" style="background-color: @tablero.Color;">
-                        <h5 class="card-title">@tablero.Titulo</h5>
-                    </div>
+                    <a asp-action="Index" asp-controller="Tabla" class="text-decoration-none">
+                        <div class="card-body borde-letras" style="background-color: @tablero.Color;">
+                            <h5 class="card-title">@tablero.Titulo</h5>
+                        </div>
+                    </a>
                     <div class="card-footer d-flex justify-content-between align-items-center">
                         <!-- Contenedor para los primeros dos botones alineados a la izquierda -->
                         <div>
@@ -50,7 +52,8 @@
 
             @await Html.PartialAsync("Eliminar", tablero.Id)
             @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroModificar(tablero))
-            @await Html.PartialAsync("Buscar", tablero.Id);
+            @await Html.PartialAsync("Buscar", new tl2_proyecto_2024_nachoNota.ViewModels.BuscarViewModel(
+                     tablero.Id, new List<tl2_proyecto_2024_nachoNota.ViewModels.BuscarUsuarioViewModel>()));
         }
 
         <div class="col-sm-6 col-md-4 col-lg-3">

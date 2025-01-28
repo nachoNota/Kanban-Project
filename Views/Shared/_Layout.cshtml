@@ -1,5 +1,7 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject tl2_proyecto_2024_nachoNota.Services.IAuthenticationService AuthService
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,25 +14,37 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow">
+        <nav class="navbar navbar-expand-lg bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">tl2_proyecto_2024_nachoNota</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand text-light" href="#">Navbar</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Login" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
+
+                @if(!AuthService.IsAuthenticated()){
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <div class="d-flex ms-auto">
+                            <a class="btn btn-outline-success" asp-action="Index" asp-controller="Login">Iniciar sesión</a>
+                            <a class="btn btn-outline-primary ms-3" asp-action="Registrar" asp-controller="Usuario">Registrarse</a>
+                        </div>
+                    </div>
+                } else {
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i>
+                            @Context.Session.GetString("User")
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Ajustes</a></li>
+                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="Login">Cerrar sesión</a></li>
+                        </ul>
+                    </div>
+                }
+
             </div>
         </nav>
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">
@@ -46,6 +60,10 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

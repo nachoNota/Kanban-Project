@@ -42,5 +42,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             loginVM.IsAuthenticated = false;
             return View("Index", loginVM);
         }
+
+        public IActionResult Logout()
+        {
+            _authentication.Logout();
+            return RedirectToAction("Index");
+        }
     }
 }
