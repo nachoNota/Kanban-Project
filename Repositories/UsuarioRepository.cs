@@ -177,23 +177,19 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
         }
 
-        public void Update(int id, Usuario usuario)
+        public void Update(Usuario usuario)
         {
             using (var connection = _connectionProvider.GetConnection())
             {
                 connection.Open();
 
                 string commandText = "UPDATE usuario SET nombre_usuario = @nombre, " +
-                                        "contrasenia = @pass," +
-                                        "id_rol = @id_rol, " +
-                                        "email = @email" +
+                                        "email = @email " +
                                         "WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
-                command.Parameters.AddWithValue("@pass", usuario.Password);
                 command.Parameters.AddWithValue("@id", usuario.Id);
                 command.Parameters.AddWithValue("@nombre", usuario.NombreUsuario);
-                command.Parameters.AddWithValue("@id_rol", usuario.IdRol);
                 command.Parameters.AddWithValue("@email", usuario.Email);
 
                 command.ExecuteNonQuery();

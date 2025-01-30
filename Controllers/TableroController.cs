@@ -17,7 +17,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public ActionResult Listar()
         {
-            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idUsuario = HttpContext.Session.GetInt32("IdUser");
 
             if(idUsuario is null)
             {
@@ -31,8 +31,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public ActionResult Crear()
         {
-            var tablero = new Tablero();
-            return View(tablero);
+            return View(new Tablero());
         }
 
         [HttpPost]
@@ -62,7 +61,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             var tablero = new Tablero(tableroVM.Id, tableroVM.IdUsuario, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 
-          //  var tableroNuevo = new Tablero(tablero.Id, tablero.IdUsuario, tablero.Titulo, tablero.Color, tablero.Descripcion);
             _tableroRepository.Update(tablero);
             return RedirectToAction("Listar");
         }

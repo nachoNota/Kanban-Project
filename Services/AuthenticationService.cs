@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using tl2_proyecto_2024_nachoNota.Models;
+﻿using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 
 namespace tl2_proyecto_2024_nachoNota.Services
@@ -9,6 +8,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
         bool Login(string nombreUsuario, string contrasenia);
         void Logout();
         bool IsAuthenticated();
+        void ChangeUserName(string nombreUsuario);
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -34,11 +34,18 @@ namespace tl2_proyecto_2024_nachoNota.Services
 
             context.Session.SetString("IsAuthenticated", "true");
             context.Session.SetString("User", nombreUsuario);
-            context.Session.SetInt32("IdUsuario", usuario.Id);
+            context.Session.SetInt32("IdUser", usuario.Id);
+            context.Session.SetString("Password", contrasenia);
             Rol rol = _rolRepository.GetById(usuario.IdRol);
             context.Session.SetString("AccessLevel", rol.NombreRol);
 
+
             return true;
+        }
+
+        public void ChangeUserName(string nombreUsuario)
+        {
+            context.Session.SetString("User", nombreUsuario);
         }
 
         public bool IsAuthenticated()
@@ -54,8 +61,9 @@ namespace tl2_proyecto_2024_nachoNota.Services
         public void Logout()
         {
             context.Session.Remove("IsAuthenticated");
+            context.Session.Remove("Password");
             context.Session.Remove("User");
-            context.Session.Remove("IdUsuario");
+            context.Session.Remove("IdUser");
             context.Session.Remove("AccessLevel");
         }
     }

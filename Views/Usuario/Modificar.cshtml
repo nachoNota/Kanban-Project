@@ -1,0 +1,33 @@
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.ModificarUsuarioViewModel
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Aside -->
+        <div class="col-md-3">
+            @await Html.PartialAsync("_Aside")
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9 p-5" style="max-width:30rem">
+			<h2 class="mb-5">Modificar usuario</h2>
+			<form method="post" asp-action="Modificar">
+				<input type="hidden" asp-for="Id">
+				<div class="mb-4">
+					<label asp-for="Email" class="form-label">Email</label>
+					<input type="text" class="form-control" asp-for="Email" aria-describedby="emailHelp">
+					<span asp-validation-for="Email" class="text-danger"></span>
+					<div id="emailHelp" class="form-text">Este mail será utilizado para recuperar su contraseña en caso de olvido</div>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="NombreUsuario" class="form-label">Nombre de usuario</label>
+					<input type="text" class="form-control" asp-for="NombreUsuario">
+					<span asp-validation-for="NombreUsuario" class="text-danger"></span>
+				</div>
+
+				<button type="submit" class="btn btn-primary mover mover-hover4 mt-3">Modificar</button>
+			</form>
+        </div>
+    </div>
+</div>
+

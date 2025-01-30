@@ -1,9 +1,9 @@
 ﻿
 @model List<tl2_proyecto_2024_nachoNota.Models.Tablero>
 
-
+<div class="container">
 <h1 class="mt-3">Tableros</h1>
-<div class="container my-4">
+<div class="my-4">
     <div class="row g-4">
         @{var rol = ViewData["RolUsuario"];}
         @foreach (var tablero in Model)
@@ -71,7 +71,7 @@
     </div>
     
 </div>
-
+</div>
 <!-- Modal -->
 
 @await Html.PartialAsync("Crear", new tl2_proyecto_2024_nachoNota.Models.Tablero())

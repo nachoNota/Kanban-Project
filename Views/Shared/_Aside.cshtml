@@ -1,0 +1,21 @@
+﻿
+<aside class="border-end vh-100 p-3 bg-dark" style="width: 275px;">
+    <h5 class="text-center text-light">Opciones de Usuario</h5>
+    <ul class="nav flex-column mt-4">
+        <li class="nav-item">
+            <a asp-action="Modificar" asp-controller="Usuario" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")" class="nav-link text-light">
+                <i class="bi bi-pencil-square me-2"></i> Modificar Usuario
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-action="Eliminar" asp-controller="Usuario" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")" class="nav-link text-light">
+                <i class="bi bi-trash-fill me-2"></i> Eliminar Usuario
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-action="CambiarContra" asp-controller="Usuario" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")" class="nav-link text-light">
+                <i class="bi bi-key-fill me-2"></i> Cambiar Contraseña
+            </a>
+        </li>
+    </ul>
+</aside>
