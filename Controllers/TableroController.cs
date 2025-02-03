@@ -37,7 +37,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public ActionResult Crear(Tablero tablero)
         {
-            int? idUsuario = HttpContext.Session.GetInt32("IdUsuario");
+            int? idUsuario = HttpContext.Session.GetInt32("IdUser");
 
             if (idUsuario is null)
             {

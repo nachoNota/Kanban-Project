@@ -1,0 +1,49 @@
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.CrearUsuarioViewModel
+
+<div class="container-fluid">
+	<div class="row">
+		<!-- Aside -->
+		<div class="col-md-3">
+			@await Html.PartialAsync("_Aside")
+		</div>
+
+		<!-- Contenido principal -->
+		<div class="col-md-9 p-4" style="max-width:30rem">
+			<h2>Crear cuenta</h2>
+			<p class="text-muted mb-4">Por favor, complete los campos a continuación para registrar un nuevo usuario y
+				asignarle un rol dentro del sistema.</p>
+
+			<form method="post" asp-action="Crear">
+				<div class="mb-3">
+					<label asp-for="Email" class="form-label">Email</label>
+					<input type="text" class="form-control" asp-for="Email" aria-describedby="emailHelp">
+					<span asp-validation-for="Email" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="NombreUsuario" class="form-label">Usuario</label>
+					<input type="text" class="form-control" asp-for="NombreUsuario">
+					<span asp-validation-for="NombreUsuario" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="Contrasenia" class="form-label">Contraseña</label>
+					<input type="password" class="form-control" asp-for="Contrasenia">
+					<span asp-validation-for="Contrasenia" class="text-danger"></span>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="IdRol" class="form-label">Seleccionar Rol</label>
+					<select asp-for="IdRol" class="form-select" style="width:75%">
+						@foreach(var rol in Model.Roles){
+							<option value="@rol.Id">@rol.NombreRol</option>
+						}
+					</select>
+					<span class="text-danger" asp-validation-for="IdRol"></span>
+				</div>
+
+				<button type="submit" class="btn btn-info mover mover-hover4 mt-3">Crear cuenta</button>
+			</form>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,48 @@
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.CambiarRolViewModel
+
+<div class="container-fluid">
+	<div class="row">
+		<!-- Aside -->
+		<div class="col-md-3">
+			@await Html.PartialAsync("_Aside")
+		</div>
+
+		<!-- Contenido principal -->
+		<div class="col-md-9 p-5" style="max-width:30rem">
+			<h2 class="">Eliminar usuario</h2>
+			<p class="text-muted mb-4">
+				Para cambiar de rol al usuario "@Model.NombreUsuario", necesitamos que ingreses tu contraseña para confirmar tu identidad.
+			</p>
+
+			<form method="post" asp-action="CambiarRol">
+				<input type="hidden" asp-for="Id">
+				<input type="hidden" asp-for="ContraseniaActual" value="@Context.Session.GetString("Password")" />
+				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario" />
+
+				<div class="mb-3">
+					<label asp-for="IdRol" class="form-label">Seleccionar Rol</label>
+					<select asp-for="IdRol" class="form-select" style="width:75%">
+						@foreach (var rol in Model.Roles)
+						{
+							<option value="@rol.Id">@rol.NombreRol</option>
+						}
+					</select>
+					<span class="text-danger" asp-validation-for="IdRol"></span>
+				</div>
+
+				<div class="mb-3">
+					<label asp-for="ContraseniaIngresada" class="form-label">Contraseña</label>
+					<input type="password" class="form-control" asp-for="ContraseniaIngresada">
+					<span asp-validation-for="ContraseniaIngresada" class="text-danger"></span>
+				</div>
+
+				@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+				{
+					<p class="text-danger">@Model.ErrorMessage</p>
+				}
+
+				<button type="submit" class="btn btn-success mover mover-hover4 mt-3">Cambiar rol</button>
+			</form>
+		</div>
+	</div>
+</div>

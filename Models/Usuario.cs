@@ -36,6 +36,13 @@ namespace tl2_proyecto_2024_nachoNota.Models
             Password = password;
             Email = email;
         }
+        public Usuario(int idRol, string nombreUsuario, string password, string email)
+        {
+            IdRol = idRol;
+            NombreUsuario = nombreUsuario;
+            Password = password;
+            Email = email;
+        }
 
         public Usuario(RegistrarUsuarioViewModel usuarioVM)
         {

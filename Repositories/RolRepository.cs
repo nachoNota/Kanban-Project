@@ -28,7 +28,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     while (reader.Read())
                     {
                         var rol = new Rol();
-                        rol.AsignarId(reader.GetInt32("id_rol"));
+                        rol.Id = reader.GetInt32("id_rol");
                         rol.NombreRol = reader.GetString("rol");
                         roles.Add(rol);
                     }
@@ -54,7 +54,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     if (reader.Read())
                     {
                         rol = new Rol();
-                        rol.AsignarId(reader.GetInt32("id_rol"));
+                        rol.Id = reader.GetInt32("id_rol");
                         rol.NombreRol = reader.GetString("rol");
                     }
                 }

@@ -7,16 +7,22 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Se requiere una contraseña")]
-        public string Password { get; set; }
-
+        public string ContraseniaIngresada { get; set; }
+        
+        public string ContraseniaActual { get; set; }
+        public string NombreUsuario {  get; set; }
         public string ErrorMessage { get; set; }
 
         public EliminarUsuarioViewModel() { }
 
-        public EliminarUsuarioViewModel(int id, string password)
+        public EliminarUsuarioViewModel(int id, string nombre)
         {
             Id = id;
-            Password = password;
+            NombreUsuario = nombre;
+        }
+        public EliminarUsuarioViewModel(int id)
+        {
+            Id = id;
         }
     }
 }

@@ -115,11 +115,11 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             using(var connection = _connectionProvider.GetConnection())
             {
                 connection.Open();
-                string commandText = "SELECT * FROM usuario WHERE nombre_usuario LIKE '%@nombre%'";
+                string commandText = "SELECT * FROM usuario WHERE nombre_usuario LIKE CONCAT('%', @nombre, '%')";
                 var command = _commandFactory.CreateCommand(commandText, connection);
                 command.Parameters.AddWithValue("@nombre", nombreUsuario);
 
-                using(var reader = command.ExecuteReader())
+                using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -127,8 +127,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idRol = reader.GetInt32("id_rol");
                         string pass = reader.GetString("contrasenia");
                         string email = reader.GetString("email");
+                        string nombre = reader.GetString("nombre_usuario");
 
-                        var usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass, email);
+                        var usuario = new Usuario(idUsuario, idRol, nombre, pass, email);
                         usuarios.Add(usuario);
                     }
                 }
@@ -138,6 +139,23 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             return usuarios;
         }
         
+        public void ChangeRol(int idUsuario, int idRol)
+        {
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "UPDATE usuario SET id_rol = @idRol WHERE id_usuario = @idUsuario";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@idRol", idRol);
+                command.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
+        }
+
         public void ChangePassword(int id, string pass)
         {
             using(var connection = _connectionProvider.GetConnection())

@@ -4,19 +4,16 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels
 {
     public class BuscarViewModel
     {
-        private int idTablero;
-        private IEnumerable<BuscarUsuarioViewModel> usuarios;
-
         public int IdTablero { get; set; }
-        public IEnumerable<BuscarUsuarioViewModel> Usuarios { get; }
+        public string Usuario { get; set; }
+        public List<Usuario> Usuarios { get; set; } 
 
-        public BuscarViewModel(int idTablero, IEnumerable<BuscarUsuarioViewModel> usuarios)
+        public BuscarViewModel() { }
+
+        public BuscarViewModel(int idTablero) 
         {
-            this.idTablero = idTablero;
-            this.usuarios = usuarios;
-        }
-        public BuscarViewModel()
-        {
+            IdTablero = idTablero;
+            Usuarios = new List<Usuario>();
         }
 
     }

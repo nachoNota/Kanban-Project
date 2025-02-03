@@ -1,22 +1,23 @@
 ﻿@model tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.EliminarUsuarioViewModel
 
 <div class="container-fluid">
-    <div class="row">
-        <!-- Aside -->
-        <div class="col-md-3">
-            @await Html.PartialAsync("_Aside")
-        </div>
+	<div class="row">
+		<!-- Aside -->
+		<div class="col-md-3">
+			@await Html.PartialAsync("_Aside")
+		</div>
 
-        <!-- Contenido principal -->
-        <div class="col-md-9 p-5" style="max-width:30rem">
+		<!-- Contenido principal -->
+		<div class="col-md-9 p-5" style="max-width:30rem">
 			<h2 class="">Eliminar usuario</h2>
 			<p class="text-muted mb-4">
-				Para proceder con la eliminación de su cuenta, por favor ingrese su contraseña en el campo a continuación.
-				Este proceso es irreversible.
+				Para eliminar al usuario "@Model.NombreUsuario", necesitamos que ingreses tu contraseña para confirmar tu identidad.
 			</p>
-			<form method="post" asp-action="Eliminar">
+			
+			<form method="post" asp-action="EliminarParaAdmin">
 				<input type="hidden" asp-for="Id">
-				<input type="hidden" asp-for="ContraseniaActual" value="@Context.Session.GetString("Password")"/>
+				<input type="hidden" asp-for="ContraseniaActual" value="@Context.Session.GetString("Password")" />
+				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario"/> 
 
 				<div class="mb-3">
 					<label asp-for="ContraseniaIngresada" class="form-label">Contraseña</label>
@@ -24,12 +25,13 @@
 					<span asp-validation-for="ContraseniaIngresada" class="text-danger"></span>
 				</div>
 
-				@if(!string.IsNullOrEmpty(Model.ErrorMessage)){
+				@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+				{
 					<p class="text-danger">@Model.ErrorMessage</p>
 				}
 
 				<button type="submit" class="btn btn-danger mover mover-hover4 mt-3">Eliminar</button>
 			</form>
-        </div>
-    </div>
+		</div>
+	</div>
 </div>

@@ -5,12 +5,8 @@
         private int id;
         private string nombreRol;
 
-        public int Id { get; }
+        public int Id { get; set; }
         public string NombreRol { get; set; }
     
-        public void AsignarId(int id)
-        {
-            this.id = id;
-        }
     }
 }

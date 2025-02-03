@@ -12,35 +12,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IAuthenticationService _authenticationService;
+        private readonly IRolRepository _rolRepository;
 
-        public UsuarioController(IUsuarioRepository usuarioRepository, IAuthenticationService authenticationService)
+        public UsuarioController(IUsuarioRepository usuarioRepository, IAuthenticationService authenticationService, IRolRepository rolRepository)
         {
             _usuarioRepository = usuarioRepository;
             _authenticationService = authenticationService;
-        }
-
-        public IActionResult Buscar(string nombreUsuario, int idTablero)
-        {
-            var usuarios = _usuarioRepository.SearchByName(nombreUsuario);
-            var buscarVM = new BuscarViewModel();
-
-            if(usuarios is null)
-            {
-                buscarVM.IdTablero = idTablero;
-                return PartialView("Buscar", buscarVM);
-            }
-
-            List<BuscarUsuarioViewModel> usuariosVM = new List<BuscarUsuarioViewModel>();
-
-            foreach (var usuario in usuarios)
-            {
-                var usuarioVM = new BuscarUsuarioViewModel(usuario.Id, usuario.NombreUsuario);
-                usuariosVM.Add(usuarioVM);
-            }
-
-            buscarVM = new BuscarViewModel(idTablero, usuariosVM);
-
-            return PartialView("Buscar", buscarVM);
+            _rolRepository = rolRepository;
         }
 
         public ActionResult Registrar()
@@ -57,7 +35,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository.Create(usuario);
             return RedirectToAction("Index", "Login");
         }
-
+        /*
+        public IActionResult Buscar(BuscarViewModel buscarVM)
+        {
+            var usuarios = _usuarioRepository.SearchByName(buscarVM.Usuario);
+            buscarVM.Usuarios = usuarios.ToList();
+            return PartialView(buscarVM);
+        }
+        */
         public IActionResult Modificar(int idUsuario)
         {
             var usuario = _usuarioRepository.GetById(idUsuario);
@@ -77,20 +62,40 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult Eliminar(int idUsuario)
         {
-            var contrasenia = HttpContext.Session.GetString("Password");
-
-            var usuarioVM = new EliminarUsuarioViewModel(idUsuario, contrasenia);
+            var usuarioVM = new EliminarUsuarioViewModel(idUsuario);
             return View(usuarioVM);
         }
-        
+
         [HttpPost]
         public IActionResult Eliminar(EliminarUsuarioViewModel usuarioVM)
         {
-            bool ContraseniasIguales = HttpContext.Session.GetString("Password") == usuarioVM.Password;
+            bool ContraseniasIguales = usuarioVM.ContraseniaActual == usuarioVM.ContraseniaIngresada;
             if (ContraseniasIguales)
             {
                 _usuarioRepository.Delete(usuarioVM.Id);
-                return RedirectToAction("Index", "Login");
+                return RedirectToAction("Logout", "Login");
+            }
+
+            usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
+
+            return View(usuarioVM);
+        }
+
+        public IActionResult EliminarParaAdmin(int idUsuario)
+        {
+            var usuario = _usuarioRepository.GetById(idUsuario);
+            var usuarioVM = new EliminarUsuarioViewModel(idUsuario, usuario.NombreUsuario);
+            return View(usuarioVM);
+        }
+
+        [HttpPost]
+        public IActionResult EliminarParaAdmin(EliminarUsuarioViewModel usuarioVM)
+        {
+            bool ContraseniasIguales = usuarioVM.ContraseniaActual == usuarioVM.ContraseniaIngresada;
+            if (ContraseniasIguales)
+            {
+                _usuarioRepository.Delete(usuarioVM.Id);
+                return RedirectToAction("Editar");
             }
 
             usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
@@ -119,6 +124,55 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             usuarioVM.ErrorMessage = "La contraseña no coincide con la actual, asegúrate de escribirla correctamente";
             return View(usuarioVM);
+        }
+
+        public IActionResult Crear()
+        {
+            var roles = _rolRepository.GetAll();
+            return View(new CrearUsuarioViewModel(roles));
+        }
+
+        [HttpPost]
+        public IActionResult Crear(CrearUsuarioViewModel usuarioVM)
+        {
+            var usuario = new Usuario(usuarioVM.IdRol, usuarioVM.NombreUsuario, usuarioVM.Contrasenia, usuarioVM.Email);
+            _usuarioRepository.Create(usuario);
+            return RedirectToAction("Crear");
+        }
+
+        public IActionResult Editar()
+        {
+            return View(new List<Usuario>());
+        }
+
+        public IActionResult CambiarRol(int idUsuario)
+        {
+            var usuario = _usuarioRepository.GetById(idUsuario);
+            var roles = _rolRepository.GetAll();
+
+            var usuarioVM = new CambiarRolViewModel(roles, usuario.NombreUsuario, idUsuario);
+            return View(usuarioVM);
+        }
+
+        [HttpPost]
+        public IActionResult CambiarRol(CambiarRolViewModel usuarioVM)
+        {
+            bool contraseniasIguales = usuarioVM.ContraseniaActual == usuarioVM.ContraseniaIngresada;
+            if (contraseniasIguales)
+            {
+                _usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.IdRol);
+                return RedirectToAction("Editar");
+            }
+
+            usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
+
+            return View(usuarioVM);
+        }
+
+        public IActionResult Buscar(string nombreUsuario)
+        {
+            var usuarios = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+            return View("Editar", usuarios);
         }
     }
 }
