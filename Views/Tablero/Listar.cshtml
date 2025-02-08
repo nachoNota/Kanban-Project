@@ -9,7 +9,7 @@
         {
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card mover mover-hover8">
-                    <a asp-action="Index" asp-controller="Tabla" class="text-decoration-none">
+                    <a asp-action="Listar" asp-controller="Tarea" asp-route-idTablero="@tablero.Id" class="text-decoration-none">
                         <div class="card-body borde-letras" style="background-color: @tablero.Color;">
                             <h5 class="card-title">@tablero.Titulo</h5>
                         </div>
@@ -55,7 +55,7 @@
         }
 
         <div class="col-sm-6 col-md-4 col-lg-3">
-            <div class="card text-center mover mover-hover8 cursor"
+            <div class="card text-center mover mover-hover8 cursor dashed"
                  data-bs-toggle="offcanvas"
                  data-bs-target="#offcanvasCrear"
                  aria-controls="offcanvasCrear">

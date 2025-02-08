@@ -21,6 +21,24 @@ body {
   margin-bottom: 60px;
 }
 
+html, body {
+    height: 100%; /* Asegura que ocupen toda la pantalla */
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; /* Hace que el contenido principal ocupe el espacio disponible */
+}
+
+footer {
+    background-color: #222; /* Color de fondo opcional */
+    color: white; /* Color del texto */
+    padding: 10px;
+    text-align: center;
+}
+
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
@@ -46,7 +64,7 @@ body {
 
 .mover-hover4:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .mover-hover8:hover {
@@ -62,3 +80,19 @@ body {
 .cursor{
     cursor:pointer;
 }
+
+.dashed{
+    border-style:dashed;
+    border-color: black;
+}
+
+.btn-outline-light-secondary {
+    border-color: #7e8b98; /* Color más oscuro para el borde */
+    color: #495057; /* Texto más oscuro */
+}
+
+    .btn-outline-light-secondary:hover {
+        background-color: #e9ecef; /* Fondo más claro al hacer hover */
+        border-color: #495057; /* Borde más oscuro al hacer hover */
+    }
+

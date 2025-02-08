@@ -101,7 +101,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idUsuario = reader.GetInt32("id_usuario");
                         string titulo = reader.GetString("titulo");
                         string color = reader.GetString("color");
-                        string desc = reader.GetString("descripcion");
+                        string? desc = reader.IsDBNull(reader.GetOrdinal("descripcion"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("descripcion"));
                         tablero = new Tablero(idTablero, idUsuario, titulo, color, desc);
                     }
                 }
@@ -130,7 +132,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         int idUsu = reader.GetInt32("id_usuario");
                         string titulo = reader.GetString("titulo");
                         string color = reader.GetString("color");
-                        string desc = reader.GetString("descripcion");
+                        string? desc = reader.IsDBNull(reader.GetOrdinal("descripcion"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("descripcion"));
                         var tablero = new Tablero(idTablero, idUsuario, titulo, color, desc);
                         tableros.Add(tablero);
                     }

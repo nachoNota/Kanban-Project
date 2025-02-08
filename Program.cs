@@ -25,7 +25,6 @@ builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
 builder.Services.AddScoped<ITableroRepository, TableroRepository>();
 builder.Services.AddScoped<ITareaRepository, TareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<ITablaRepository, TablaRepository>();
 builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 

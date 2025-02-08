@@ -31,15 +31,14 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     while (reader.Read())
                     {
                         var tarea = new Tarea();
-                        tarea.AsignarId(reader.GetInt32("id_tarea"));
-                        tarea.AsignarUsuario(reader.GetInt32("id_usuario"));
-                        tarea.AsignarTabla(reader.GetInt32("id_tabla"));
+                        tarea.Id = reader.GetInt32("id_tarea");
+                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
+                        tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
                         tarea.Descripcion = reader.GetString("descripcion");
-                        if (!reader.IsDBNull(reader.GetOrdinal("imagen")))
-                        {
-                            tarea.Imagen = (byte[])reader["imagen"];
-                        }
+                        tarea.Color = reader.GetString("color");
+                        tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
                         tareas.Add(tarea);
                     }
                 }
@@ -66,15 +65,14 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     while (reader.Read())
                     {
                         tarea = new Tarea();
-                        tarea.AsignarId(reader.GetInt32("id_tarea"));
-                        tarea.AsignarUsuario(reader.GetInt32("id_usuario"));
-                        tarea.AsignarTabla(reader.GetInt32("id_tabla"));
+                        tarea.Id = reader.GetInt32("id_tarea");
+                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
+                        tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
                         tarea.Descripcion = reader.GetString("descripcion");
-                        if (!reader.IsDBNull(reader.GetOrdinal("imagen")))
-                        {
-                            tarea.Imagen = (byte[])reader["imagen"];
-                        }
+                        tarea.Color = reader.GetString("color");
+                        tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
                     }
                 }
 
@@ -89,7 +87,38 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         }
         public IEnumerable<Tarea> GetByTablero(int idTablero)
         {
-            throw new NotImplementedException();
+            var tareas = new List<Tarea>();
+
+            using (var connection = _connectionProvider.GetConnection())
+            {
+
+                connection.Open();
+
+                string commandText = @"SELECT * FROM tarea WHERE id_tablero = @id";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@id", idTablero);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var tarea = new Tarea();
+                        tarea.Id = reader.GetInt32("id_tarea");
+                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
+                        tarea.IdTablero = reader.GetInt32("id_tablero");
+                        tarea.Titulo = reader.GetString("titulo");
+                        tarea.Descripcion = reader.GetString("descripcion");
+                        tarea.Color = reader.GetString("color");
+                        tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
+
+                        tareas.Add(tarea);
+                    }
+                }
+
+                connection.Close();
+            }
+            return tareas;
         }
 
         public void AsignarUsuarioATarea(int idUsuario, int idTarea)
@@ -109,6 +138,40 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         public void Delete(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<Tarea> GetByTablaYTablero(int idTabla, int idTablero)
+        {
+            var tareas = new List<Tarea>();
+
+            using(var connection =  _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT * FROM tarea WHERE id_tabla = @idTabla AND id_tablero = @idTablero";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@idTabla", idTabla);
+                command.Parameters.AddWithValue("@idTablero", idTablero);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var tarea = new Tarea();
+                        tarea.Id = reader.GetInt32("id_tarea");
+                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.IdTablero = reader.GetInt32("id_tablero");
+                        tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
+                        tarea.Titulo = reader.GetString("titulo");
+                        tarea.Descripcion = reader.GetString("descripcion");
+                        tarea.Color = reader.GetString("color");
+                        tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
+
+                        tareas.Add(tarea);
+                    }
+                }
+                connection.Close();
+            }
+            return tareas;
         }
     }
 }

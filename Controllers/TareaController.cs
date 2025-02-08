@@ -1,33 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
+using tl2_proyecto_2024_nachoNota.ViewModels;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
 {
     public class TareaController : Controller
     {
         private readonly ITareaRepository _tareaRepository;
+        private readonly ITableroRepository _tableroRepository;
 
-        public TareaController(ITareaRepository tareaRepository)
+        public TareaController(ITareaRepository tareaRepository, ITableroRepository tableroRepository)
         {
             _tareaRepository = tareaRepository;
+            _tableroRepository = tableroRepository;
         }
 
-        public IActionResult Listar()
+        public IActionResult Listar(int idTablero)
         {
-            return View(_tareaRepository.GetAll());
+            var tareas = _tareaRepository.GetByTablero(idTablero);
+            var tablero = _tableroRepository.GetById(idTablero);
+
+            var tareasVM = tareas.Select(t => new ListarTareasViewModel(t)).ToList();
+
+            var tareasEnTableroVM = new ListarTareasDeTableroViewModel(tablero, tareasVM);
+            return View(tareasEnTableroVM);
         }
 
-        public FileResult? GetImagen(int id)
+
+        public IActionResult VerDetalles(int idTarea)
         {
-            Tarea tarea = _tareaRepository.GetById(id);
-            
-            if(tarea.Imagen is null)
-            {
-                return null;
-            }
+            var tarea = _tareaRepository.GetById(idTarea);
 
-            return File(tarea.Imagen, "image/jpg");
+            var tareaVM = new DetalleTareaViewModel(tarea);
+
+            return View(tareaVM);
         }
+
     }
 }

@@ -25,7 +25,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
 
             int usuario = idUsuario.Value;
-            ViewData["RolUsuario"] = HttpContext.Session.GetString("AccessLevel").ToString();
             return View(_tableroRepository.GetAllByUser(usuario));
         }
 
