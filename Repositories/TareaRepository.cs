@@ -1,4 +1,5 @@
-﻿using tl2_proyecto_2024_nachoNota.Database;
+﻿using Microsoft.AspNetCore.Server.Kestrel.Core.Features;
+using tl2_proyecto_2024_nachoNota.Database;
 using tl2_proyecto_2024_nachoNota.Models;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
@@ -36,7 +37,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
-                        tarea.Descripcion = reader.GetString("descripcion");
+                        tarea.Descripcion = reader.IsDBNull(reader.GetOrdinal("descripcion"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("descripcion"));
                         tarea.Color = reader.GetString("color");
                         tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
                         tareas.Add(tarea);
@@ -70,7 +73,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
-                        tarea.Descripcion = reader.GetString("descripcion");
+                        tarea.Descripcion = reader.IsDBNull(reader.GetOrdinal("descripcion"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("descripcion"));
                         tarea.Color = reader.GetString("color");
                         tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
                     }
@@ -108,7 +113,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
-                        tarea.Descripcion = reader.GetString("descripcion");
+                        tarea.Descripcion = reader.IsDBNull(reader.GetOrdinal("descripcion")) ? null : reader.GetString(reader.GetOrdinal("descripcion"));
                         tarea.Color = reader.GetString("color");
                         tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
 
@@ -126,9 +131,26 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             throw new NotImplementedException();
         }
 
-        public void Create(int idTablero, Tarea tablero)
+        public void Create(Tarea tarea)
         {
-            throw new NotImplementedException();
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "INSERT INTO tarea(id_usuario, titulo, descripcion, color, id_tablero, estado) VALUES " +
+                                    "(@idUsuario, @titulo, @desc, @color, @idTablero, @estado)";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@idUsuario", tarea.IdUsuario);
+                command.Parameters.AddWithValue("@titulo", tarea.Titulo);
+                command.Parameters.AddWithValue("@desc", tarea.Descripcion);
+                command.Parameters.AddWithValue("@idTablero", tarea.IdTablero);
+                command.Parameters.AddWithValue("@color", tarea.Color);
+                command.Parameters.AddWithValue("@estado", ((int)tarea.Estado));
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
         }
         public void Update(int id, Tarea tablero)
         {
@@ -137,7 +159,19 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+
+                string commandText = "DELETE FROM tarea WHERE id_tarea = @idTarea";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@idTarea", id);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
         }
 
         public IEnumerable<Tarea> GetByTablaYTablero(int idTabla, int idTablero)
@@ -162,7 +196,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.Titulo = reader.GetString("titulo");
-                        tarea.Descripcion = reader.GetString("descripcion");
+                        tarea.Descripcion = reader.IsDBNull(reader.GetOrdinal("descripcion")) ? null : reader.GetString(reader.GetOrdinal("descripcion"));
                         tarea.Color = reader.GetString("color");
                         tarea.FechaModificacion = reader.GetDateTime("fecha_modificacion");
 
@@ -172,6 +206,24 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 connection.Close();
             }
             return tareas;
+        }
+
+        public void CambiarEstado(int idTarea, EstadoTarea estado)
+        {
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+
+                string commandText = "UPDATE tarea SET estado = @estado WHERE id_tarea = @idTarea";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@idTarea", idTarea);
+                command.Parameters.AddWithValue("@estado", (int)estado);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using MySqlX.XDevAPI;
 using System.Data.Common;
 using tl2_proyecto_2024_nachoNota.Database;
+using NuGet.Protocol.Plugins;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
@@ -233,5 +234,26 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
         }
 
+        public string GetNameById(int id)
+        {
+            var nombre = string.Empty;
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT nombre_usuario FROM usuario WHERE id_usuario = @id";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@id", id);
+
+                using(var reader = command.ExecuteReader())
+                {
+                    if(reader.Read())
+                    {
+                        nombre = reader.GetString("nombre_usuario");
+                    }
+                }
+                connection.Close();
+            }
+            return nombre;
+        }
     }
 }

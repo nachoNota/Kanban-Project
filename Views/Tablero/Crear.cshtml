@@ -1,4 +1,4 @@
-﻿@model tl2_proyecto_2024_nachoNota.Models.Tablero
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.CrearTableroViewModel
 
 
 <div class="offcanvas offcanvas-end bg-dark bg-gradient" tabindex="-1" id="offcanvasCrear" aria-labelledby="offcanvasCrearLabel">
@@ -8,9 +8,11 @@
     </div>
     <div class="offcanvas-body">
 <form asp-action="Crear" method="post">
+    <input type="hidden" asp-for="IdUsuario" value="@Context.Session.GetInt32("IdUser")"/>
     <div class="mb-3">
         <label asp-for="Titulo" class="form-label text-light"></label>
         <input asp-for="Titulo" class="form-control border border-secondary-subtle" />
+        <span asp-validation-for="Titulo" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="Color" class="form-label text-light"></label>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
-using tl2_proyecto_2024_nachoNota.ViewModels;
+using tl2_proyecto_2024_nachoNota.ViewModels.TableroVM;
 using ZstdSharp.Unsafe;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
@@ -30,20 +30,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public ActionResult Crear()
         {
-            return View(new Tablero());
+            return View(new CrearTableroViewModel());
         }
 
         [HttpPost]
-        public ActionResult Crear(Tablero tablero)
+        public ActionResult Crear(CrearTableroViewModel tableroVM)
         {
-            int? idUsuario = HttpContext.Session.GetInt32("IdUser");
+            var tablero = new Tablero(tableroVM.IdUsuario, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 
-            if (idUsuario is null)
-            {
-                return RedirectToAction("Index", "Login");
-            }
-
-            tablero.IdUsuario = idUsuario.Value;
             _tableroRepository.Create(tablero);
             return RedirectToAction("Listar");   
         }
@@ -51,12 +45,12 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public ActionResult Modificar(int idTablero)
         {
             var tablero = _tableroRepository.GetById(idTablero);
-            var tableroVM = new TableroModificar(tablero);
+            var tableroVM = new ModificarTableroViewModel(tablero);
             return PartialView(tableroVM);
         }
 
         [HttpPost]
-        public ActionResult Modificar(TableroModificar tableroVM)
+        public ActionResult Modificar(ModificarTableroViewModel tableroVM)
         {
             var tablero = new Tablero(tableroVM.Id, tableroVM.IdUsuario, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 

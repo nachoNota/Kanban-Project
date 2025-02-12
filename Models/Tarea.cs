@@ -28,5 +28,18 @@
         public string Color { get => color; set => color = value; }
         public DateTime FechaModificacion { get => fechaModificacion; set => fechaModificacion = value; }
         public EstadoTarea Estado { get => estado; set => estado = value; }
+
+        public Tarea() { }
+
+        public Tarea(int idUsuario, int idTablero, string titulo, string descripcion, string color) 
+        {
+            IdUsuario = idUsuario;
+            IdTablero = idTablero;
+            Titulo = titulo;
+            Descripcion = descripcion;
+            Color = color;
+            Estado = EstadoTarea.Ideas;
+        }
+
     }
 }

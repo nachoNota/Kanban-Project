@@ -8,6 +8,8 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels
         public int Id { get ; set ; }
         public int IdUsuario { get; set; }
         public int IdTablero { get; set; }
+        public int IdPropietarioTablero { get; set; }
+        public string NombreUsuario { get; set; }
         public string? Titulo { get ; set ; }
         public string? Descripcion { get; set; }
         public string Color { get; set; }
@@ -16,7 +18,7 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels
 
         public DetalleTareaViewModel() { }
 
-        public DetalleTareaViewModel(Tarea tarea) 
+        public DetalleTareaViewModel(Tarea tarea, string nombreUsuario, int idPropietarioTablero)
         {
             Id = tarea.Id;
             IdUsuario = tarea.IdUsuario;
@@ -26,6 +28,8 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels
             Color = tarea.Color;
             FechaModificacion = tarea.FechaModificacion;
             Estado = tarea.Estado;
+            NombreUsuario = nombreUsuario;
+            IdPropietarioTablero = idPropietarioTablero;
         }
 
     }

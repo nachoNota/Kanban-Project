@@ -33,16 +33,6 @@
                             </button>
                         </div>
 
-                        <!-- boton cambiar tablero de usuario-->
-                        @if (string.Equals(Context.Session.GetString("AccessLevel"), "admin"))
-                        {
-                            <button class="btn btn-outline-primary ms-auto"
-                                     data-bs-toggle="modal" data-bs-target="#exampleModal"
-                                     data-bs-toggle="tooltip" data-bs-placement="bottom" title="Asignar tablero a otro usuario">
-                                <i class="bi bi-person-up fs-5"></i>
-                            </button>
-
-                        }
                     </div>
 
                 </div>
@@ -50,8 +40,7 @@
 
 
             @await Html.PartialAsync("Eliminar", tablero.Id)
-            @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroModificar(tablero))
-            @await Html.PartialAsync("Buscar", new tl2_proyecto_2024_nachoNota.ViewModels.BuscarViewModel(tablero.Id));
+            @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.ModificarTableroViewModel(tablero))
         }
 
         <div class="col-sm-6 col-md-4 col-lg-3">
@@ -70,8 +59,10 @@
     
 </div>
 </div>
-<!-- Modal -->
 
-@await Html.PartialAsync("Crear", new tl2_proyecto_2024_nachoNota.Models.Tablero())
+@await Html.PartialAsync("Crear", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.CrearTableroViewModel())
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
 
+</script>

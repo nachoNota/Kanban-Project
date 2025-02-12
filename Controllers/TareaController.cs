@@ -9,11 +9,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     {
         private readonly ITareaRepository _tareaRepository;
         private readonly ITableroRepository _tableroRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public TareaController(ITareaRepository tareaRepository, ITableroRepository tableroRepository)
+        public TareaController(ITareaRepository tareaRepository, ITableroRepository tableroRepository, IUsuarioRepository usuarioRepository)
         {
             _tareaRepository = tareaRepository;
             _tableroRepository = tableroRepository;
+            _usuarioRepository = usuarioRepository;
         }
 
         public IActionResult Listar(int idTablero)
@@ -28,13 +30,41 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
 
-        public IActionResult VerDetalles(int idTarea)
+        public IActionResult VerDetalles(int idTarea, int idPropietarioTablero)
         {
             var tarea = _tareaRepository.GetById(idTarea);
+            var nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
 
-            var tareaVM = new DetalleTareaViewModel(tarea);
+            var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
 
             return View(tareaVM);
+        }
+
+        public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
+        {
+            _tareaRepository.CambiarEstado(idTarea, estado);
+            return RedirectToAction("VerDetalles", new { idTarea });
+        }
+
+        public IActionResult Crear(int idTablero)
+        {
+            return View(new CrearTareaViewModel(idTablero));
+        }
+
+        [HttpPost]
+        public IActionResult Crear(CrearTareaViewModel tareaVM)
+        {
+            var tarea = new Tarea(tareaVM.IdUsuario, tareaVM.IdTablero, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
+            _tareaRepository.Create(tarea);
+
+            return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
+        }
+
+        [HttpPost]
+        public IActionResult Eliminar(EliminarTareaViewModel tareaVM)
+        {
+            _tareaRepository.Delete(tareaVM.IdTarea);
+            return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }
 
     }

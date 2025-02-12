@@ -8,6 +8,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         Usuario GetById(int id);
         Usuario GetUser(string nombreUsuario, string contrasenia);
         IEnumerable<Usuario> SearchByName(string nombreUsuario);
+        string GetNameById(int id);
         void Create(Usuario usuario);
         void Update(Usuario usuario);
         void Delete(int id);

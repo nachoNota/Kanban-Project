@@ -35,14 +35,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository.Create(usuario);
             return RedirectToAction("Index", "Login");
         }
-        /*
-        public IActionResult Buscar(BuscarViewModel buscarVM)
-        {
-            var usuarios = _usuarioRepository.SearchByName(buscarVM.Usuario);
-            buscarVM.Usuarios = usuarios.ToList();
-            return PartialView(buscarVM);
-        }
-        */
+
         public IActionResult Modificar(int idUsuario)
         {
             var usuario = _usuarioRepository.GetById(idUsuario);
@@ -168,7 +161,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             return View(usuarioVM);
         }
-
+ 
         public IActionResult Buscar(string nombreUsuario)
         {
             var usuarios = _usuarioRepository.SearchByName(nombreUsuario).ToList();

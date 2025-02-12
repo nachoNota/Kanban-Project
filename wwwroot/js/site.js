@@ -10,3 +10,16 @@
     });
   });
 
+    $(document).ready(function () {
+        $("#buscarUsuario").on("input", function () {
+            var nombre = $(this).val();
+
+            if (nombre.length > 2) {
+                $.get("/Usuario/Buscar", { nombre: nombre }, function (data) {
+                    $("#listaUsuarios").html(data);
+                });
+            } else {
+                $("#listaUsuarios").empty();
+            }
+        });
+});

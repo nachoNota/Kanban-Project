@@ -1,0 +1,23 @@
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.EliminarTareaViewModel
+
+<div class="modal fade" id="modalEliminar-@Model.IdTarea" tabindex="-1" aria-labelledby="modalEliminarLabel-@Model.IdTarea" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEliminarLabel-@Model.IdTarea">¿Eliminar tarea?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                Esta acción eliminará esta tarea de forma permanente, ¡y eso es mucho tiempo!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form method="post" asp-action="Eliminar">
+                    <input type="hidden" asp-for="IdTarea" value="@Model.IdTarea" />
+                    <input type="hidden" asp-for="IdTablero" value="@Model.IdTablero" />
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

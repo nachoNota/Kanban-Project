@@ -1,4 +1,4 @@
-﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TableroModificar
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.ModificarTableroViewModel
 
 <div class="offcanvas offcanvas-end bg-body-secondary" tabindex="-1" id="offcanvasRight-@Model.Id" aria-labelledby="offcanvasRightLabel-@Model.Id">
     <div class="offcanvas-header">
@@ -14,6 +14,7 @@
         <div class="mb-3">
             <label asp-for="Titulo" class="form-label"></label>
             <input asp-for="Titulo" class="form-control border border-secondary-subtle" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Color" class="form-label"></label>
