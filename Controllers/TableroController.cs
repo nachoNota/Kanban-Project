@@ -15,22 +15,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _tableroRepository = tableroRepository;
         }
 
-        public ActionResult Listar()
+        public ActionResult ListarPropios(int idUsuario)
         {
-            int? idUsuario = HttpContext.Session.GetInt32("IdUser");
-
-            if(idUsuario is null)
-            {
-                return RedirectToAction("Index", "Login");
-            }
-
-            int usuario = idUsuario.Value;
-            return View(_tableroRepository.GetAllByUser(usuario));
+            var tableros = _tableroRepository.GetAllByUser(idUsuario).ToList();
+            return View(tableros);
         }
 
-        public ActionResult Crear()
+        public IActionResult ListarConTareasAsignadas(int idUsuario)
         {
-            return View(new CrearTableroViewModel());
+            var tableros = _tableroRepository.GetTablerosConTareasAsignadas(idUsuario).ToList();
+
+            return View(tableros);
         }
 
         [HttpPost]
@@ -39,14 +34,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             var tablero = new Tablero(tableroVM.IdUsuario, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 
             _tableroRepository.Create(tablero);
-            return RedirectToAction("Listar");   
-        }
-
-        public ActionResult Modificar(int idTablero)
-        {
-            var tablero = _tableroRepository.GetById(idTablero);
-            var tableroVM = new ModificarTableroViewModel(tablero);
-            return PartialView(tableroVM);
+            return RedirectToAction("ListarPropios", new {IdUsuario = tableroVM.IdUsuario});   
         }
 
         [HttpPost]
@@ -55,14 +43,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             var tablero = new Tablero(tableroVM.Id, tableroVM.IdUsuario, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 
             _tableroRepository.Update(tablero);
-            return RedirectToAction("Listar");
+            return RedirectToAction("ListarPropios", new { IdUsuario = tableroVM.IdUsuario });
         }
 
         [HttpPost]
         public ActionResult Eliminar(int idTablero)
         {
             _tableroRepository.Delete(idTablero);
-            return RedirectToAction("Listar");
+            return RedirectToAction("ListarPropios", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
         }
 
     }

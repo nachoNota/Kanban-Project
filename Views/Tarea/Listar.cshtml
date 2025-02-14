@@ -27,11 +27,11 @@
                                 <a asp-action="VerDetalles" asp-route-idTarea="@tarea.IdTarea" asp-route-idPropietarioTablero="@Model.Tablero.IdUsuario" type="button"
                                    style="background-color:@tarea.Color;"
                                    class="list-group-item list-group-item-action mover mover-hover4 d-flex justify-content-between align-items-center">
-                                    <span class="@tachar">@tarea.Titulo</span>
+                                    <span class="@tachar borde-letras">@tarea.Titulo</span>
 
                                     @if (tarea.IdUsuario == Context.Session.GetInt32("IdUser"))
                                     {
-                                        <i class="bi bi-person" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        <i class="bi bi-person borde-letras" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                            data-bs-title="Eres propietario de esta tarea"></i>
                                     }
 

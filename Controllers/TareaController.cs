@@ -43,7 +43,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
         {
             _tareaRepository.CambiarEstado(idTarea, estado);
-            return RedirectToAction("VerDetalles", new { idTarea });
+            return RedirectToAction("VerDetalles", new { idTarea , idPropietarioTablero = HttpContext.Session.GetInt32("IdUser") } );
         }
 
         public IActionResult Crear(int idTablero)

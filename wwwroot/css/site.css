@@ -36,8 +36,6 @@ main {
 footer {
     background-color: #222; /* Color de fondo opcional */
     color: white; /* Color del texto */
-    padding: 10px;
-    text-align: center;
 }
 
 
@@ -93,8 +91,15 @@ footer {
     color: #495057; /* Texto más oscuro */
 }
 
-    .btn-outline-light-secondary:hover {
-        background-color: #e9ecef; /* Fondo más claro al hacer hover */
-        border-color: #495057; /* Borde más oscuro al hacer hover */
-    }
+.btn-outline-light-secondary:hover {
+    background-color: #e9ecef; /* Fondo más claro al hacer hover */
+    border-color: #495057; /* Borde más oscuro al hacer hover */
+}
 
+.navbar-brand {
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}

@@ -83,6 +83,43 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         }
 
+        public IEnumerable<Tablero> GetTablerosConTareasAsignadas(int idUsuario)
+        {
+            var tableros = new List<Tablero>();
+
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = @"
+                             SELECT distinct tab.id_tablero, tab.id_usuario, tab.titulo, tab.descripcion, tab.color
+                            FROM tablero tab
+                            JOIN tarea tar USING(id_tablero)
+                            WHERE tar.id_usuario = @idUsuario AND tab.id_usuario <> @idUsuario";
+                
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int idTablero = reader.GetInt32("id_tablero");
+                        int idUsu = reader.GetInt32("id_usuario");
+                        string titulo = reader.GetString("titulo");
+                        string color = reader.GetString("color");
+                        string? desc = reader.IsDBNull(reader.GetOrdinal("descripcion"))
+                                    ? null
+                                    : reader.GetString(reader.GetOrdinal("descripcion"));
+                        var tablero = new Tablero(idTablero, idUsu, titulo, color, desc);
+
+                        tableros.Add(tablero);
+                    }
+                }
+                connection.Close();
+            }
+            return tableros;
+        }
+
         public Tablero GetById(int id)
         {
             Tablero tablero = null;

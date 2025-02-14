@@ -14,51 +14,85 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-dark">
+        <nav class="navbar navbar-expand-lg bg-dark px-3">
             <div class="container-fluid">
-                <a class="navbar-brand text-light" asp-action="Listar" asp-controller="Tablero">Proyecto</a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Logo -->
+                <a class="navbar-brand text-light fw-bold" asp-action="Index" asp-controller="Login">Proyecto</a>
+                @if(AuthService.IsAuthenticated()){
+                    <ul class="navbar-nav ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-action="ListarPropios" asp-controller="Tablero" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">
+                                Mis tableros
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-action="ListarConTareasAsignadas" asp-controller="Tablero" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">Tareas asignadas</a>
+                        </li>
+                    </ul>
+                }
+                <!-- Botón de menú en pantallas pequeñas -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                @if(!AuthService.IsAuthenticated()){
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <div class="d-flex ms-auto">
-                            <a class="btn btn-outline-success" asp-action="Index" asp-controller="Login">Iniciar sesión</a>
+                <!-- Contenido colapsable (se mantiene a la derecha) -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <div class="ms-auto d-flex align-items-center">
+                        @if (!AuthService.IsAuthenticated())
+                        {
+                            <a class="btn btn-outline-success me-3" asp-action="Index" asp-controller="Login">Iniciar sesión</a>
+                            <div class="vr text-light"></div>
                             <a class="btn btn-outline-primary ms-3" asp-action="Registrar" asp-controller="Usuario">Registrarse</a>
-                        </div>
+                        }
+                        else
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person"></i> @Context.Session.GetString("User")
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" asp-action="Modificar" asp-controller="Usuario" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">
+                                            <i class="bi bi-gear me-2"></i> Ajustes
+                                        </a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-action="Logout" asp-controller="Login">Cerrar sesión</a></li>
+                                </ul>
+                            </div>
+                        }
                     </div>
-                } else {
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person"></i>
-                            @Context.Session.GetString("User")
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-action="Modificar" asp-controller="Usuario" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">
-                                                                        <i class="bi bi-gear me-2"></i>Ajustes</a>
-                            </li>
-                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="Login">Cerrar sesión</a></li>
-                        </ul>
-                    </div>
-                }
-
+                </div>
             </div>
         </nav>
 
+
+
     </header>
+
 
         <main role="main" style="background-color: @(ViewData["BackgroundColor"] ?? "#ffffff");">
             @RenderBody()
         </main>
 
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted p-3" >
         <div class="container text-light">
-            &copy; 2024 - tl2_proyecto_2024_nachoNota - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="d-flex justify-content-between align-items-center">
+                <span>
+                    &copy; 2024 - tl2_proyecto_2024_nachoNota -
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                </span>
+                <div>
+                    <ul class="list-unstyled d-flex m-0">
+                        <li class="me-3 mover mover-hover4"><a href="https://www.instagram.com/nachonota04/" class="text-light"><i class="bi bi-instagram fs-4"></i></a></li>
+                        <li class="me-3 mover mover-hover4"><a href="" class="text-light"><i class="bi bi-twitter-x fs-4"></i></a></li>
+                        <li class="mover mover-hover4"><a href="" class="text-light"><i class="bi bi-whatsapp fs-4"></i></a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </footer>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
