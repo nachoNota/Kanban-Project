@@ -59,7 +59,7 @@
                             @foreach (EstadoTarea estado in Enum.GetValues(typeof(EstadoTarea)))
                             {
                                 <li>
-                                    <a class="dropdown-item" asp-action="CambiarEstado" asp-route-idTarea="@Model.Id" asp-route-estado="@estado">
+                                    <a class="dropdown-item" asp-action="CambiarEstado" asp-route-idTarea="@Model.Id" asp-route-estado="@estado" asp-route-idPropTablero="@Model.IdPropietarioTablero">
                                         @estado
                                     </a>
                                 </li>

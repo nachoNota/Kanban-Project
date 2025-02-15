@@ -19,12 +19,12 @@
 
         }
 
-        public Tablero(int idUsuario, string titulo, string color, string? descripcion)
+        public Tablero(string titulo, string color, string? descripcion, int idUsuario)
         {
-            IdUsuario = idUsuario;
             Titulo = titulo;
             Color = color;
             Descripcion = descripcion;
+            IdUsuario = idUsuario;
         }
 
         public Tablero(int id, int idUsuario, string titulo, string color, string desc)
@@ -35,7 +35,13 @@
             Color = color;
             Descripcion = desc;
         }
-
+        public Tablero(int id, string titulo, string color, string desc)
+        {
+            Id = id;
+            Titulo = titulo;
+            Color = color;
+            Descripcion = desc;
+        }
 
     }
 }

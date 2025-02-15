@@ -7,13 +7,11 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.TableroVM
     {
 
         private int id;
-        private int idUsuario;
         private string titulo;
         private string color;
         private string? descripcion;
 
         public int Id { get; set; }
-        public int IdUsuario { get; set; }
         [Required(ErrorMessage = "Debes ingresar un titulo para el tablero.")]
         public string Titulo { get; set; }
         public string Color { get; set; }
@@ -24,13 +22,12 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.TableroVM
 
         }
 
-        public ModificarTableroViewModel(Tablero tablero)
+        public ModificarTableroViewModel(ListarTablerosPropiosViewModel tableroVM)
         {
-            Id = tablero.Id;
-            IdUsuario = tablero.IdUsuario;
-            Titulo = tablero.Titulo;
-            Color = tablero.Color;
-            Descripcion = tablero.Descripcion;
+            Id = tableroVM.IdTablero;
+            Titulo = tableroVM.Titulo;
+            Color = tableroVM.Color;
+            Descripcion = tableroVM.Descripcion;
         }
     }
 }

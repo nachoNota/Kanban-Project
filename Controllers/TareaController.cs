@@ -40,10 +40,10 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return View(tareaVM);
         }
 
-        public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
+        public IActionResult CambiarEstado(int idTarea, EstadoTarea estado, int idPropTablero)
         {
             _tareaRepository.CambiarEstado(idTarea, estado);
-            return RedirectToAction("VerDetalles", new { idTarea , idPropietarioTablero = HttpContext.Session.GetInt32("IdUser") } );
+            return RedirectToAction("VerDetalles", new { idTarea , idPropietarioTablero = idPropTablero } );
         }
 
         public IActionResult Crear(int idTablero)
@@ -66,6 +66,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _tareaRepository.Delete(tareaVM.IdTarea);
             return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }
+
 
     }
 }
