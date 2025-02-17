@@ -1,0 +1,47 @@
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TareaVM.CambiarPropietarioTareaViewModel
+
+<div class="container py-3">
+    <div class="w-50">
+
+        <h2>Cambiar propietario</h2>
+        <p class="text-muted mb-4 w-75">
+            Busca un usuario por su nombre para poder asignarlo como propietario de la tarea seleccionada.
+        </p>
+
+        <form asp-action="BuscarUsu" class="d-flex mb-2" role="search" style="max-width:30rem">
+            <input type="hidden" name="idTarea" value="@Model.IdTarea"/>
+            <input class="form-control me-2" type="search" name="nombreUsuario" placeholder="Busca por nombre de usuario" aria-label="Search" />
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+
+        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+            @if (Model.Usuarios.Count > 0)
+            {
+                @foreach (var usuario in Model.Usuarios)
+                {
+                    <button type="button" class="btn btn-outline-primary" onclick="cambiarPropietario(@Model.IdTarea, @usuario.Id)">
+                        @usuario.Nombre
+                    </button>
+                }
+            }
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    function cambiarPropietario(idTarea, idUsuario) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("CambiarPropietarioTarea", "Tarea")'; // Cambia "ControllerName" por el nombre de tu controlador
+
+        form.innerHTML = `
+            <input type="hidden" name="idTarea" value="${idTarea}" />
+            <input type="hidden" name="idUsuario" value="${idUsuario}" />
+        `;
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>

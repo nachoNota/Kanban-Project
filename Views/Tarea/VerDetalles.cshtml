@@ -1,5 +1,4 @@
-﻿@using tl2_proyecto_2024_nachoNota.ViewModels
-@model tl2_proyecto_2024_nachoNota.ViewModels.DetalleTareaViewModel
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TareaVM.DetalleTareaViewModel
 
 @{
     ViewData["Title"] = "Ver Detalles de Tarea";
@@ -23,7 +22,9 @@
 
                 @if (esPropietarioTablero)
                 {
-                    <button type="button" class="btn btn-outline-secondary ms-4">Cambiar propietario</button>
+                    <a asp-action="CambiarPropietarioTarea" asp-route-idTarea="@Model.Id" type="button" class="btn btn-outline-secondary ms-4">
+                        Cambiar propietario
+                    </a>
                 }
             </header>
 
@@ -59,7 +60,7 @@
                             @foreach (EstadoTarea estado in Enum.GetValues(typeof(EstadoTarea)))
                             {
                                 <li>
-                                    <a class="dropdown-item" asp-action="CambiarEstado" asp-route-idTarea="@Model.Id" asp-route-estado="@estado" asp-route-idPropTablero="@Model.IdPropietarioTablero">
+                                    <a class="dropdown-item" asp-action="CambiarEstado" asp-route-idTarea="@Model.Id" asp-route-estado="@estado">
                                         @estado
                                     </a>
                                 </li>
@@ -86,9 +87,9 @@
                         </button>
                     </div>
                     <div class="p-2">
-                        <button asp-action="Modificar" class="btn btn-outline-primary">
+                        <a asp-action="Modificar" asp-route-idTarea="@Model.Id" class="btn btn-outline-primary">
                             <i class="bi bi-pencil-square"></i>
-                        </button>
+                        </a>
                     </div>
                 }
             </footer>
@@ -96,4 +97,4 @@
     </article>
 </div>
 
-@await Html.PartialAsync("Eliminar", new EliminarTareaViewModel(Model.Id, Model.IdTablero));
+@await Html.PartialAsync("Eliminar", new tl2_proyecto_2024_nachoNota.ViewModels.TareaVM.EliminarTareaViewModel(Model.Id, Model.IdTablero));

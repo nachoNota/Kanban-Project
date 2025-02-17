@@ -11,7 +11,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         void CambiarEstado(int idTarea, EstadoTarea estado);
         void AsignarUsuarioATarea(int idUsuario, int idTarea);
         void Create(Tarea tarea);
-        void Update(int id, Tarea tablero);
+        void Update(Tarea tarea);
         void Delete(int id);
         IEnumerable<Tarea> GetByTablaYTablero(int idTabla, int idTablero);
     }

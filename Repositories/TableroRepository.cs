@@ -241,5 +241,27 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
         }
 
+        public int GetPropietario(int idTablero)
+        {
+            int idUsuario = 0;
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT id_usuario FROM tablero WHERE id_tablero = @idTablero";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@idTablero", idTablero);
+
+                using(var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        idUsuario = reader.GetInt32("id_usuario");
+                    }
+                }
+                connection.Close();
+            }
+            return idUsuario;
+        }
     }
 }

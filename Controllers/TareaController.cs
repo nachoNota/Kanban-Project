@@ -2,6 +2,7 @@
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.ViewModels;
+using tl2_proyecto_2024_nachoNota.ViewModels.TareaVM;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
 {
@@ -30,20 +31,22 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
 
-        public IActionResult VerDetalles(int idTarea, int idPropietarioTablero)
+        public IActionResult VerDetalles(int idTarea)
         {
             var tarea = _tareaRepository.GetById(idTarea);
             var nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
+
+            int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
 
             var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
 
             return View(tareaVM);
         }
 
-        public IActionResult CambiarEstado(int idTarea, EstadoTarea estado, int idPropTablero)
+        public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
         {
             _tareaRepository.CambiarEstado(idTarea, estado);
-            return RedirectToAction("VerDetalles", new { idTarea , idPropietarioTablero = idPropTablero } );
+            return RedirectToAction("VerDetalles", new { idTarea } );
         }
 
         public IActionResult Crear(int idTablero)
@@ -67,6 +70,44 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }
 
+        [HttpPost]
+        public IActionResult BuscarUsu(string nombreUsuario, int idTarea)
+        {
+            var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
 
+            var usuariosBuscadosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
+
+            var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, usuariosBuscadosVM);
+
+            return View("CambiarPropietarioTarea", cambiarPropietarioVM);
+        }
+
+        public IActionResult CambiarPropietarioTarea(int idTarea)
+        {
+            var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
+            return View(cambiarPropietarioVM);
+        }
+
+        [HttpPost]
+        public IActionResult CambiarPropietarioTarea(int idTarea, int idUsuario)
+        {
+            _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
+            return RedirectToAction("VerDetalles", new { idTarea });
+        }
+
+        public IActionResult Modificar(int idTarea)
+        {
+            var tarea = _tareaRepository.GetById(idTarea);
+            var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
+            return View(tareaVM);
+        }
+
+        [HttpPost]
+        public IActionResult Modificar(ModificarTareaViewModel tareaVM)
+        {
+            var tarea = new Tarea(tareaVM.Id, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
+            _tareaRepository.Update(tarea);
+            return RedirectToAction("VerDetalles", new { idTarea = tareaVM.Id } );
+        }
     }
 }

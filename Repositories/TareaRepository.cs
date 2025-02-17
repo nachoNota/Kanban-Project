@@ -128,7 +128,19 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public void AsignarUsuarioATarea(int idUsuario, int idTarea)
         {
-            throw new NotImplementedException();
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "UPDATE tarea SET id_usuario = @idUsuario WHERE id_tarea = @idTarea";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@idUsuario", idUsuario);
+                command.Parameters.AddWithValue("@idTarea", idTarea);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
         }
 
         public void Create(Tarea tarea)
@@ -152,9 +164,25 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 connection.Close();
             }
         }
-        public void Update(int id, Tarea tablero)
+        public void Update(Tarea tarea)
         {
-            throw new NotImplementedException();
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+
+                string commandText = "UPDATE tarea SET titulo = @titulo, descripcion = @desc, " +
+                    "color = @color WHERE id_tarea = @idTarea";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+
+                command.Parameters.AddWithValue("@titulo", tarea.Titulo);
+                command.Parameters.AddWithValue("@desc", tarea.Descripcion);
+                command.Parameters.AddWithValue("@color", tarea.Color);
+                command.Parameters.AddWithValue("@idTarea", tarea.Id);
+
+                command.ExecuteNonQuery();
+
+                connection.Close();
+            }
         }
 
         public void Delete(int id)

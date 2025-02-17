@@ -1,16 +1,16 @@
 ﻿using System.Drawing;
 using tl2_proyecto_2024_nachoNota.Models;
 
-namespace tl2_proyecto_2024_nachoNota.ViewModels
+namespace tl2_proyecto_2024_nachoNota.ViewModels.TareaVM
 {
     public class DetalleTareaViewModel
     {
-        public int Id { get ; set ; }
+        public int Id { get; set; }
         public int IdUsuario { get; set; }
         public int IdTablero { get; set; }
         public int IdPropietarioTablero { get; set; }
         public string NombreUsuario { get; set; }
-        public string? Titulo { get ; set ; }
+        public string? Titulo { get; set; }
         public string? Descripcion { get; set; }
         public string Color { get; set; }
         public DateTime FechaModificacion { get; set; }

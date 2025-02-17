@@ -31,6 +31,14 @@
 
         public Tarea() { }
 
+        public Tarea(int id, string titulo, string? descripcion, string color)
+        {
+            Id = id;
+            Titulo = titulo;
+            Descripcion = descripcion;
+            Color = color;
+        }
+
         public Tarea(int idUsuario, int idTablero, string titulo, string descripcion, string color) 
         {
             IdUsuario = idUsuario;

@@ -168,11 +168,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return View("Editar", usuarios);
         }
 
-        public IActionResult buscarotro(string nombreUsuario)
-        {
-            var usuarios = _usuarioRepository.SearchByName(nombreUsuario).ToList();
-            
-            var usuariosVM = usuarios.Select(u => new Buscar)
-        }
+        
     }
 }
