@@ -1,4 +1,5 @@
 using tl2_proyecto_2024_nachoNota.Database;
+using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.Services;
 
@@ -25,7 +26,6 @@ builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
 builder.Services.AddScoped<ITableroRepository, TableroRepository>();
 builder.Services.AddScoped<ITareaRepository, TareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddControllersWithViews();

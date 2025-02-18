@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using tl2_proyecto_2024_nachoNota.Models;
 
 namespace tl2_proyecto_2024_nachoNota.ViewModels.TableroVM
 {

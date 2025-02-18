@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 
 namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
 {

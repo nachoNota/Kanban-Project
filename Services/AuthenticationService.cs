@@ -9,22 +9,22 @@ namespace tl2_proyecto_2024_nachoNota.Services
         void Logout();
         bool IsAuthenticated();
         void ChangeUserName(string nombreUsuario);
+        void ChangePassword(string password);
+        public void ChangeAccessLevel(RolUsuario rol);
+
     }
 
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IUsuarioRepository _usuarioRepository;
-        private readonly IRolRepository _rolRepository;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly HttpContext context;
 
-        public AuthenticationService(IUsuarioRepository usuarioRepository, IHttpContextAccessor contextAccessor,
-                                    IRolRepository rolRepository)
+        public AuthenticationService(IUsuarioRepository usuarioRepository, IHttpContextAccessor contextAccessor)
         {
             _usuarioRepository = usuarioRepository;
             _contextAccessor = contextAccessor;
             context = _contextAccessor.HttpContext;
-            _rolRepository = rolRepository;
         }
         public bool Login(string nombreUsuario, string contrasenia)
         {
@@ -36,8 +36,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
             context.Session.SetString("User", nombreUsuario);
             context.Session.SetInt32("IdUser", usuario.Id);
             context.Session.SetString("Password", contrasenia);
-            Rol rol = _rolRepository.GetById(usuario.IdRol);
-            context.Session.SetString("AccessLevel", rol.NombreRol);
+            context.Session.SetString("AccessLevel", usuario.Rol.ToString());
 
 
             return true;
@@ -48,6 +47,15 @@ namespace tl2_proyecto_2024_nachoNota.Services
             context.Session.SetString("User", nombreUsuario);
         }
 
+        public void ChangePassword(string password)
+        {
+            context.Session.SetString("Password", password);
+        }
+
+        public void ChangeAccessLevel(RolUsuario rol)
+        {
+            context.Session.SetString("AccessLevel", rol.ToString());
+        }
         public bool IsAuthenticated()
         {
             var context = _contextAccessor.HttpContext;

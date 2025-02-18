@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
-using tl2_proyecto_2024_nachoNota.ViewModels;
 using tl2_proyecto_2024_nachoNota.ViewModels.TableroVM;
-using ZstdSharp.Unsafe;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
 {
+    [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
     public class TableroController : Controller
     {
         private readonly ITableroRepository _tableroRepository;
@@ -51,6 +51,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             var tablero = new Tablero(tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion, tableroVM.IdUsuario);
 
             _tableroRepository.Create(tablero);
+            TempData["Mensaje"] = "El tablero fue creado con éxito.";
             return RedirectToAction("ListarPropios", new {IdUsuario = tablero.IdUsuario });   
         }
 
@@ -60,6 +61,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             var tablero = new Tablero(tableroVM.Id, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 
             _tableroRepository.Update(tablero);
+            TempData["Mensaje"] = "El tablero fue modificado con éxito.";
             return RedirectToAction("ListarPropios", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
         }
 
@@ -67,6 +69,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public ActionResult Eliminar(int idTablero)
         {
             _tableroRepository.Delete(idTablero);
+            TempData["Mensaje"] = "El tablero fue eliminado con éxito";
             return RedirectToAction("ListarPropios", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
         }
 

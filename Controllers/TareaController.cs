@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.ViewModels;
@@ -6,6 +7,7 @@ using tl2_proyecto_2024_nachoNota.ViewModels.TareaVM;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
 {
+    [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
     public class TareaController : Controller
     {
         private readonly ITareaRepository _tareaRepository;
@@ -59,7 +61,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             var tarea = new Tarea(tareaVM.IdUsuario, tareaVM.IdTablero, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
             _tareaRepository.Create(tarea);
-
+            TempData["Mensaje"] = "La tarea fue creada con éxito";
             return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
         }
 
@@ -67,6 +69,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult Eliminar(EliminarTareaViewModel tareaVM)
         {
             _tareaRepository.Delete(tareaVM.IdTarea);
+            TempData["Mensaje"] = "La tarea fue eliminada con éxito.";
             return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }
 
@@ -92,6 +95,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult CambiarPropietarioTarea(int idTarea, int idUsuario)
         {
             _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
+            TempData["Mensaje"] = "El usuario fue asignado a la tarea.";
             return RedirectToAction("VerDetalles", new { idTarea });
         }
 
@@ -107,6 +111,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             var tarea = new Tarea(tareaVM.Id, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
             _tareaRepository.Update(tarea);
+            TempData["Mensaje"] = "La tarea fue modificada con éxito.";
             return RedirectToAction("VerDetalles", new { idTarea = tareaVM.Id } );
         }
     }

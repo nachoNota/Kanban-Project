@@ -1,10 +1,5 @@
 ﻿using tl2_proyecto_2024_nachoNota.Models;
-using MySql.Data;
-using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI;
-using System.Data.Common;
 using tl2_proyecto_2024_nachoNota.Database;
-using NuGet.Protocol.Plugins;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
@@ -36,12 +31,12 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     while (reader.Read())
                     {
                         int idUsuario = reader.GetInt32("id_usuario");
-                        int idRol = reader.GetInt32("id_rol");
                         string nombreUsuario = reader.GetString("nombre_usuario");
                         string pass = reader.GetString("contrasenia");
                         string email = reader.GetString("email");
+                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
 
-                        var usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass, email);
+                        var usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
                         
                         usuarios.Add(usuario);
                     }
@@ -67,12 +62,12 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     if (reader.Read())
                     {
                         int idUsuario = reader.GetInt32("id_usuario");
-                        int idRol = reader.GetInt32("id_rol");
                         string nombreUsuario = reader.GetString("nombre_usuario");
                         string pass = reader.GetString("contrasenia");
                         string email = reader.GetString("email");
+                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
 
-                        usuario = new Usuario(idUsuario, idRol, nombreUsuario, pass, email);
+                        usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
                     }
                 }
                 connection.Close();
@@ -98,10 +93,10 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     if (reader.Read())
                     {
                         int idUsuario = reader.GetInt32("id_usuario");
-                        int idRol = reader.GetInt32("id_rol");
                         string email = reader.GetString("email");
+                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
 
-                        usuario = new Usuario(idUsuario, idRol, nombreUsuario, contrasenia, email);
+                        usuario = new Usuario(idUsuario, rol, nombreUsuario, contrasenia, email);
                     }
                 }
                 connection.Close();
@@ -125,12 +120,12 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     while (reader.Read())
                     {
                         int idUsuario = reader.GetInt32("id_usuario");
-                        int idRol = reader.GetInt32("id_rol");
                         string pass = reader.GetString("contrasenia");
                         string email = reader.GetString("email");
                         string nombre = reader.GetString("nombre_usuario");
+                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
 
-                        var usuario = new Usuario(idUsuario, idRol, nombre, pass, email);
+                        var usuario = new Usuario(idUsuario, rol, nombre, pass, email);
                         usuarios.Add(usuario);
                     }
                 }
@@ -140,15 +135,15 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             return usuarios;
         }
         
-        public void ChangeRol(int idUsuario, int idRol)
+        public void ChangeRol(int idUsuario, RolUsuario rol)
         {
             using(var connection = _connectionProvider.GetConnection())
             {
                 connection.Open();
-                string commandText = "UPDATE usuario SET id_rol = @idRol WHERE id_usuario = @idUsuario";
+                string commandText = "UPDATE usuario SET rol = @idRol WHERE id_usuario = @idUsuario";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
-                command.Parameters.AddWithValue("@idRol", idRol);
+                command.Parameters.AddWithValue("@idRol", ((int)rol));
                 command.Parameters.AddWithValue("@idUsuario", idUsuario);
 
                 command.ExecuteNonQuery();
@@ -181,13 +176,13 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             {
                 connection.Open();
 
-                string commandText = "INSERT INTO usuario(nombre_usuario, contrasenia, id_rol, email)" +
-                                        " VALUES (@nombre, @contra, @id_rol, @email)";
+                string commandText = "INSERT INTO usuario(nombre_usuario, contrasenia, rol, email)" +
+                                        " VALUES (@nombre, @contra, @rol, @email)";
                 var command = _commandFactory.CreateCommand(commandText, connection);
 
                 command.Parameters.AddWithValue("@nombre", usuario.NombreUsuario);
                 command.Parameters.AddWithValue("@contra", usuario.Password);
-                command.Parameters.AddWithValue("@id_rol", usuario.IdRol);
+                command.Parameters.AddWithValue("@rol", ((int)usuario.Rol));
                 command.Parameters.AddWithValue("@email", usuario.Email);
 
                 command.ExecuteNonQuery();
