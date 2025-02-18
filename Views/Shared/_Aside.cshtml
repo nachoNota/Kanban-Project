@@ -1,6 +1,5 @@
-﻿@{
-    var accessLevel = Enum.Parse<RolUsuario>(Context.Session.GetString("AccessLevel"));
-}
+﻿@inject tl2_proyecto_2024_nachoNota.Services.IAuthenticationService AuthService
+
 
 <aside class="border-end vh-100 p-3 bg-dark" style="width: 275px;">
     <h5 class="text-center text-light">Opciones de Usuario</h5>
@@ -20,7 +19,7 @@
                 <i class="bi bi-key me-2"></i> Cambiar Contraseña
             </a>
         </li>
-       @if(accessLevel == RolUsuario.Admin){
+       @if(AuthService.GetAccessLevel() == RolUsuario.Admin){
             <li class="nav-item">
                 <a asp-action="Crear" asp-controller="Usuario" class="nav-link text-light">
                     <i class="bi bi-person-add me-2"></i> Crear nuevo usuario

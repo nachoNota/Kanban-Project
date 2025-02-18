@@ -2,6 +2,7 @@
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
+using tl2_proyecto_2024_nachoNota.ViewModels;
 using tl2_proyecto_2024_nachoNota.ViewModels.TableroVM;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
@@ -18,7 +19,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository = usuarioRepository;
         }
 
-        public ActionResult ListarPropios(int idUsuario)
+        public IActionResult ListarPropios(int idUsuario)
         {
             var tableros = _tableroRepository.GetAllByUser(idUsuario).ToList();
 
@@ -45,8 +46,21 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return View(tablerosVM);
         }
 
+        public IActionResult ListarBuscados(int idUsuario)
+        {
+            var tableros = _tableroRepository.GetAllByUser(idUsuario);
+
+            var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel(
+                t.Id,
+                t.Titulo,
+                t.Color,
+                _usuarioRepository.GetNameById(t.IdUsuario))).ToList();
+
+            return View(tablerosVM);
+        }
+
         [HttpPost]
-        public ActionResult Crear(CrearTableroViewModel tableroVM)
+        public IActionResult Crear(CrearTableroViewModel tableroVM)
         {
             var tablero = new Tablero(tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion, tableroVM.IdUsuario);
 
@@ -56,7 +70,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public ActionResult Modificar(ModificarTableroViewModel tableroVM)
+        public IActionResult Modificar(ModificarTableroViewModel tableroVM)
         {
             var tablero = new Tablero(tableroVM.Id, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
 
@@ -66,11 +80,25 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public ActionResult Eliminar(int idTablero)
+        public IActionResult Eliminar(int idTablero)
         {
             _tableroRepository.Delete(idTablero);
             TempData["Mensaje"] = "El tablero fue eliminado con éxito";
             return RedirectToAction("ListarPropios", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
+        }
+
+        public IActionResult MostrarBuscadorUsuarios()
+        {
+            return View(new List<UsuarioBuscadoViewModel>());
+        }
+
+        public IActionResult BuscarUsu(string nombreUsuario)
+        {
+            var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario);
+
+            var usuariosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
+
+            return View("MostrarBuscadorUsuarios", usuariosVM);
         }
 
     }

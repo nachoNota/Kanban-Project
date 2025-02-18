@@ -28,6 +28,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-action="ListarConTareasAsignadas" asp-controller="Tablero" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">Tareas asignadas</a>
                         </li>
+                        @if(AuthService.GetAccessLevel() == RolUsuario.Admin){
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-action="MostrarBuscadorUsuarios" asp-controller="Tablero">Buscar Tableros</a>
+                            </li>
+                        }
                     </ul>
                 }
                 <!-- Botón de menú en pantallas pequeñas -->

@@ -11,6 +11,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
         void ChangeUserName(string nombreUsuario);
         void ChangePassword(string password);
         public void ChangeAccessLevel(RolUsuario rol);
+        public RolUsuario GetAccessLevel();
 
     }
 
@@ -56,6 +57,19 @@ namespace tl2_proyecto_2024_nachoNota.Services
         {
             context.Session.SetString("AccessLevel", rol.ToString());
         }
+
+        public RolUsuario GetAccessLevel()
+        {
+            var rol = ConvertToAccessLevel();
+
+            return rol;
+        }
+
+        private RolUsuario ConvertToAccessLevel()
+        {
+            return (RolUsuario)Enum.Parse(typeof(RolUsuario), context.Session.GetString("AccessLevel"));
+        }
+
         public bool IsAuthenticated()
         {
             var context = _contextAccessor.HttpContext;

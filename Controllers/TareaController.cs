@@ -48,6 +48,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
         {
             _tareaRepository.CambiarEstado(idTarea, estado);
+
             return RedirectToAction("VerDetalles", new { idTarea } );
         }
 
@@ -62,6 +63,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             var tarea = new Tarea(tareaVM.IdUsuario, tareaVM.IdTablero, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
             _tareaRepository.Create(tarea);
             TempData["Mensaje"] = "La tarea fue creada con éxito";
+
             return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
         }
 
@@ -70,6 +72,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             _tareaRepository.Delete(tareaVM.IdTarea);
             TempData["Mensaje"] = "La tarea fue eliminada con éxito.";
+
             return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }
 
@@ -88,6 +91,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult CambiarPropietarioTarea(int idTarea)
         {
             var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
+
             return View(cambiarPropietarioVM);
         }
 
@@ -96,6 +100,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
             TempData["Mensaje"] = "El usuario fue asignado a la tarea.";
+
             return RedirectToAction("VerDetalles", new { idTarea });
         }
 
@@ -103,6 +108,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             var tarea = _tareaRepository.GetById(idTarea);
             var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
+
             return View(tareaVM);
         }
 
@@ -111,6 +117,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             var tarea = new Tarea(tareaVM.Id, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
             _tareaRepository.Update(tarea);
+
             TempData["Mensaje"] = "La tarea fue modificada con éxito.";
             return RedirectToAction("VerDetalles", new { idTarea = tareaVM.Id } );
         }
