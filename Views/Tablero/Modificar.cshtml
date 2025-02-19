@@ -9,6 +9,7 @@
 
     <form asp-action="Modificar" method="post">
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="IdUsuario" />
 
         <div class="mb-3">
             <label asp-for="Titulo" class="form-label"></label>
@@ -22,6 +23,8 @@
         <div class="mb-3">
             <label asp-for="Descripcion" class="form-label"></label>
             <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+
         </div>
         <button type="submit" class="btn btn-primary">Modificar</button>
     </form>

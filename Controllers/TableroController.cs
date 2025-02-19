@@ -12,43 +12,46 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     {
         private readonly ITableroRepository _tableroRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ILogger<TableroController> _logger;
 
-        public TableroController(ITableroRepository tableroRepository, IUsuarioRepository usuarioRepository)
+        public TableroController(ITableroRepository tableroRepository, IUsuarioRepository usuarioRepository, ILogger<TableroController> logger)
         {
             _tableroRepository = tableroRepository;
             _usuarioRepository = usuarioRepository;
+            _logger = logger;
         }
-
-        public IActionResult ListarPropios(int idUsuario)
+        private List<ListarTablerosViewModel> ObtenerTablerosViewModel(int idUsuario)
         {
             var tableros = _tableroRepository.GetAllByUser(idUsuario).ToList();
 
-            var tablerosVM = tableros.Select(t => new ListarTablerosPropiosViewModel(
+            var tablerosVM = tableros.Select(t => new ListarTablerosViewModel(
                 t.Id,
                 t.Titulo,
                 t.Color,
                 t.Descripcion
                 )).ToList();
-
-            return View(tablerosVM);
+            return tablerosVM;
         }
 
-        public IActionResult ListarConTareasAsignadas(int idUsuario)
+        public IActionResult Listar(int idUsuario)
         {
-            var tableros = _tableroRepository.GetTablerosConTareasAsignadas(idUsuario).ToList(); 
-
-            var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel(
-                t.Id,
-                t.Titulo,
-                t.Color,
-                _usuarioRepository.GetNameById(t.IdUsuario))).ToList();
-
+            List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
             return View(tablerosVM);
         }
 
         public IActionResult ListarBuscados(int idUsuario)
         {
-            var tableros = _tableroRepository.GetAllByUser(idUsuario);
+            List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
+            string nombreUsuario = _usuarioRepository.GetNameById(idUsuario);
+
+            var datosTableros = new ListarTablerosBuscadosViewModel(nombreUsuario, tablerosVM);
+
+            return View(datosTableros);
+        }
+
+        public IActionResult ListarConTareasAsignadas(int idUsuario)
+        {
+            var tableros = _tableroRepository.GetTablerosConTareasAsignadas(idUsuario).ToList(); 
 
             var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel(
                 t.Id,
@@ -66,7 +69,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             _tableroRepository.Create(tablero);
             TempData["Mensaje"] = "El tablero fue creado con éxito.";
-            return RedirectToAction("ListarPropios", new {IdUsuario = tablero.IdUsuario });   
+            return RedirectToAction("Listar", new {IdUsuario = tablero.IdUsuario });   
         }
 
         [HttpPost]
@@ -76,7 +79,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             _tableroRepository.Update(tablero);
             TempData["Mensaje"] = "El tablero fue modificado con éxito.";
-            return RedirectToAction("ListarPropios", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
+
+            if (tableroVM.IdUsuario == HttpContext.Session.GetInt32("IdUser"))
+            {
+                return RedirectToAction("Listar", new { tableroVM.IdUsuario });
+            }
+
+            return RedirectToAction("ListarBuscados", new { tableroVM.IdUsuario });
         }
 
         [HttpPost]
@@ -84,7 +93,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             _tableroRepository.Delete(idTablero);
             TempData["Mensaje"] = "El tablero fue eliminado con éxito";
-            return RedirectToAction("ListarPropios", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
+            return RedirectToAction("Listar", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
         }
 
         public IActionResult MostrarBuscadorUsuarios()

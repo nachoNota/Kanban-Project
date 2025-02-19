@@ -21,7 +21,7 @@
                 @if(AuthService.IsAuthenticated()){
                     <ul class="navbar-nav ms-3">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-action="ListarPropios" asp-controller="Tablero" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">
+                            <a class="nav-link text-light" asp-action="Listar" asp-controller="Tablero" asp-route-idUsuario="@Context.Session.GetInt32("IdUser")">
                                 Mis tableros
                             </a>
                         </li>

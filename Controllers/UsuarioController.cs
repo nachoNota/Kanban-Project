@@ -11,11 +11,12 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IAuthenticationService _authenticationService;
-
-        public UsuarioController(IUsuarioRepository usuarioRepository, IAuthenticationService authenticationService)
+        private readonly ILogger<UsuarioController> _logger;
+        public UsuarioController(IUsuarioRepository usuarioRepository, IAuthenticationService authenticationService, ILogger<UsuarioController> logger)
         {
             _usuarioRepository = usuarioRepository;
             _authenticationService = authenticationService;
+            _logger = logger;
         }
 
         public ActionResult Registrar()

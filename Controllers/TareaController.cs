@@ -13,12 +13,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         private readonly ITareaRepository _tareaRepository;
         private readonly ITableroRepository _tableroRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ILogger<TareaController> _logger;
 
-        public TareaController(ITareaRepository tareaRepository, ITableroRepository tableroRepository, IUsuarioRepository usuarioRepository)
+        public TareaController(ITareaRepository tareaRepository, ITableroRepository tableroRepository, IUsuarioRepository usuarioRepository, ILogger<TareaController> logger) 
         {
             _tareaRepository = tareaRepository;
             _tableroRepository = tableroRepository;
             _usuarioRepository = usuarioRepository;
+            _logger = logger;
         }
 
         public IActionResult Listar(int idTablero)
