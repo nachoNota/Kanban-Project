@@ -2,7 +2,7 @@
 {
     public class ListarTablerosViewModel
     {
-        public int IdTablero { get; set; }
+        public int Id { get; set; }
         public int IdUsuario { get; set; }
         public string Titulo { get; set; }
         public string Color { get; set; }
@@ -11,7 +11,7 @@
         public ListarTablerosViewModel() { }
         public ListarTablerosViewModel(int idTablero, string titulo, string color, string descripcion)
         {
-            IdTablero = idTablero;
+            Id = idTablero;
             Titulo = titulo;
             Color = color;
             Descripcion = descripcion;

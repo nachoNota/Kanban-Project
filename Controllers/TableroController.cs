@@ -79,7 +79,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             _tableroRepository.Update(tablero);
             TempData["Mensaje"] = "El tablero fue modificado con éxito.";
-
+            
             if (tableroVM.IdUsuario == HttpContext.Session.GetInt32("IdUser"))
             {
                 return RedirectToAction("Listar", new { tableroVM.IdUsuario });
@@ -89,11 +89,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Eliminar(int idTablero)
+        public IActionResult Eliminar(EliminarTableroViewModel tableroVM)
         {
-            _tableroRepository.Delete(idTablero);
+            _tableroRepository.Delete(tableroVM.IdTablero);
             TempData["Mensaje"] = "El tablero fue eliminado con éxito";
-            return RedirectToAction("Listar", new { IdUsuario = HttpContext.Session.GetInt32("IdUser") });
+
+            if (tableroVM.IdUsuario == HttpContext.Session.GetInt32("IdUser"))
+            {
+                return RedirectToAction("Listar", new { tableroVM.IdUsuario });
+            }
+
+            return RedirectToAction("ListarBuscados", new { tableroVM.IdUsuario });
         }
 
         public IActionResult MostrarBuscadorUsuarios()

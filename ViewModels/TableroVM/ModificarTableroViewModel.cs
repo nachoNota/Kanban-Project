@@ -28,7 +28,7 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.TableroVM
 
         public ModificarTableroViewModel(ListarTablerosViewModel tableroVM)
         {
-            Id = tableroVM.IdTablero;
+            Id = tableroVM.Id;
             IdUsuario = tableroVM.IdUsuario;
             Titulo = tableroVM.Titulo;
             Color = tableroVM.Color;

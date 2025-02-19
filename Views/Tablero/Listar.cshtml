@@ -9,7 +9,7 @@
         {
             <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card mover mover-hover8">
-                    <a asp-action="Listar" asp-controller="Tarea" asp-route-idTablero="@tablero.IdTablero" class="text-decoration-none">
+                    <a asp-action="Listar" asp-controller="Tarea" asp-route-idTablero="@tablero.Id" class="text-decoration-none">
                         <div class="card-body borde-letras" style="background-color: @tablero.Color;">
                             <h5 class="card-title">@tablero.Titulo</h5>
                         </div>
@@ -20,14 +20,14 @@
                             <!-- boton eliminar -->
                             <button class="btn btn-outline-danger"
                                     data-bs-toggle="modal"
-                                        data-bs-target="#modalEliminar-@tablero.IdTablero">
+                                        data-bs-target="#modalEliminar-@tablero.Id">
                                 <i class="bi bi-trash"></i>
                             </button>
 
                             <!-- boton modificar -->
                             <button class="btn btn-outline-primary ms-2"
                                     data-bs-toggle="offcanvas"
-                                        data-bs-target="#offcanvasRight-@tablero.IdTablero"
+                                        data-bs-target="#offcanvasRight-@tablero.Id"
                                     aria-controls="offcanvasRight">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
@@ -39,7 +39,7 @@
             </div>
 
 
-            @await Html.PartialAsync("Eliminar", tablero.IdTablero)
+                @await Html.PartialAsync("Eliminar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.EliminarTableroViewModel(tablero.Id, tablero.IdUsuario))
             @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.ModificarTableroViewModel(tablero))
         }
 
