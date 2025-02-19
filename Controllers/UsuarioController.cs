@@ -150,7 +150,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult Editar()
         {
-            return View(new List<Usuario>());
+            return View(new List<EditarUsuarioViewModel>());
         }
 
         [AccessLevel(RolUsuario.Admin)]
@@ -185,7 +185,10 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult Buscar(string nombreUsuario)
         {
             var usuarios = _usuarioRepository.SearchByName(nombreUsuario).ToList();
-            return View("Editar", usuarios);
+
+            var usuariosVM = usuarios.Select(u => new EditarUsuarioViewModel(u.Id, u.NombreUsuario , u.Email, u.Rol)).ToList();
+
+            return View("Editar", usuariosVM);
         }
 
         

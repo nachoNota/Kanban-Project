@@ -26,13 +26,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public IActionResult Login(LoginViewModel loginVM)
         {
-            if (string.IsNullOrEmpty(loginVM.nombreUsuario) || string.IsNullOrEmpty(loginVM.contrasenia))
-            {
-                loginVM.ErrorMessage = "Debes completar los campos para continuar.";
-                return View("Index", loginVM);
-            }
-
-            bool loginExitoso = _authentication.Login(loginVM.nombreUsuario, loginVM.contrasenia);
+            bool loginExitoso = _authentication.Login(loginVM.NombreUsuario, loginVM.Contrasenia);
             if (loginExitoso)
             {
                 return RedirectToAction("ListarPropios", "Tablero", new { idUsuario = HttpContext.Session.GetInt32("IdUser")});
