@@ -9,7 +9,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
         void Logout();
         bool IsAuthenticated();
         void ChangeUserName(string nombreUsuario);
-        void ChangePassword(string password);
         public void ChangeAccessLevel(RolUsuario rol);
         public RolUsuario GetAccessLevel();
 
@@ -36,7 +35,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
             context.Session.SetString("IsAuthenticated", "true");
             context.Session.SetString("User", nombreUsuario);
             context.Session.SetInt32("IdUser", usuario.Id);
-            context.Session.SetString("Password", contrasenia);
             context.Session.SetString("AccessLevel", usuario.Rol.ToString());
 
 
@@ -46,11 +44,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
         public void ChangeUserName(string nombreUsuario)
         {
             context.Session.SetString("User", nombreUsuario);
-        }
-
-        public void ChangePassword(string password)
-        {
-            context.Session.SetString("Password", password);
         }
 
         public void ChangeAccessLevel(RolUsuario rol)
@@ -83,7 +76,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
         public void Logout()
         {
             context.Session.Remove("IsAuthenticated");
-            context.Session.Remove("Password");
             context.Session.Remove("User");
             context.Session.Remove("IdUser");
             context.Session.Remove("AccessLevel");

@@ -39,6 +39,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return View(tablerosVM);
         }
 
+        [AccessLevel(RolUsuario.Admin)]
         public IActionResult ListarBuscados(int idUsuario)
         {
             List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
@@ -69,7 +70,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             _tableroRepository.Create(tablero);
             TempData["Mensaje"] = "El tablero fue creado con éxito.";
-            return RedirectToAction("Listar", new {IdUsuario = tablero.IdUsuario });   
+            return RedirectToAction("Listar", new { tablero.IdUsuario });   
         }
 
         [HttpPost]
@@ -102,14 +103,21 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return RedirectToAction("ListarBuscados", new { tableroVM.IdUsuario });
         }
 
+        [AccessLevel(RolUsuario.Admin)]
         public IActionResult MostrarBuscadorUsuarios()
         {
             return View(new List<UsuarioBuscadoViewModel>());
         }
 
+        [AccessLevel(RolUsuario.Admin)]
         public IActionResult BuscarUsu(string nombreUsuario)
         {
             var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario);
+
+            if(!usuariosBuscados.Any())
+            {
+                TempData["Mensaje"] = $"No hemos encontrado coincidencias para '{nombreUsuario}', escribilo de otra forma y volvé a intentar.";
+            }
 
             var usuariosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
 

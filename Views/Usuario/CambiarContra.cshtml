@@ -15,22 +15,32 @@
 				Luego, podrá establecer una nueva contraseña.
 			</p>
 			<form method="post" asp-action="CambiarContra">
-				<input type="hidden" asp-for="Id">
-
-				<div class="mb-4">
+				<input type="hidden" asp-for="IdUsuario">
+				
+				<div class="mb-4 position-relative">
 					<label asp-for="PasswordActual" class="form-label">Contraseña actual</label>
-					<input type="password" class="form-control" asp-for="PasswordActual">
+					<div class="input-group">
+						<input type="password" class="form-control" asp-for="PasswordActual" id="passwordInput">
+						<button class="btn btn-outline-primary" type="button" id="togglePassword">
+							<i class="bi bi-eye" id="eyeIcon"></i>
+						</button>
+					</div>
 					<span asp-validation-for="PasswordActual" class="text-danger"></span>
 				</div>
-				
+
 				@if (!string.IsNullOrEmpty(Model.ErrorMessage))
 				{
 					<p class="text-danger">@Model.ErrorMessage</p>
 				}
 
-				<div class="mb-3">
+				<div class="mb-3 position-relative">
 					<label asp-for="PasswordNueva" class="form-label">Nueva contraseña</label>
-					<input type="password" class="form-control" asp-for="PasswordNueva"/>
+					<div class="input-group">
+						<input type="password" class="form-control" asp-for="PasswordNueva" id="passwordInput">
+						<button class="btn btn-outline-primary" type="button" id="togglePassword">
+							<i class="bi bi-eye" id="eyeIcon"></i>
+						</button>
+					</div>
 					<span asp-validation-for="PasswordNueva" class="text-danger"></span>
 				</div>
 

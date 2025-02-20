@@ -17,11 +17,16 @@
 			<form method="post" asp-action="EliminarParaAdmin">
 				<input type="hidden" asp-for="Id">
 				<input type="hidden" asp-for="ContraseniaActual" value="@Context.Session.GetString("Password")" />
-				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario"/> 
+				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario"/>
 
-				<div class="mb-3">
+				<div class="mb-3 position-relative">
 					<label asp-for="ContraseniaIngresada" class="form-label">Contraseña</label>
-					<input type="password" class="form-control" asp-for="ContraseniaIngresada">
+					<div class="input-group">
+						<input type="password" class="form-control" asp-for="ContraseniaIngresada" id="passwordInput">
+						<button class="btn btn-outline-primary" type="button" id="togglePassword">
+							<i class="bi bi-eye" id="eyeIcon"></i>
+						</button>
+					</div>
 					<span asp-validation-for="ContraseniaIngresada" class="text-danger"></span>
 				</div>
 

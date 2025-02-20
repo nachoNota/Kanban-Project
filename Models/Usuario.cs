@@ -1,4 +1,5 @@
-﻿using tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM;
+﻿using Org.BouncyCastle.Crypto.Generators;
+using tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM;
 
 namespace tl2_proyecto_2024_nachoNota.Models
 {
@@ -36,7 +37,7 @@ namespace tl2_proyecto_2024_nachoNota.Models
             Password = password;
             Email = email;
         }
-        public Usuario(RolUsuario rol, string nombreUsuario, string password, string email)
+        public Usuario(string nombreUsuario, string email, string password, RolUsuario rol)
         {
             Rol = rol;
             NombreUsuario = nombreUsuario;
@@ -46,9 +47,11 @@ namespace tl2_proyecto_2024_nachoNota.Models
 
         public Usuario(RegistrarUsuarioViewModel usuarioVM)
         {
+            Rol = RolUsuario.Operador;
             NombreUsuario = usuarioVM.NombreUsuario;
             Password = usuarioVM.Contrasenia;
             Email = usuarioVM.Email;
         }
+
     }
 }

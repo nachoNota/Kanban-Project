@@ -11,7 +11,7 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
         [StringLength(15, MinimumLength = 5, ErrorMessage = "La contraseña debe estar entre los 5 y 15 caracteres")]
         public string PasswordNueva { get; set; }
 
-        public int Id { get; set; }
+        public int IdUsuario { get; set; }
 
         public string ErrorMessage { get; set; }
 
@@ -21,7 +21,7 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
         {
             PasswordActual = passwordActual;
             PasswordNueva = passwordNueva;
-            Id = id;
+            IdUsuario = id;
         }
     }
 }
