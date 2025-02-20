@@ -5,7 +5,7 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
     public class CambiarContraViewModel
     {
         [Required(ErrorMessage = "Debes ingresar tu contraseña actual")]
-        public string PasswordActual { get; set; }
+        public string PasswordActualInput { get; set; }
 
         [Required(ErrorMessage = "Debes ingresar una nueva contraseña")]
         [StringLength(15, MinimumLength = 5, ErrorMessage = "La contraseña debe estar entre los 5 y 15 caracteres")]

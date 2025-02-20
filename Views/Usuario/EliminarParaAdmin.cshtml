@@ -16,7 +16,6 @@
 			
 			<form method="post" asp-action="EliminarParaAdmin">
 				<input type="hidden" asp-for="Id">
-				<input type="hidden" asp-for="ContraseniaActual" value="@Context.Session.GetString("Password")" />
 				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario"/>
 
 				<div class="mb-3 position-relative">

@@ -134,7 +134,29 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
             return usuarios;
         }
-        
+
+        public string GetPasswordById(int id)
+        {
+            string password = string.Empty;
+            using(var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT contrasenia FROM usuario WHERE id_usuario = @id";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@id", id);
+
+                using(var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        password = reader.GetString("contrasenia");
+                    }
+                }
+                connection.Close();
+            }
+            return password;
+        }
+
         public void ChangeRol(int idUsuario, RolUsuario rol)
         {
             using(var connection = _connectionProvider.GetConnection())

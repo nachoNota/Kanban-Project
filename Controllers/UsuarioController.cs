@@ -22,6 +22,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _passwordService = passwordService;
         }
 
+        private bool VerificarContrasenia(int idUsuario, string contraseniaIngresada)
+        {
+            string contraseniaActual = _usuarioRepository.GetPasswordById(idUsuario);
+            bool sonIguales = _passwordService.VerifyPassword(contraseniaActual, contraseniaIngresada);
+            return sonIguales;
+        }
+
         public ActionResult Registrar()
         {
             var usuarioVM = new RegistrarUsuarioViewModel();
@@ -66,8 +73,9 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
         private IActionResult EliminarUsuario(EliminarUsuarioViewModel usuarioVM, IActionResult returnSuccess)
         {
-            bool ContraseniasIguales = usuarioVM.ContraseniaActual == usuarioVM.ContraseniaIngresada;
-            if (ContraseniasIguales)
+            bool sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);   
+            
+            if (sonIguales)
             {
                 _usuarioRepository.Delete(usuarioVM.Id);
                 TempData["Mensaje"] = "El usuario fue eliminado con éxito.";
@@ -75,7 +83,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
 
             usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
-
             return View(usuarioVM);
         }
 
@@ -122,11 +129,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult CambiarContra(CambiarContraViewModel usuarioVM)
         {
-            bool contrasActualesIguales = usuarioVM.PasswordActual == HttpContext.Session.GetString("Password");
+			bool sonIguales = VerificarContrasenia(usuarioVM.IdUsuario, usuarioVM.PasswordActualInput);
 
-            if (contrasActualesIguales)
-            {
-                _usuarioRepository.ChangePassword(usuarioVM.IdUsuario, usuarioVM.PasswordNueva);
+			if (sonIguales)
+			{
+				_usuarioRepository.ChangePassword(usuarioVM.IdUsuario, usuarioVM.PasswordNueva);
 
                 TempData["Mensaje"] = "La nueva contraseña ha sido guardada con éxito. Por favor, inicie sesión de vuelta.";
                 return RedirectToAction("Logout", "Login");
@@ -146,8 +153,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult Crear(CrearUsuarioViewModel usuarioVM)
         {
-            var usuario = new Usuario(usuarioVM.Rol, usuarioVM.NombreUsuario, usuarioVM.Contrasenia, usuarioVM.Email);
-            _usuarioRepository.Create(usuario);
+			var usuario = new Usuario(
+				usuarioVM.NombreUsuario,
+				usuarioVM.Email,
+				_passwordService.HashPassword(usuarioVM.Contrasenia),
+				usuarioVM.Rol);
+
+			_usuarioRepository.Create(usuario);
             TempData["Mensaje"] = "El nuevo usuario fue creado con éxito.";
             return RedirectToAction("Crear");
         }
@@ -171,10 +183,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult CambiarRol(CambiarRolViewModel usuarioVM)
         {
-            bool contraseniasIguales = usuarioVM.ContraseniaActual == usuarioVM.ContraseniaIngresada;
-            if (contraseniasIguales)
-            {
-                _usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
+			bool sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);
+
+			if (sonIguales)
+			{
+				_usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
                 _authenticationService.ChangeAccessLevel(usuarioVM.Rol);
 
                 TempData["Mensaje"] = "El cambio de rol se ha producido de manera exitosa.";

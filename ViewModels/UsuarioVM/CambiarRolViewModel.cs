@@ -11,7 +11,6 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
         public string NombreUsuario { get; set; }
         [Required(ErrorMessage = "Debes ingresar tu contraseña para continuar.")]
         public string ContraseniaIngresada { get; set; }
-        public string ContraseniaActual {  get; set; }
         public string ErrorMessage { get; set; }
 
 

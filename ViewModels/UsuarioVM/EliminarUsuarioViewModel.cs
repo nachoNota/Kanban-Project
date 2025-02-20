@@ -8,8 +8,6 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
 
         [Required(ErrorMessage = "Se requiere una contraseña")]
         public string ContraseniaIngresada { get; set; }
-        
-        public string ContraseniaActual { get; set; }
         public string NombreUsuario {  get; set; }
         public string ErrorMessage { get; set; }
 
