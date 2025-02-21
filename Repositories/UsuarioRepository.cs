@@ -46,7 +46,37 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
             return usuarios; 
         }
-        public Usuario GetById(int id)
+
+		public Usuario GetByName(string nombreUsuario)
+        {
+			Usuario? usuario = null;
+
+			using (var connection = _connectionProvider.GetConnection())
+			{
+				connection.Open();
+				string commandText = "SELECT * FROM usuario WHERE nombre_usuario = @nombre";
+				var command = _commandFactory.CreateCommand(commandText, connection);
+				command.Parameters.AddWithValue("@nombre", nombreUsuario);
+
+				using (var reader = command.ExecuteReader())
+				{
+					if (reader.Read())
+					{
+						int idUsuario = reader.GetInt32("id_usuario");
+						string pass = reader.GetString("contrasenia");
+						string email = reader.GetString("email");
+						RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
+
+						usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
+					}
+				}
+				connection.Close();
+			}
+
+			return usuario;
+		}
+
+		public Usuario GetById(int id)
         {
             Usuario? usuario = null;
 

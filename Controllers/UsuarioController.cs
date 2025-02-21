@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
@@ -71,52 +72,41 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             return RedirectToAction("Modificar", new {idUsuario = usuario.Id});
         }
-        private IActionResult EliminarUsuario(EliminarUsuarioViewModel usuarioVM, IActionResult returnSuccess)
-        {
-            bool sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);   
-            
-            if (sonIguales)
-            {
-                _usuarioRepository.Delete(usuarioVM.Id);
-                TempData["Mensaje"] = "El usuario fue eliminado con éxito.";
-                return returnSuccess;
-            }
 
-            usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
-            return View(usuarioVM);
-        }
 
-        [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult Eliminar(int idUsuario)
+        public IActionResult EliminarPropio(int idUsuario)
         {
             var usuarioVM = new EliminarUsuarioViewModel(idUsuario);
             return View(usuarioVM);
         }
 
         [HttpPost]
-        [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult Eliminar(EliminarUsuarioViewModel usuarioVM)
+        public IActionResult EliminarPropio(EliminarUsuarioViewModel usuarioVM)
         {
-            return EliminarUsuario(usuarioVM, RedirectToAction("Logout", "Login"));
-        }
+            var sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);
 
+            if (sonIguales)
+            {
+                _usuarioRepository.Delete(usuarioVM.Id);
+				TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
+				return RedirectToAction("Logout", "Login");
+            }
 
-        [AccessLevel(RolUsuario.Admin)]
-        public IActionResult EliminarParaAdmin(int idUsuario)
-        {
-            var usuario = _usuarioRepository.GetById(idUsuario);
-            var usuarioVM = new EliminarUsuarioViewModel(idUsuario, usuario.NombreUsuario);
+            usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrese de escribir todo correctamente.";
+
             return View(usuarioVM);
         }
 
-        [HttpPost]
         [AccessLevel(RolUsuario.Admin)]
-        public IActionResult EliminarParaAdmin(EliminarUsuarioViewModel usuarioVM)
-        {
-            return EliminarUsuario(usuarioVM, RedirectToAction("Editar"));
-        }
+		public IActionResult EliminarParaAdmin(int idUsuario)
+		{
+			_usuarioRepository.Delete(idUsuario);
 
-        [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
+            TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
+			return RedirectToAction("Editar");
+		}
+	    
+		[AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult CambiarContra(int idUsuario)
         {
             var usuario = _usuarioRepository.GetById(idUsuario);
@@ -133,7 +123,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
 			if (sonIguales)
 			{
-				_usuarioRepository.ChangePassword(usuarioVM.IdUsuario, usuarioVM.PasswordNueva);
+				_usuarioRepository.ChangePassword(usuarioVM.IdUsuario, _passwordService.HashPassword(usuarioVM.PasswordNueva));
 
                 TempData["Mensaje"] = "La nueva contraseña ha sido guardada con éxito. Por favor, inicie sesión de vuelta.";
                 return RedirectToAction("Logout", "Login");
@@ -183,12 +173,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult CambiarRol(CambiarRolViewModel usuarioVM)
         {
-			bool sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);
+			bool sonIguales = VerificarContrasenia(_authenticationService.GetUserId(), usuarioVM.ContraseniaIngresada);
 
 			if (sonIguales)
 			{
 				_usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
-                _authenticationService.ChangeAccessLevel(usuarioVM.Rol);
 
                 TempData["Mensaje"] = "El cambio de rol se ha producido de manera exitosa.";
                 return RedirectToAction("Editar");
@@ -202,9 +191,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult Buscar(string nombreUsuario)
         {
-            var usuarios = _usuarioRepository.SearchByName(nombreUsuario).ToList();
-
-            var usuariosVM = usuarios.Select(u => new EditarUsuarioViewModel(u.Id, u.NombreUsuario , u.Email, u.Rol)).ToList();
+            var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+			
+            if (!usuariosBuscados.Any())
+			{
+				TempData["Mensaje"] = $"No hemos encontrado coincidencias para '{nombreUsuario}', escribilo de otra forma y volvé a intentar.";
+			}
+			var usuariosVM = usuariosBuscados.Select(u => new EditarUsuarioViewModel(u.Id, u.NombreUsuario , u.Email, u.Rol)).ToList();
 
             return View("Editar", usuariosVM);
         }

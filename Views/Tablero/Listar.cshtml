@@ -39,7 +39,7 @@
             </div>
 
 
-                @await Html.PartialAsync("Eliminar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.EliminarTableroViewModel(tablero.Id, tablero.IdUsuario))
+            @await Html.PartialAsync("Eliminar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.EliminarTableroViewModel(tablero.Id, tablero.IdUsuario))
             @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.ModificarTableroViewModel(tablero))
         }
 

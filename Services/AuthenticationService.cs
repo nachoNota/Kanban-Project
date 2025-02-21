@@ -11,6 +11,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
         void ChangeUserName(string nombreUsuario);
         public void ChangeAccessLevel(RolUsuario rol);
         public RolUsuario GetAccessLevel();
+        public int GetUserId();
 
     }
 
@@ -18,27 +19,32 @@ namespace tl2_proyecto_2024_nachoNota.Services
     {
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IPasswordService _passwordService;
         private readonly HttpContext context;
 
-        public AuthenticationService(IUsuarioRepository usuarioRepository, IHttpContextAccessor contextAccessor)
+        public AuthenticationService(IUsuarioRepository usuarioRepository, IHttpContextAccessor contextAccessor, IPasswordService passwordService)
         {
             _usuarioRepository = usuarioRepository;
             _contextAccessor = contextAccessor;
             context = _contextAccessor.HttpContext;
+            _passwordService = passwordService;
         }
         public bool Login(string nombreUsuario, string contrasenia)
         {
-            Usuario usuario = _usuarioRepository.GetUser(nombreUsuario, contrasenia);
+            Usuario usuario = _usuarioRepository.GetByName(nombreUsuario);
 
             if (usuario is null) return false;
 
-            context.Session.SetString("IsAuthenticated", "true");
-            context.Session.SetString("User", nombreUsuario);
-            context.Session.SetInt32("IdUser", usuario.Id);
-            context.Session.SetString("AccessLevel", usuario.Rol.ToString());
+            if(_passwordService.VerifyPassword(usuario.Password, contrasenia))
+            {
+                context.Session.SetString("IsAuthenticated", "true");
+                context.Session.SetString("User", nombreUsuario);
+                context.Session.SetInt32("IdUser", usuario.Id);
+                context.Session.SetString("AccessLevel", usuario.Rol.ToString());
+                return true;
+            }
 
-
-            return true;
+            return false;
         }
 
         public void ChangeUserName(string nombreUsuario)
@@ -62,6 +68,10 @@ namespace tl2_proyecto_2024_nachoNota.Services
         {
             return (RolUsuario)Enum.Parse(typeof(RolUsuario), context.Session.GetString("AccessLevel"));
         }
+		public int GetUserId()
+		{
+			return context.Session.GetInt32("IdUser").Value;
+		}
 
         public bool IsAuthenticated()
         {
@@ -80,5 +90,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
             context.Session.Remove("IdUser");
             context.Session.Remove("AccessLevel");
         }
-    }
+
+	}
 }

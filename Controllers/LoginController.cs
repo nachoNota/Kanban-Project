@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.Services;
 using tl2_proyecto_2024_nachoNota.ViewModels;
 
@@ -8,9 +9,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     {
         private readonly IAuthenticationService _authentication;
 
+
         public LoginController(IAuthenticationService authenticationService)
         {
             _authentication = authenticationService;
+
         }
 
         public IActionResult Index()
@@ -23,7 +26,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             return View(modelo);
         }
 
-        [HttpPost]
+		[HttpPost]
         public IActionResult Login(LoginViewModel loginVM)
         {
             bool loginExitoso = _authentication.Login(loginVM.NombreUsuario, loginVM.Contrasenia);

@@ -1,41 +1,19 @@
-﻿@model tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.EliminarUsuarioViewModel
+﻿@model tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.ConfirmarEliminarUsuarioViewModel
 
-<div class="container-fluid">
-	<div class="row">
-		<!-- Aside -->
-		<div class="col-md-3">
-			@await Html.PartialAsync("_Aside")
-		</div>
-
-		<!-- Contenido principal -->
-		<div class="col-md-9 p-5" style="max-width:30rem">
-			<h2 class="">Eliminar usuario</h2>
-			<p class="text-muted mb-4">
-				Para eliminar al usuario "@Model.NombreUsuario", necesitamos que ingreses tu contraseña para confirmar tu identidad.
-			</p>
-			
-			<form method="post" asp-action="EliminarParaAdmin">
-				<input type="hidden" asp-for="Id">
-				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario"/>
-
-				<div class="mb-3 position-relative">
-					<label asp-for="ContraseniaIngresada" class="form-label">Contraseña</label>
-					<div class="input-group">
-						<input type="password" class="form-control" asp-for="ContraseniaIngresada" id="passwordInput">
-						<button class="btn btn-outline-primary" type="button" id="togglePassword">
-							<i class="bi bi-eye" id="eyeIcon"></i>
-						</button>
-					</div>
-					<span asp-validation-for="ContraseniaIngresada" class="text-danger"></span>
-				</div>
-
-				@if (!string.IsNullOrEmpty(Model.ErrorMessage))
-				{
-					<p class="text-danger">@Model.ErrorMessage</p>
-				}
-
-				<button type="submit" class="btn btn-danger mover mover-hover4 mt-3">Eliminar</button>
-			</form>
-		</div>
-	</div>
+<div class="modal fade" id="modalEliminar-@Model.IdUsuario" tabindex="-1" aria-labelledby="modalEliminarLabel-@Model.IdUsuario" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEliminarLabel-@Model.IdUsuario">¿Eliminar a "@Model.NombreUsuario"?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                Esta acción eliminará al usuario seleccionado de forma permanente, ¡y eso es mucho tiempo!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a asp-action="EliminarParaAdmin" asp-route-idUsuario="@Model.IdUsuario" class="btn btn-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
 </div>

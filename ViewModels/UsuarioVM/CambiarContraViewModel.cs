@@ -17,11 +17,5 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
 
         public CambiarContraViewModel() { }
 
-        public CambiarContraViewModel(string passwordActual, string passwordNueva, int id)
-        {
-            PasswordActual = passwordActual;
-            PasswordNueva = passwordNueva;
-            IdUsuario = id;
-        }
     }
 }

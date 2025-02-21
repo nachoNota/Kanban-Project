@@ -6,7 +6,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
     {
         IEnumerable<Usuario> GetAll();
         Usuario GetById(int id);
-        Usuario GetUser(string nombreUsuario, string contrasenia);
+        Usuario GetByName(string nombreUsuario);
         IEnumerable<Usuario> SearchByName(string nombreUsuario);
         string GetNameById(int id);
         string GetPasswordById(int id);

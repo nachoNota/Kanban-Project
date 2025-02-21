@@ -1,4 +1,5 @@
-﻿@model List<tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM.EditarUsuarioViewModel>
+﻿@using tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
+@model List<EditarUsuarioViewModel>
 
 
 <div class="container-fluid">
@@ -41,11 +42,17 @@
 									<div class="d-flex gap-2">
 										<a asp-action="CambiarRol" asp-route-idUsuario="@usuario.Id" class="btn btn-outline-success"
 										   data-bs-toggle="tooltip" data-bs-placement="bottom" title="Asigna o cambia de rol a un usuario"><i class="bi bi-gear"></i></a>
-										<a asp-action="EliminarParaAdmin" asp-route-idUsuario="@usuario.Id" class="btn btn-outline-danger"><i class="bi bi-trash"></i></a>
+										<!-- boton eliminar -->
+										<button class="btn btn-outline-danger"
+												data-bs-toggle="modal"
+												data-bs-target="#modalEliminar-@usuario.Id">
+											<i class="bi bi-trash"></i>
+										</button>
 									</div>
 								</div>
 							</div>
 						</div>
+						@await Html.PartialAsync("EliminarParaAdmin", new ConfirmarEliminarUsuarioViewModel(usuario.Id, usuario.Nombre));
 					}
 				}
 			</div>
@@ -54,17 +61,15 @@
 	</div>
 </div>
 
-
 @if (TempData["Mensaje"] != null)
 {
 	<div class="toast-container position-fixed top-0 end-0 p-3">
-		<div class="toast show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-			<div class="toast-header">
-				<strong class="me-auto">Éxito</strong>
-				<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-			</div>
-			<div class="toast-body text-light">
-				@TempData["Mensaje"]
+		<div class="toast show align-items-center text-bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body">
+					@TempData["Mensaje"]
+				</div>
+				<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
 			</div>
 		</div>
 	</div>
