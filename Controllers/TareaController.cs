@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
@@ -50,7 +51,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
         {
             _tareaRepository.CambiarEstado(idTarea, estado);
-
+            
             return RedirectToAction("VerDetalles", new { idTarea } );
         }
 
@@ -62,18 +63,35 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public IActionResult Crear(CrearTareaViewModel tareaVM)
         {
-            var tarea = new Tarea(tareaVM.IdUsuario, tareaVM.IdTablero, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
-            _tareaRepository.Create(tarea);
-            TempData["Mensaje"] = "La tarea fue creada con éxito";
-
-            return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
+            try
+            {
+                var tarea = new Tarea(tareaVM.IdUsuario, tareaVM.IdTablero, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
+                _tareaRepository.Create(tarea);
+                TempData["Mensaje"] = "La tarea fue creada con éxito";
+    
+                return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar crear una nueva tarea en el tablero {IdTablero}", tareaVM.IdTablero);
+                ModelState.AddModelError("", "Ocurrió un error inesperado al intentar crear una nueva tarea, intente de nuevo más tarde.");
+            }
+            return View(tareaVM);
         }
 
         [HttpPost]
         public IActionResult Eliminar(EliminarTareaViewModel tareaVM)
         {
-            _tareaRepository.Delete(tareaVM.IdTarea);
-            TempData["Mensaje"] = "La tarea fue eliminada con éxito.";
+            try
+            {
+                _tareaRepository.Delete(tareaVM.IdTarea);
+                TempData["Mensaje"] = "La tarea fue eliminada con éxito.";
+
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar crear una nueva tarea en el tablero {IdTablero}", tareaVM.IdTablero);
+                ModelState.AddModelError("", "Ocurrió un error inesperado al intentar crear una nueva tarea, intente de nuevo más tarde.");
+            }
 
             return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }

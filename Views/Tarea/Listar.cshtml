@@ -8,6 +8,7 @@
 
 <div class="container-md">
     <h4 class="py-3 borde-letras">@Model.Tablero.Titulo</h4>
+    <div asp-validation-summary="ModelOnly" class="text-danger borde-letras"></div>
 
     <div class="row row-cols-1 row-cols-md-5 g-4">
         @foreach (EstadoTarea estado in Enum.GetValues(typeof(EstadoTarea)))
