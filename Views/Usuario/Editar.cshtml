@@ -21,6 +21,8 @@
 				<input class="form-control me-2" type="search" name="nombreUsuario" placeholder="Busca por nombre de usuario" aria-label="Search" />
 				<button class="btn btn-outline-success" type="submit">Search</button>
 			</form>
+			
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 			<div class="accordion accordion-flush" id="accordionFlushExample">
 				@if (Model.Count > 0)

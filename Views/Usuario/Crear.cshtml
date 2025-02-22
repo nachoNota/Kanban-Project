@@ -13,6 +13,8 @@
 			<p class="text-muted mb-4">Por favor, complete los campos a continuación para registrar un nuevo usuario y
 				asignarle un rol dentro del sistema.</p>
 
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 			<form method="post" asp-action="Crear">
 				<div class="mb-3">
 					<label asp-for="Email" class="form-label">Email</label>
