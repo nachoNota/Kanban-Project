@@ -16,6 +16,10 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM
         public string ErrorMessage { get; set; }
 
         public CambiarContraViewModel() { }
+        public CambiarContraViewModel(int idUsuario)
+        {
+            IdUsuario = idUsuario;  
+        }
 
     }
 }

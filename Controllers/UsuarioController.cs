@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Operations;
+using MySql.Data.MySqlClient;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
@@ -39,38 +40,64 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public ActionResult Registrar(RegistrarUsuarioViewModel usuarioVM)
         {
-            var usuario = new Usuario(
-                usuarioVM.NombreUsuario,
-                usuarioVM.Email,
-                _passwordService.HashPassword(usuarioVM.Contrasenia),
-                RolUsuario.Operador);
+            try
+            {
+			    var usuario = new Usuario(usuarioVM.NombreUsuario, usuarioVM.Email, _passwordService.HashPassword(usuarioVM.Contrasenia), RolUsuario.Operador);
 
-            _usuarioRepository.Create(usuario);
-
-            TempData["Mensaje"] = "Usuario creado con éxito, prueba a iniciar sesión para confirmar los cambios.";
-
-            return RedirectToAction("Index", "Login");
+                _usuarioRepository.Create(usuario);
+                TempData["Mensaje"] = "Usuario creado con éxito, prueba a iniciar sesión para confirmar los cambios.";
+                return RedirectToAction("Index", "Login");
+			}
+            catch(MySqlException ex) when (ex.Number == 1062) // clave duplicada
+            {
+                ModelState.AddModelError("NombreUsuario", "Este nombre de usuario ya está en uso, intenta con otro.");
+            }
+			catch (Exception ex)
+			{
+				ModelState.AddModelError("", "Ocurrió un error inesperado al registrar tu usuario, intente de nuevo más tarde.");
+				_logger.LogError(ex, "Error inesperado al intentar registrarse.");
+			}
+            
+            return View(usuarioVM);
         }
 
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult Modificar(int idUsuario)
         {
-            var usuario = _usuarioRepository.GetById(idUsuario);
-            var usuarioVM = new ModificarUsuarioViewModel(usuario);
-            return View(usuarioVM);
+            try
+            {
+			    var usuario = _usuarioRepository.GetById(idUsuario);
+                var usuarioVM = new ModificarUsuarioViewModel(usuario);
+                return View(usuarioVM);
+			}
+			catch (Exception ex)
+			{
+				TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
+			}
+
+            return RedirectToAction("Listar", "Tablero", new { idUsuario });
         }
 
         [HttpPost]
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult Modificar(ModificarUsuarioViewModel usuarioVM)
         {
-            var usuario = new Usuario(usuarioVM);
-            _usuarioRepository.Update(usuario);
-            _authenticationService.ChangeUserName(usuario.NombreUsuario);
+            try
+            {
+			    var usuario = new Usuario(usuarioVM);
+                _usuarioRepository.Update(usuario);
+                _authenticationService.ChangeUserName(usuario.NombreUsuario);
 
-            TempData["Mensaje"] = "El usuario fue modificado con éxito.";
-
-            return RedirectToAction("Modificar", new {idUsuario = usuario.Id});
+                TempData["Mensaje"] = "El usuario fue modificado con éxito.";
+			}
+			catch (Exception ex)
+			{
+				TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
+			}
+            
+            return RedirectToAction("Modificar", new {idUsuario = usuarioVM.Id});
         }
 
 
@@ -83,35 +110,60 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public IActionResult EliminarPropio(EliminarUsuarioViewModel usuarioVM)
         {
-            var sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);
-
-            if (sonIguales)
+            try
             {
-                _usuarioRepository.Delete(usuarioVM.Id);
-				TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
-				return RedirectToAction("Logout", "Login");
-            }
+                var sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);
 
-            usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrese de escribir todo correctamente.";
+                if (sonIguales)
+                {
+                    _usuarioRepository.Delete(usuarioVM.Id);
+                    TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
+                    return RedirectToAction("Logout", "Login");
+                }
+                usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrese de escribir todo correctamente.";
 
-            return View(usuarioVM);
+            } catch(MySqlException ex) when(ex.Number == 1451) //error de restriccion de FK
+            {
+                ModelState.AddModelError("", "Este usuario está relacionado con tareas y/o tableros, por lo que no puede ser eliminado.");
+				_logger.LogError(ex, "Error en la base de datos al intentar eliminar usuario propio.");
+			}
+			catch (Exception ex)
+			{
+				ModelState.AddModelError("", "Ocurrió un error inesperado, intente de nuevo más tarde.");
+				_logger.LogError(ex, "Error inesperado al intentar eliminar usuario propio");
+			}
+
+			return View(usuarioVM);
         }
 
         [AccessLevel(RolUsuario.Admin)]
 		public IActionResult EliminarParaAdmin(int idUsuario)
 		{
-			_usuarioRepository.Delete(idUsuario);
+            try
+            {
+			    _usuarioRepository.Delete(idUsuario);
+                TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
+		    }
+            catch (MySqlException ex)
+            {
+                TempData["Mensaje"] = "Ocurrió un error en la base de datos, asegúrese de que el usuario no esté relacionado a tareas y/o tableros." +
+                    " Si el error persiste, intente de nuevo más tarde";
+                _logger.LogError(ex, "Error en la base de datos al intentar eliminar otro usuario.");
+            }
+            catch(Exception ex)
+            {
+                TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+                _logger.LogError(ex, "Error inesperado al intentar eliminar otro usuario");
+			}
 
-            TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
 			return RedirectToAction("Editar");
-		}
+        }
 	    
 		[AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult CambiarContra(int idUsuario)
         {
-            var usuario = _usuarioRepository.GetById(idUsuario);
-            var usuarioVM = new CambiarContraViewModel();
-            usuarioVM.IdUsuario = usuario.Id;
+            var usuarioVM = new CambiarContraViewModel(idUsuario);
+     
             return View(usuarioVM);
         }
 
@@ -119,17 +171,26 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult CambiarContra(CambiarContraViewModel usuarioVM)
         {
-			bool sonIguales = VerificarContrasenia(usuarioVM.IdUsuario, usuarioVM.PasswordActualInput);
+            try
+            {
+                bool sonIguales = VerificarContrasenia(usuarioVM.IdUsuario, usuarioVM.PasswordActualInput);
 
-			if (sonIguales)
-			{
-				_usuarioRepository.ChangePassword(usuarioVM.IdUsuario, _passwordService.HashPassword(usuarioVM.PasswordNueva));
+			    if (sonIguales)
+			    {
+				    _usuarioRepository.ChangePassword(usuarioVM.IdUsuario, _passwordService.HashPassword(usuarioVM.PasswordNueva));
 
-                TempData["Mensaje"] = "La nueva contraseña ha sido guardada con éxito. Por favor, inicie sesión de vuelta.";
-                return RedirectToAction("Logout", "Login");
+                    TempData["Mensaje"] = "La nueva contraseña ha sido guardada con éxito. Por favor, inicie sesión de vuelta.";
+                    return RedirectToAction("Logout", "Login");
+                }
+
+                usuarioVM.ErrorMessage = "La contraseña ingresada no coincide con la actual, asegúrate de escribirla correctamente";
             }
+            catch (Exception ex)
+            {
+				TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
+			}
 
-            usuarioVM.ErrorMessage = "La contraseña ingresada no coincide con la actual, asegúrate de escribirla correctamente";
             return View(usuarioVM);
         }
 
@@ -143,15 +204,20 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult Crear(CrearUsuarioViewModel usuarioVM)
         {
-			var usuario = new Usuario(
-				usuarioVM.NombreUsuario,
-				usuarioVM.Email,
-				_passwordService.HashPassword(usuarioVM.Contrasenia),
-				usuarioVM.Rol);
+            try
+            {
+                var usuario = new Usuario(usuarioVM.NombreUsuario, usuarioVM.Email, _passwordService.HashPassword(usuarioVM.Contrasenia), usuarioVM.Rol);
 
-			_usuarioRepository.Create(usuario);
-            TempData["Mensaje"] = "El nuevo usuario fue creado con éxito.";
-            return RedirectToAction("Crear");
+			    _usuarioRepository.Create(usuario);
+                TempData["Mensaje"] = "El nuevo usuario fue creado con éxito.";
+			}
+			catch (Exception ex)
+			{
+				TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+				_logger.LogError(ex, "Error inesperado al intentar crear un nuevo usuario.");
+			}
+
+			return RedirectToAction("Crear");
         }
         
         [AccessLevel(RolUsuario.Admin)]
@@ -163,28 +229,46 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult CambiarRol(int idUsuario)
         {
-            var usuario = _usuarioRepository.GetById(idUsuario);
+            try
+            {
+                var usuario = _usuarioRepository.GetById(idUsuario);
 
-            var usuarioVM = new CambiarRolViewModel(usuario.NombreUsuario, idUsuario);
-            return View(usuarioVM);
-        }
+                var usuarioVM = new CambiarRolViewModel(usuario.NombreUsuario, idUsuario);
+
+                return View(usuarioVM);
+			}
+			catch (Exception ex)
+			{
+				TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
+			}
+
+            return RedirectToAction("Editar");
+		}
 
         [HttpPost]
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult CambiarRol(CambiarRolViewModel usuarioVM)
         {
-			bool sonIguales = VerificarContrasenia(_authenticationService.GetUserId(), usuarioVM.ContraseniaIngresada);
+            try
+            {
+			    bool sonIguales = VerificarContrasenia(_authenticationService.GetUserId(), usuarioVM.ContraseniaIngresada);
 
-			if (sonIguales)
+			    if (sonIguales)
+			    {
+				    _usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
+
+                    TempData["Mensaje"] = "El cambio de rol se ha producido de manera exitosa.";
+                    return RedirectToAction("Editar");
+                }
+
+                usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
+			}
+			catch (Exception ex)
 			{
-				_usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
-
-                TempData["Mensaje"] = "El cambio de rol se ha producido de manera exitosa.";
-                return RedirectToAction("Editar");
-            }
-
-            usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
-
+				TempData["Mensaje"] = "Ocurrió un error inesperado, intente de nuevo más tarde.";
+				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
+			}
             return View(usuarioVM);
         }
 
