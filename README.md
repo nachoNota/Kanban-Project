@@ -54,8 +54,39 @@ admin, se agrega una nueva opción para buscar tableros de un usuario en especí
 - /Views --> Contiene todo lo relacionado con la interfaz de usuario.
 
 ## ✨ Uso
- (falta adjuntar imagenes)
- 
+- En primera instancia, vas a toparte con dos vistas, una para loguearse, y otra para registrarte si es que todavía no tienes una cuenta:
+ <div style="display: flex; flex-wrap: wrap;">
+    <img src="https://github.com/user-attachments/assets/477fa78b-87b7-47ec-be76-9e5b9074e0e3" style="margin: 5px;" width="400">
+    <img src="https://github.com/user-attachments/assets/8913657d-1a8b-468f-aa73-440266f8b637" style="margin: 5px;" width="400">
+</div>
+
+- Luego, una vez iniciada la sesión, vas a poder visualizar los tableros que haz creado, junto con las opciones para crearlos, modificarlos o eliminarlos: 
+
+<img src="https://github.com/user-attachments/assets/d412916e-d88e-44ec-b71c-4c84edaca1f9" width="400">
+
+- En cuanto al usuario, puedes entrar a los ajustes desde la parte superior derecha, y encontrarás distintas opciones, dependiendo del
+rol que tenga tu usuario (la siguiente vista es la del admin, un operador tendría solo las primeras tres opciones):
+
+<img src="https://github.com/user-attachments/assets/e409b7ea-4da4-4d53-9afb-6d1fafe5ec7c" style="margin: 5px;" width="300" height="250">
+
+- Volviendo a los tableros, tenemos la opción de poder ver todos los tableros en los que podamos tener alguna tarea asignada dentro:
+
+<img src="https://github.com/user-attachments/assets/26ac1e2c-9475-4b68-8820-71e72f5f2c80" width="400">
+
+- Además, si tienes un rol de administrador, tienes acceso a todos los tableros dentro del sistema, pero no puedes verlos todos al mismo
+tiempo, debes filtarlos por el nombre del usuario del que quieras visualizar los tableros.
+
+- Esto es lo que verías cuando entras a uno de los tableros, una serie de tablas con sus correspondientes tareas. Ves que algunas tareas
+tienen un icono de un usuario y otras no? si la tiene, significa que vos sos el propietario de esa tarea, caso contrario otra persona es
+el propietario (esto se ve pasando el mouse por encima del icono).
+
+<img src="https://github.com/user-attachments/assets/8e956205-9a80-4205-8971-9343f7554a8a" width="400">
+
+- Por último, puedes visualizar los detalles de las tareas haciendo click en alguna de ellas. La siguiente vista es lo que verías si eres
+el propietario del tablero, además de ser el propietario de la tarea. Si alguno de estos factores varía, tendrás las acciones más limitadas.
+
+<img src="https://github.com/user-attachments/assets/558d0731-5f51-43cc-84eb-71b534915004" width="400">
+
  ## 👤 Autor 
  Nota, José Ignacio
  
