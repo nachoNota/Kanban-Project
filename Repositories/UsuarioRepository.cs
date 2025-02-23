@@ -1,5 +1,6 @@
 ﻿using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Database;
+using MySql.Data.MySqlClient;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
@@ -103,35 +104,23 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 connection.Close();
             }
 
+            if (usuario is null) throw new KeyNotFoundException($"No se encontró usuario con id {id}");
             return usuario;
         }
 
-        public Usuario GetUser(string nombreUsuario, string contrasenia)
+        public bool Exists(int id)
         {
-            Usuario usuario = null;
-
-            using(var connection = _connectionProvider.GetConnection())
+            int count;
+            using (var connection = _connectionProvider.GetConnection())
             {
                 connection.Open();
-                string commandText = "SELECT * FROM usuario WHERE nombre_usuario = @usu AND contrasenia = @contra";
+                string commandText = "SELECT COUNT(1) FROM usuario WHERE id_usuario = @id";
                 var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@usu", nombreUsuario);
-                command.Parameters.AddWithValue("@contra", contrasenia);
+                command.Parameters.AddWithValue("@id", id);
 
-                using(var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        int idUsuario = reader.GetInt32("id_usuario");
-                        string email = reader.GetString("email");
-                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
-
-                        usuario = new Usuario(idUsuario, rol, nombreUsuario, contrasenia, email);
-                    }
-                }
-                connection.Close();
+                count = Convert.ToInt32(command.ExecuteScalar());
             }
-            return usuario;
+            return count > 0;
         }
 
         public IEnumerable<Usuario> SearchByName(string nombreUsuario)

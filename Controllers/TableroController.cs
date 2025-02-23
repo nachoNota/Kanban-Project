@@ -23,46 +23,82 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
         private List<ListarTablerosViewModel> ObtenerTablerosViewModel(int idUsuario)
         {
-            var tableros = _tableroRepository.GetAllByUser(idUsuario).ToList();
-
-            var tablerosVM = tableros.Select(t => new ListarTablerosViewModel(
-                t.Id,
-                t.IdUsuario,
-                t.Titulo,
-                t.Color,
-                t.Descripcion
+            return _tableroRepository.GetAllByUser(idUsuario)
+                .Select(t => new ListarTablerosViewModel(
+                    t.Id,
+                    t.IdUsuario,
+                    t.Titulo,
+                    t.Color,
+                    t.Descripcion
                 )).ToList();
-            return tablerosVM;
         }
 
         public IActionResult Listar(int idUsuario)
         {
-            List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
-            return View(tablerosVM);
+            try
+            {
+                if (!_usuarioRepository.Exists(idUsuario))
+                {
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+                }
+            
+                List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
+                return View(tablerosVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar listar tableros del usuario {idUsuario}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult ListarBuscados(int idUsuario)
         {
-            List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
-            string nombreUsuario = _usuarioRepository.GetNameById(idUsuario);
+            try
+            {
+                if (!_usuarioRepository.Exists(idUsuario))
+                {
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+                }
 
-            var datosTableros = new ListarTablerosBuscadosViewModel(nombreUsuario, tablerosVM);
+                List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
+                string nombreUsuario = _usuarioRepository.GetNameById(idUsuario);
 
-            return View(datosTableros);
+                var datosTableros = new ListarTablerosBuscadosViewModel(nombreUsuario, tablerosVM);
+
+                return View(datosTableros);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar listar tableros del usuario {idUsuario}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         public IActionResult ListarConTareasAsignadas(int idUsuario)
         {
-            var tableros = _tableroRepository.GetTablerosConTareasAsignadas(idUsuario).ToList(); 
+            try
+            {
+                if (!_usuarioRepository.Exists(idUsuario))
+                {
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+                }
 
-            var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel(
-                t.Id,
-                t.Titulo,
-                t.Color,
-                _usuarioRepository.GetNameById(t.IdUsuario))).ToList();
+                var tableros = _tableroRepository.GetTablerosConTareasAsignadas(idUsuario).ToList(); 
+                var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel(
+                    t.Id,
+                    t.Titulo,
+                    t.Color,
+                    _usuarioRepository.GetNameById(t.IdUsuario))).ToList();
 
-            return View(tablerosVM);
+                return View(tablerosVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar listar tableros del usuario {idUsuario}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [HttpPost]
@@ -74,13 +110,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
                 _tableroRepository.Create(tablero);
                 TempData["Mensaje"] = "El tablero fue creado con éxito.";
+                return RedirectToAction("Listar", new { tableroVM.IdUsuario });   
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al intentar crear un tablero.");
-
+                _logger.LogError(ex, "Error inesperado al intentar crear un tablero");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar crear el tablero seleccionado. Por favor, intente de nuevo más tarde." });
             }
-            return RedirectToAction("Listar", new { tableroVM.IdUsuario });   
         }
 
         [HttpPost]
@@ -98,13 +134,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 {
                     return Redirect(tableroVM.ReturnUrl);
                 }
+                return RedirectToAction("Index", "Login");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al intentar modificar tablero {Id}", tableroVM.Id);
+                _logger.LogError(ex, "Error inesperado al intentar modificar el tablero {Id}.", tableroVM.Id);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar modificar el tablero seleccionado. Por favor, intente de nuevo más tarde." });
             }
-
-            return RedirectToAction("Index", "Login");
         }
 
         [HttpPost]
@@ -120,6 +156,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 {
                     return Redirect(tableroVM.ReturnUrl);
                 }
+                return RedirectToAction("Index", "Login");
             }
             catch (MySqlException ex) when (ex.Number == 1451) //error de restriccion de FK
             {
@@ -129,10 +166,9 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al intentar eliminar tablero {IdTablero}", tableroVM.IdTablero);
+                _logger.LogError(ex, "Error inesperado al intentar eliminar el tablero {IdTablero}.", tableroVM.IdTablero);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar eliminar el tablero seleccionado. Por favor, intente de nuevo más tarde." });
             }
-
-            return RedirectToAction("Index", "Login");
         }
 
 

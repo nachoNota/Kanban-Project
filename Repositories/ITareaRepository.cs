@@ -6,7 +6,6 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
     {
         IEnumerable<Tarea> GetAll();
         Tarea GetById(int id);
-        IEnumerable<Tarea> GetByUser(int idUsuario);
         IEnumerable<Tarea> GetByTablero(int idTablero);
         void CambiarEstado(int idTarea, EstadoTarea estado);
         void AsignarUsuarioATarea(int idUsuario, int idTarea);

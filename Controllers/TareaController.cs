@@ -27,62 +27,88 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult Listar(int idTablero)
         {
-            var tablero = _tableroRepository.GetById(idTablero);
-            
-            if (tablero is null)
+            try
             {
-                ViewData["Mensaje"] = "El tablero seleccionado no existe en nuestra base de datos.";
-                return View("NotFound");
+                var tablero = _tableroRepository.GetById(idTablero);
+                var tareas = _tareaRepository.GetByTablero(idTablero);
+                var tareasVM = tareas.Select(t => new ListarTareasViewModel(t)).ToList();
+
+                var tareasEnTableroVM = new ListarTareasDeTableroViewModel(tablero, tareasVM);
+
+                return View(tareasEnTableroVM);
             }
-
-            var tareas = _tareaRepository.GetByTablero(idTablero);
-            var tareasVM = tareas.Select(t => new ListarTareasViewModel(t)).ToList();
-
-            var tareasEnTableroVM = new ListarTareasDeTableroViewModel(tablero, tareasVM);
-            return View(tareasEnTableroVM);
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El tablero solicitado no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder al tablero {idTablero}.", idTablero);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al tablero seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
 
         public IActionResult VerDetalles(int idTarea)
         {
-            var tarea = _tareaRepository.GetById(idTarea);
-            
-            if (tarea is null)
+            try
             {
-                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
-                return View("NotFound");
+                var tarea = _tareaRepository.GetById(idTarea);
+                var nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
+                int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
+            
+                var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
+
+                return View(tareaVM);
             }
-
-            var nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
-            int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
-            var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
-
-            return View(tareaVM);
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "La tarea solicitada no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", idTarea);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
         {
-            var tarea = _tareaRepository.GetById(idTarea);
-            if (tarea is null)
+            try
             {
-                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
-                return View("NotFound");
+                var tarea = _tareaRepository.GetById(idTarea);
+                _tareaRepository.CambiarEstado(idTarea, estado);
+                
+                return RedirectToAction("VerDetalles", new { idTarea } );
             }
-
-            _tareaRepository.CambiarEstado(idTarea, estado); 
-            return RedirectToAction("VerDetalles", new { idTarea } );
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "La tarea solicitada no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", idTarea);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         public IActionResult Crear(int idTablero)
         {
-            var tablero = _tableroRepository.GetById(idTablero);
-            if (tablero is null)
+            try
             {
-                ViewData["Mensaje"] = "El tablero seleccionado no existe en nuestra base de datos.";
-                return View("NotFound");
-            }
+                var tablero = _tableroRepository.GetById(idTablero);
             
-            return View(new CrearTareaViewModel(idTablero));
+                return View(new CrearTareaViewModel(idTablero));
+            }
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El tablero solicitado no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder al tablero {idTablero}.", idTablero);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al tablero seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [HttpPost]
@@ -96,12 +122,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     
                 return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al intentar crear una nueva tarea en el tablero {IdTablero}", tareaVM.IdTablero);
-                ModelState.AddModelError("", "Ocurrió un error inesperado al intentar crear una nueva tarea, intente de nuevo más tarde.");
+                _logger.LogError(ex, "Error inesperado al intentar crear tarea");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar crear la tarea seleccionada. Por favor, intente de nuevo más tarde." });
             }
-            return View(tareaVM);
         }
 
         [HttpPost]
@@ -112,13 +137,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 _tareaRepository.Delete(tareaVM.IdTarea);
                 TempData["Mensaje"] = "La tarea fue eliminada con éxito.";
 
-            }catch(Exception ex)
+                return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
+            }
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al intentar crear una nueva tarea en el tablero {IdTablero}", tareaVM.IdTablero);
-                ModelState.AddModelError("", "Ocurrió un error inesperado al intentar crear una nueva tarea, intente de nuevo más tarde.");
+                _logger.LogError(ex, "Error inesperado al intentar eliminar tarea {IdTarea}", tareaVM.IdTarea);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar eliminar la tarea seleccionada. Por favor, intente de nuevo más tarde." });
             }
 
-            return RedirectToAction("Listar", new {idTablero = tareaVM.IdTablero});
         }
 
         [HttpPost]
@@ -135,47 +161,77 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult CambiarPropietarioTarea(int idTarea)
         {
-            var tarea = _tareaRepository.GetById(idTarea);
-            if (tarea is null)
+            try
             {
-                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
-                return View("NotFound");
-            }
+                var tarea = _tareaRepository.GetById(idTarea);
+                var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
 
-            var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
-            return View(cambiarPropietarioVM);
+                return View(cambiarPropietarioVM);
+            }
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "La tarea solicitada no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", idTarea);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [HttpPost]
         public IActionResult CambiarPropietarioTarea(int idTarea, int idUsuario)
         {
-            _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
-            TempData["Mensaje"] = "El usuario fue asignado a la tarea.";
+            try
+            {
+                _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
+                TempData["Mensaje"] = "El usuario fue asignado a la tarea.";
 
-            return RedirectToAction("VerDetalles", new { idTarea });
+                return RedirectToAction("VerDetalles", new { idTarea });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", idTarea);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         public IActionResult Modificar(int idTarea)
         {
-            var tarea = _tareaRepository.GetById(idTarea);
-            if (tarea is null)
+            try
             {
-                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
-                return View("NotFound");
+                var tarea = _tareaRepository.GetById(idTarea);
+                var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
+            
+                return View(tareaVM);
             }
-
-            var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
-            return View(tareaVM);
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "La tarea solicitada no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", idTarea);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [HttpPost]
         public IActionResult Modificar(ModificarTareaViewModel tareaVM)
         {
-            var tarea = new Tarea(tareaVM.Id, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
-            _tareaRepository.Update(tarea);
+            try
+            {
+                var tarea = new Tarea(tareaVM.Id, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
+                _tareaRepository.Update(tarea);
 
-            TempData["Mensaje"] = "La tarea fue modificada con éxito.";
-            return RedirectToAction("VerDetalles", new { idTarea = tareaVM.Id } );
+                TempData["Mensaje"] = "La tarea fue modificada con éxito.";
+                return RedirectToAction("VerDetalles", new { idTarea = tareaVM.Id } );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", tareaVM.Id);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar modificar la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
         }
     }
 }

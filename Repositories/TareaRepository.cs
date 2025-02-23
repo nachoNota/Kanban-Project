@@ -51,7 +51,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         }
         public Tarea GetById(int id)
         {
-            Tarea tarea = null;
+            Tarea? tarea = null;
 
             using (var connection = _connectionProvider.GetConnection())
             {
@@ -82,13 +82,13 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
                 connection.Close();
             }
+
+            if (tarea is null) throw new KeyNotFoundException($"No se encontró tarea con id {id}");
+
             return tarea;
 
         }
-        public IEnumerable<Tarea> GetByUser(int idUsuario)
-        {
-            throw new NotImplementedException();
-        }
+
         public IEnumerable<Tarea> GetByTablero(int idTablero)
         {
             var tareas = new List<Tarea>();

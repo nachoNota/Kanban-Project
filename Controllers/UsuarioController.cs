@@ -24,9 +24,8 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _passwordService = passwordService;
         }
 
-        private bool VerificarContrasenia(int idUsuario, string contraseniaIngresada)
+        private bool VerificarContrasenia(string contraseniaActual, string contraseniaIngresada)
         {
-            string contraseniaActual = _usuarioRepository.GetPasswordById(idUsuario);
             bool sonIguales = _passwordService.VerifyPassword(contraseniaActual, contraseniaIngresada);
             return sonIguales;
         }
@@ -114,15 +113,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             try
             {
                 var usuario = _usuarioRepository.GetById(idUsuario);
-
-                if (usuario is null)
-                {
-                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
-                }
-
                 var usuarioVM = new EliminarUsuarioViewModel(idUsuario);
-                return View(usuarioVM);
 
+                return View(usuarioVM);
+            }
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
             }
             catch (Exception ex)
             {
@@ -136,7 +133,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             try
             {
-                var sonIguales = VerificarContrasenia(usuarioVM.Id, usuarioVM.ContraseniaIngresada);
+                var sonIguales = VerificarContrasenia(_usuarioRepository.GetPasswordById(usuarioVM.Id), usuarioVM.ContraseniaIngresada);
 
                 if (sonIguales)
                 {
@@ -144,9 +141,10 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                     TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
                     return RedirectToAction("Logout", "Login");
                 }
-                usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrese de escribir todo correctamente.";
 
-            } catch(MySqlException ex) when(ex.Number == 1451) //error de restriccion de FK
+                usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrese de escribir todo correctamente.";
+            }
+            catch(MySqlException ex) when(ex.Number == 1451) //error de restriccion de FK
             {
                 ModelState.AddModelError("", "Este usuario está relacionado con tareas y/o tableros, por lo que no puede ser eliminado.");
 			}
@@ -186,14 +184,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             try
             {
                 var usuario = _usuarioRepository.GetById(idUsuario);
-            
-                if (usuario is null)
-                {
-                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
-                }
-
                 var usuarioVM = new CambiarContraViewModel(idUsuario);
+
                 return View(usuarioVM);
+            }
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
             }
             catch (Exception ex)
             {
@@ -208,7 +205,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             try
             {
-                bool sonIguales = VerificarContrasenia(usuarioVM.IdUsuario, usuarioVM.PasswordActualInput);
+                bool sonIguales = VerificarContrasenia(_usuarioRepository.GetPasswordById(usuarioVM.IdUsuario), usuarioVM.PasswordActualInput);
 			    if (sonIguales)
 			    {
 				    _usuarioRepository.ChangePassword(usuarioVM.IdUsuario, _passwordService.HashPassword(usuarioVM.PasswordNueva));
@@ -269,15 +266,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             try
             {
                 var usuario = _usuarioRepository.GetById(idUsuario);
-
-                if(usuario is null)
-                {
-                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
-                }
-
                 var usuarioVM = new CambiarRolViewModel(usuario.NombreUsuario, idUsuario);
+
                 return View(usuarioVM);
 			}
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error inesperado al intentar acceder al usuario {Id}.", idUsuario);
@@ -291,7 +287,8 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         {
             try
             {
-			    bool sonIguales = VerificarContrasenia(_authenticationService.GetUserId(), usuarioVM.ContraseniaIngresada);
+                string contraseniaActual = _usuarioRepository.GetPasswordById(_authenticationService.GetUserId());
+			    bool sonIguales = VerificarContrasenia(contraseniaActual, usuarioVM.ContraseniaIngresada);
 
 			    if (sonIguales)
 			    {

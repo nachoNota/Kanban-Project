@@ -121,7 +121,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 
         public Tablero GetById(int id)
         {
-            Tablero tablero = null;
+            Tablero? tablero = null;
 
             using(var connection = _connectionProvider.GetConnection())
             {
@@ -147,6 +147,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 }
                 connection.Close();
             }
+
+            if (tablero is null) throw new KeyNotFoundException($"No se encontró tablero de id {id}");
 
             return tablero;
         }
