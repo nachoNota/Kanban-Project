@@ -55,7 +55,7 @@ admin, se agrega una nueva opción para buscar tableros de un usuario en especí
 
 ## ✨ Uso
  (falta adjuntar imagenes)
-
+ 
  ## 👤 Autor 
  Nota, José Ignacio
  
