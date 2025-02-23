@@ -10,6 +10,9 @@
         <!-- Contenido principal -->
         <div class="col-md-9 p-5" style="max-width:30rem">
 			<h2 class="mb-5">Modificar usuario</h2>
+			
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 			<form method="post" asp-action="Modificar">
 				<input type="hidden" asp-for="Id">
 				<div class="mb-4">

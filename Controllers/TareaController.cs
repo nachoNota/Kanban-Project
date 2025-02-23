@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Relational;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
@@ -26,9 +27,15 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult Listar(int idTablero)
         {
-            var tareas = _tareaRepository.GetByTablero(idTablero);
             var tablero = _tableroRepository.GetById(idTablero);
+            
+            if (tablero is null)
+            {
+                ViewData["Mensaje"] = "El tablero seleccionado no existe en nuestra base de datos.";
+                return View("NotFound");
+            }
 
+            var tareas = _tareaRepository.GetByTablero(idTablero);
             var tareasVM = tareas.Select(t => new ListarTareasViewModel(t)).ToList();
 
             var tareasEnTableroVM = new ListarTareasDeTableroViewModel(tablero, tareasVM);
@@ -39,10 +46,15 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult VerDetalles(int idTarea)
         {
             var tarea = _tareaRepository.GetById(idTarea);
+            
+            if (tarea is null)
+            {
+                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
+                return View("NotFound");
+            }
+
             var nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
-
             int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
-
             var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
 
             return View(tareaVM);
@@ -50,13 +62,26 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
         {
-            _tareaRepository.CambiarEstado(idTarea, estado);
-            
+            var tarea = _tareaRepository.GetById(idTarea);
+            if (tarea is null)
+            {
+                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
+                return View("NotFound");
+            }
+
+            _tareaRepository.CambiarEstado(idTarea, estado); 
             return RedirectToAction("VerDetalles", new { idTarea } );
         }
 
         public IActionResult Crear(int idTablero)
         {
+            var tablero = _tableroRepository.GetById(idTablero);
+            if (tablero is null)
+            {
+                ViewData["Mensaje"] = "El tablero seleccionado no existe en nuestra base de datos.";
+                return View("NotFound");
+            }
+            
             return View(new CrearTareaViewModel(idTablero));
         }
 
@@ -110,8 +135,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult CambiarPropietarioTarea(int idTarea)
         {
-            var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
+            var tarea = _tareaRepository.GetById(idTarea);
+            if (tarea is null)
+            {
+                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
+                return View("NotFound");
+            }
 
+            var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
             return View(cambiarPropietarioVM);
         }
 
@@ -127,8 +158,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         public IActionResult Modificar(int idTarea)
         {
             var tarea = _tareaRepository.GetById(idTarea);
-            var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
+            if (tarea is null)
+            {
+                ViewData["Mensaje"] = "La tarea seleccionada no existe en nuestra base de datos.";
+                return View("NotFound");
+            }
 
+            var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
             return View(tareaVM);
         }
 

@@ -8,12 +8,12 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     public class LoginController : Controller
     {
         private readonly IAuthenticationService _authentication;
+        private readonly ILogger<LoginController> _logger;
 
-
-        public LoginController(IAuthenticationService authenticationService)
+        public LoginController(IAuthenticationService authenticationService, ILogger<LoginController> logger)
         {
             _authentication = authenticationService;
-
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -29,14 +29,22 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 		[HttpPost]
         public IActionResult Login(LoginViewModel loginVM)
         {
-            bool loginExitoso = _authentication.Login(loginVM.NombreUsuario, loginVM.Contrasenia);
-            if (loginExitoso)
+            try
             {
-                return RedirectToAction("Listar", "Tablero", new { idUsuario = HttpContext.Session.GetInt32("IdUser")});
-            }
+                bool loginExitoso = _authentication.Login(loginVM.NombreUsuario, loginVM.Contrasenia);
+                if (loginExitoso)
+                {
+                    return RedirectToAction("Listar", "Tablero", new { idUsuario = _authentication.GetUserId()});
+                }
 
-            loginVM.ErrorMessage = "Acceso inválido, asegúrese de escribir todo correctamente.";
-            loginVM.IsAuthenticated = false;
+                loginVM.ErrorMessage = "Acceso inválido, asegúrese de escribir todo correctamente.";
+                loginVM.IsAuthenticated = false;
+
+            } catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al intentar iniciar sesión.");
+                ModelState.AddModelError("", "Se ha producido un error inesperado. Por favor, intente de nuevo mas tarde.");
+            }
             return View("Index", loginVM);
         }
 

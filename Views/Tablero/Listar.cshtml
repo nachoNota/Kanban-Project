@@ -1,9 +1,11 @@
-﻿
+﻿@using tl2_proyecto_2024_nachoNota.ViewModels.TableroVM;
 @model List<tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.ListarTablerosViewModel>
 
 <div class="container">
-<h1 class="mt-3">Mis Tableros</h1>
+<h1 class="mt-3">Mis Tableros</h1>    
+
 <div class="my-4">
+
     <div class="row g-4">
         @foreach (var tablero in Model)
         {
@@ -39,8 +41,13 @@
             </div>
 
 
-            @await Html.PartialAsync("Eliminar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.EliminarTableroViewModel(tablero.Id, tablero.IdUsuario))
-            @await Html.PartialAsync("Modificar", new tl2_proyecto_2024_nachoNota.ViewModels.TableroVM.ModificarTableroViewModel(tablero))
+                @await Html.PartialAsync("Eliminar", new EliminarTableroViewModel(
+                         tablero.Id,
+                         tablero.IdUsuario,
+                         Url.Action("Listar", new {tablero.IdUsuario})
+                         ))
+
+                @await Html.PartialAsync("Modificar", new ModificarTableroViewModel(tablero, Url.Action("Listar", new { tablero.IdUsuario })))
         }
 
         <div class="col-sm-6 col-md-4 col-lg-3">
@@ -66,13 +73,12 @@
 @if (TempData["Mensaje"] != null)
 {
     <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div class="toast show bg-success" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">Éxito</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body text-light">
-                @TempData["Mensaje"]
+        <div class="toast show text-bg-primary align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @TempData["Mensaje"]
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>

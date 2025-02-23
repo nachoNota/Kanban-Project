@@ -16,13 +16,12 @@
 				Busca un usuario por su nombre para ver su información. Desde aquí puedes cambiar su rol o eliminarlo del sistema.
 			</p>
 
+			<p class="text-danger">@TempData["Error"]</p>
 
 			<form asp-action="Buscar" asp-controller="Usuario" class="d-flex mb-2" role="search" style="max-width:30rem">
 				<input class="form-control me-2" type="search" name="nombreUsuario" placeholder="Busca por nombre de usuario" aria-label="Search" />
 				<button class="btn btn-outline-success" type="submit">Search</button>
 			</form>
-			
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 			<div class="accordion accordion-flush" id="accordionFlushExample">
 				@if (Model.Count > 0)

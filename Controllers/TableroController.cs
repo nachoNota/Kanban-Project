@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
@@ -26,6 +27,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
             var tablerosVM = tableros.Select(t => new ListarTablerosViewModel(
                 t.Id,
+                t.IdUsuario,
                 t.Titulo,
                 t.Color,
                 t.Descripcion
@@ -66,42 +68,73 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public IActionResult Crear(CrearTableroViewModel tableroVM)
         {
-            var tablero = new Tablero(tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion, tableroVM.IdUsuario);
+            try
+            {
+                var tablero = new Tablero(tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion, tableroVM.IdUsuario);
 
-            _tableroRepository.Create(tablero);
-            TempData["Mensaje"] = "El tablero fue creado con éxito.";
-            return RedirectToAction("Listar", new { tablero.IdUsuario });   
+                _tableroRepository.Create(tablero);
+                TempData["Mensaje"] = "El tablero fue creado con éxito.";
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar crear un tablero.");
+
+            }
+            return RedirectToAction("Listar", new { tableroVM.IdUsuario });   
         }
 
         [HttpPost]
         public IActionResult Modificar(ModificarTableroViewModel tableroVM)
         {
-            var tablero = new Tablero(tableroVM.Id, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
-
-            _tableroRepository.Update(tablero);
-            TempData["Mensaje"] = "El tablero fue modificado con éxito.";
-            
-            if (tableroVM.IdUsuario == HttpContext.Session.GetInt32("IdUser"))
+            try
             {
-                return RedirectToAction("Listar", new { tableroVM.IdUsuario });
+                var tablero = new Tablero(tableroVM.Id, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
+
+                _tableroRepository.Update(tablero);
+                TempData["Mensaje"] = "El tablero fue modificado con éxito.";
+
+                bool esUrlValida = !string.IsNullOrEmpty(tableroVM.ReturnUrl) && Url.IsLocalUrl(tableroVM.ReturnUrl);
+                if (esUrlValida)
+                {
+                    return Redirect(tableroVM.ReturnUrl);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar modificar tablero {Id}", tableroVM.Id);
             }
 
-            return RedirectToAction("ListarBuscados", new { tableroVM.IdUsuario });
+            return RedirectToAction("Index", "Login");
         }
 
         [HttpPost]
         public IActionResult Eliminar(EliminarTableroViewModel tableroVM)
         {
-            _tableroRepository.Delete(tableroVM.IdTablero);
-            TempData["Mensaje"] = "El tablero fue eliminado con éxito";
-
-            if (tableroVM.IdUsuario == HttpContext.Session.GetInt32("IdUser"))
+            try
             {
-                return RedirectToAction("Listar", new { tableroVM.IdUsuario });
+                _tableroRepository.Delete(tableroVM.IdTablero);
+                TempData["Mensaje"] = "El tablero fue eliminado con éxito";
+
+                bool esUrlValida = !string.IsNullOrEmpty(tableroVM.ReturnUrl) && Url.IsLocalUrl(tableroVM.ReturnUrl);
+                if(esUrlValida)
+                {
+                    return Redirect(tableroVM.ReturnUrl);
+                }
+            }
+            catch (MySqlException ex) when (ex.Number == 1451) //error de restriccion de FK
+            {
+                TempData["Mensaje"] = "El tablero que se quiere borrar está relacionado con tareas, por lo que no puede ser eliminado.";
+                return Redirect(tableroVM.ReturnUrl);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar eliminar tablero {IdTablero}", tableroVM.IdTablero);
             }
 
-            return RedirectToAction("ListarBuscados", new { tableroVM.IdUsuario });
+            return RedirectToAction("Index", "Login");
         }
+
 
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult MostrarBuscadorUsuarios()

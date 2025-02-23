@@ -28,7 +28,7 @@ namespace tl2_proyecto_2024_nachoNota.Filters
 
             if (!esAccessLevel || SinNivelesDefinidos)
             {
-                context.Result = new RedirectToActionResult("Error", "Home", null);
+                context.Result = new RedirectToActionResult("ErrorRol", "Error", null);
                 return;
             }
         }

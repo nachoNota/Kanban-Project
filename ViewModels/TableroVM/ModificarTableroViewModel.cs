@@ -12,27 +12,30 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.TableroVM
         public string Color { get; set; }
         [StringLength(100, ErrorMessage = "La descripción debe ser menor a los 100 caracteres.")]
         public string? Descripcion { get; set; }
+        public string ReturnUrl { get; set; }
 
         public ModificarTableroViewModel()
         {
 
         }
-        public ModificarTableroViewModel(int id, int idUsuario, string titulo, string color, string desc)
+        public ModificarTableroViewModel(int id, int idUsuario, string titulo, string color, string desc, string returnUrl)
         {
             Id = id;
             IdUsuario = idUsuario;
             Titulo = titulo;
             Color = color;
             Descripcion = desc;
+            ReturnUrl = returnUrl;
         }
 
-        public ModificarTableroViewModel(ListarTablerosViewModel tableroVM)
+        public ModificarTableroViewModel(ListarTablerosViewModel tableroVM, string returnUrl)
         {
             Id = tableroVM.Id;
             IdUsuario = tableroVM.IdUsuario;
             Titulo = tableroVM.Titulo;
             Color = tableroVM.Color;
             Descripcion = tableroVM.Descripcion;
+            ReturnUrl = returnUrl;
         }
     }
 }

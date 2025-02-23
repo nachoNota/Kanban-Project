@@ -14,6 +14,8 @@
 				Para cambiar de rol al usuario "@Model.NombreUsuario", necesitamos que ingreses tu contraseña para confirmar tu identidad.
 			</p>
 
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 			<form method="post" asp-action="CambiarRol">
 				<input type="hidden" asp-for="Id">
 				<input type="hidden" asp-for="NombreUsuario" value="@Model.NombreUsuario" />

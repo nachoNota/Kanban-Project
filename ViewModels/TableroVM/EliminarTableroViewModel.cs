@@ -4,12 +4,14 @@
     {
         public int IdUsuario { get; set; }
         public int IdTablero {  get; set; }
+        public string ReturnUrl { get; set; }
 
         public EliminarTableroViewModel() { }
-        public EliminarTableroViewModel(int idTablero, int idUsuario)
+        public EliminarTableroViewModel(int idTablero, int idUsuario, string returnUrl)
         {
             IdUsuario = idUsuario;
             IdTablero = idTablero;
+            ReturnUrl = returnUrl;
         }
     }
 }

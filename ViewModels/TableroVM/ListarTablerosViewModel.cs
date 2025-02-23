@@ -9,12 +9,14 @@
         public string? Descripcion { get; set; }
 
         public ListarTablerosViewModel() { }
-        public ListarTablerosViewModel(int idTablero, string titulo, string color, string descripcion)
+        public ListarTablerosViewModel(int idTablero, int idUsuario, string titulo, string color, string descripcion)
         {
             Id = idTablero;
             Titulo = titulo;
             Color = color;
             Descripcion = descripcion;
+            IdUsuario = idUsuario;
+
         }
     }
 }

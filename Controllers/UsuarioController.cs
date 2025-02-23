@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
@@ -50,14 +51,14 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             catch(MySqlException ex) when (ex.Number == 1062) // clave duplicada
             {
                 ModelState.AddModelError("NombreUsuario", "Este nombre de usuario ya está en uso, intenta con otro.");
+                return View(usuarioVM);
             }
 			catch (Exception ex)
 			{
-				ModelState.AddModelError("", "Ocurrió un error inesperado al registrar tu usuario, intente de nuevo más tarde.");
 				_logger.LogError(ex, "Error inesperado al intentar registrarse.");
-			}
-            
-            return View(usuarioVM);
+                return View("ErrorInesperado", "Ocurrió un error inesperado al intentar registar su usuario. Por favor, intente de nuevo más tarde.");
+            }
+
         }
 
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
@@ -69,8 +70,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 
                 if(usuario is null)
                 {
-                    ViewData["Mensaje"] = "El usuario seleccionado no existe en nuestra base de datos."
-                    return View("NotFound");
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
                 }
 
                 var usuarioVM = new ModificarUsuarioViewModel(usuario);
@@ -78,11 +78,9 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 			}
 			catch (Exception ex)
 			{
-				TempData["Mensaje"] = "Ocurrió un error inesperado al intentar modificar su usuario, intente de nuevo más tarde.";
-				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
-			}
-
-            return RedirectToAction("Listar", "Tablero", new { idUsuario });
+                _logger.LogError(ex, "Error inesperado al intentar modificar al usuario {Id}.", idUsuario);
+                return View("ErrorInesperado", "Ocurrió un error inesperado al intentar acceder su usuario. Por favor, intente de nuevo más tarde.");
+            }
         }
 
         [HttpPost]
@@ -96,25 +94,41 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 _authenticationService.ChangeUserName(usuario.NombreUsuario);
 
                 TempData["Mensaje"] = "El usuario fue modificado con éxito.";
+                return RedirectToAction("Modificar", new {idUsuario = usuarioVM.Id});
 			}
             catch(MySqlException ex) when(ex.Number == 1062) //clave duplicada
             {
 				ModelState.AddModelError("NombreUsuario", "Este nombre de usuario ya está en uso, intenta con otro.");
+                return View(usuarioVM); 
 			}
 			catch (Exception ex)
 			{
-				TempData["Mensaje"] = "Ocurrió un error inesperado al intentar modificar su usuario, intente de nuevo más tarde.";
-				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
+                _logger.LogError(ex, "Error inesperado al intentar modificar el usuario {Id}.", usuarioVM.Id);
+                return View("ErrorInesperado", "Ocurrió un error inesperado al intentar modificar su usuario. Por favor, intente de nuevo más tarde.");
 			}
-            
-            return RedirectToAction("Modificar", new {idUsuario = usuarioVM.Id});
         }
 
 
         public IActionResult EliminarPropio(int idUsuario)
         {
-            var usuarioVM = new EliminarUsuarioViewModel(idUsuario);
-            return View(usuarioVM);
+            try
+            {
+                var usuario = _usuarioRepository.GetById(idUsuario);
+
+                if (usuario is null)
+                {
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+                }
+
+                var usuarioVM = new EliminarUsuarioViewModel(idUsuario);
+                return View(usuarioVM);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder al usuario {Id}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a su usuario. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [HttpPost]
@@ -138,11 +152,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 			}
 			catch (Exception ex)
 			{
-				ModelState.AddModelError("", "Ocurrió un error inesperado al intentar eliminar su usuario, intente de nuevo más tarde.");
-				_logger.LogError(ex, "Error inesperado al intentar eliminar usuario propio");
+                _logger.LogError(ex, "Error inesperado al intentar eliminar el usuario {Id}.", usuarioVM.Id);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar eliminar su usuario. Por favor, intente de nuevo más tarde." });
 			}
-
-			return View(usuarioVM);
+			
+            return View(usuarioVM);
         }
 
         [AccessLevel(RolUsuario.Admin)]
@@ -155,23 +169,37 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 		    }
 			catch (MySqlException ex) when (ex.Number == 1451) //error de restriccion de FK
 			{
-				ModelState.AddModelError("", "El usuario que se quiere borrar está relacionado con tareas y/o tableros, por lo que no puede ser eliminado.");
+				TempData["Error"] = "El usuario que se quiere borrar está relacionado con tareas y/o tableros, por lo que no puede ser eliminado.";
 			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("", "Ocurrió un error inesperado al intentar eliminar su usuario, intente de nuevo más tarde.");
-				_logger.LogError(ex, "Error inesperado al intentar eliminar usuario propio");
-			}
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder al usuario {Id}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
 
-			return RedirectToAction("Editar");
+            return RedirectToAction("Editar");
         }
 	    
 		[AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
         public IActionResult CambiarContra(int idUsuario)
         {
-            var usuarioVM = new CambiarContraViewModel(idUsuario);
-     
-            return View(usuarioVM);
+            try
+            {
+                var usuario = _usuarioRepository.GetById(idUsuario);
+            
+                if (usuario is null)
+                {
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+                }
+
+                var usuarioVM = new CambiarContraViewModel(idUsuario);
+                return View(usuarioVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder al usuario {Id}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder a su usuario. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [HttpPost]
@@ -190,14 +218,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 }
 
                 usuarioVM.ErrorMessage = "La contraseña ingresada no coincide con la actual, asegúrate de escribirla correctamente";
+                return View(usuarioVM);
             }
             catch (Exception ex)
             {
-				ModelState.AddModelError("", "Ocurrió un error inesperado, intente de nuevo más tarde.");
-				_logger.LogError(ex, "Error inesperado al intentar cambiar de contraseña.");
-			}
-
-            return View(usuarioVM);
+                _logger.LogError(ex, "Error inesperado al intentar cambiar contraseña de usuario {Id}.", usuarioVM.IdUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar cambiar su contraseña. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [AccessLevel(RolUsuario.Admin)]
@@ -221,13 +248,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 			{
 				ModelState.AddModelError("NombreUsuario", "Este nombre de usuario ya está en uso, intenta con otro.");
 			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("", "Ocurrió un error inesperado, intente de nuevo más tarde.");
-				_logger.LogError(ex, "Error inesperado al intentar crear un nuevo usuario.");
-			}
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar crear un nuevo usuario.");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar crear el nuevo usuario. Por favor, intente de nuevo más tarde." });
+            }
 
-			return RedirectToAction("Crear");
+            return RedirectToAction("Crear");
         }
         
         [AccessLevel(RolUsuario.Admin)]
@@ -245,20 +272,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
                 if(usuario is null)
                 {
-                    ViewData["Mensaje"] = "El usuario solicitado no existe en nuestra base de datos.";
-                    return View("NotFound");
+                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
                 }
 
                 var usuarioVM = new CambiarRolViewModel(usuario.NombreUsuario, idUsuario);
                 return View(usuarioVM);
 			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("", "Ocurrió un error inesperado, intente de nuevo más tarde.");
-				_logger.LogError(ex, "Error inesperado al intentar cambiar de rol a un usuario.");
-			}
-
-            return RedirectToAction("Editar");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar acceder al usuario {Id}.", idUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
 		}
 
         [HttpPost]
@@ -278,13 +302,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 }
 
                 usuarioVM.ErrorMessage = "Las contraseñas no coinciden, asegúrate de escribir todo correctamente";
+                return View(usuarioVM);
 			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("", "Ocurrió un error inesperado, intente de nuevo más tarde.");
-				_logger.LogError(ex, "Error inesperado al cambiar de rol a un usuario.");
-			}
-            return View(usuarioVM);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar cambiar rol al usuario {Id}.", usuarioVM.Id);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar cambiar de rol al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
