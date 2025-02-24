@@ -240,18 +240,19 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
 			    _usuarioRepository.Create(usuario);
                 TempData["Mensaje"] = "El nuevo usuario fue creado con éxito.";
+                return RedirectToAction("Crear");
 			}
 			catch (MySqlException ex) when (ex.Number == 1062) //clave duplicada
 			{
 				ModelState.AddModelError("NombreUsuario", "Este nombre de usuario ya está en uso, intenta con otro.");
-			}
+                return View(usuarioVM);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error inesperado al intentar crear un nuevo usuario.");
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar crear el nuevo usuario. Por favor, intente de nuevo más tarde." });
             }
 
-            return RedirectToAction("Crear");
         }
         
         [AccessLevel(RolUsuario.Admin)]
