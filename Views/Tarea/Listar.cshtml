@@ -1,13 +1,18 @@
 ﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TareaVM.ListarTareasDeTableroViewModel
+@inject tl2_proyecto_2024_nachoNota.Services.IAuthenticationService AuthService
 
 @{
     ViewData["BackgroundColor"] = Model.Tablero.Color;
 }
 
-@{bool EsPropietarioTablero = Model.Tablero.IdUsuario == Context.Session.GetInt32("IdUser");}
+@{bool EsPropietarioTablero = Model.Tablero.IdUsuario == AuthService.GetUserId();}
 
 <div class="container-md">
-    <h4 class="py-3 borde-letras">@Model.Tablero.Titulo</h4>
+   
+    <h4 class="py-3 borde-letras">@Model.Tablero.Titulo 
+        <i class="bi bi-eye ms-3 fs-5" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="@Model.Tablero.Descripcion"></i>
+        </h4>
+    
     <div asp-validation-summary="ModelOnly" class="text-danger borde-letras"></div>
 
     <div class="row row-cols-1 row-cols-md-5 g-4">
@@ -30,7 +35,7 @@
                                    class="list-group-item list-group-item-action mover mover-hover4 d-flex justify-content-between align-items-center">
                                     <span class="@tachar borde-letras">@tarea.Titulo</span>
 
-                                    @if (tarea.IdUsuario == Context.Session.GetInt32("IdUser"))
+                                    @if (tarea.IdUsuario == AuthService.GetUserId())
                                     {
                                         <i class="bi bi-person borde-letras" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                            data-bs-title="Eres propietario de esta tarea"></i>
