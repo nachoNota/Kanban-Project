@@ -60,7 +60,7 @@ opcion server, y luego data import. Por último, debes cambiar la cadena de cone
 USUARIOS DE PRUEBA:
 
  1. USUARIO: elAdmin | CONTRASEÑA: 123456 | ROL: Admin
- 2. USUARIO: prueba123 | CONTRASEÑA: prueba123 | ROL: Operador
+ 2. USUARIO: pruebas123 | CONTRASEÑA: pruebas123 | ROL: Operador
 
 - En primera instancia, vas a toparte con dos vistas, una para loguearse, y otra para registrarte si es que todavía no tienes una cuenta:
  <div style="display: flex; flex-wrap: wrap;">
