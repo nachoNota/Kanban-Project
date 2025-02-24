@@ -54,6 +54,14 @@ admin, se agrega una nueva opción para buscar tableros de un usuario en especí
 - /Views --> Contiene todo lo relacionado con la interfaz de usuario.
 
 ## ✨ Uso
+Para poder utilizar la base de datos correspondiente, necesitas guardar el archivo .sql que se encuentra en la carpeta Database. Luego, en Mysql Workbench, ve a tu localhost, apreta la
+opcion server, y luego data import. Por último, debes cambiar la cadena de conexión en appsettings.json con tus respectivos datos.
+
+USUARIOS DE PRUEBA:
+
+ 1. USUARIO: elAdmin | CONTRASEÑA: 123456 | ROL: Admin
+ 2. USUARIO: prueba123 | CONTRASEÑA: prueba123 | ROL: Operador
+
 - En primera instancia, vas a toparte con dos vistas, una para loguearse, y otra para registrarte si es que todavía no tienes una cuenta:
  <div style="display: flex; flex-wrap: wrap;">
     <img src="https://github.com/user-attachments/assets/477fa78b-87b7-47ec-be76-9e5b9074e0e3" style="margin: 5px;" width="400">
@@ -90,3 +98,4 @@ el propietario del tablero, además de ser el propietario de la tarea. Si alguno
  ## 👤 Autor 
  Nota, José Ignacio
  
+
