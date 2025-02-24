@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.Services;
 using tl2_proyecto_2024_nachoNota.ViewModels;
@@ -40,12 +41,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 loginVM.ErrorMessage = "Acceso inválido, asegúrese de escribir todo correctamente.";
                 loginVM.IsAuthenticated = false;
 
-            } catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al intentar iniciar sesión.");
-                ModelState.AddModelError("", "Se ha producido un error inesperado. Por favor, intente de nuevo mas tarde.");
+                return View("Index", loginVM);
             }
-            return View("Index", loginVM);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar loguearse");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar loguearse. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         public IActionResult Logout()

@@ -48,13 +48,15 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-
         public IActionResult VerDetalles(int idTarea)
         {
             try
             {
                 var tarea = _tareaRepository.GetById(idTarea);
-                var nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
+                var nombreUsuario = string.Empty;
+
+                if (tarea.IdUsuario != 0) nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
+
                 int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
             
                 var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
@@ -150,13 +152,20 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public IActionResult BuscarUsu(string nombreUsuario, int idTarea)
         {
-            var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+            try
+            {
+                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+                var usuariosBuscadosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
 
-            var usuariosBuscadosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
+                var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, usuariosBuscadosVM);
 
-            var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, usuariosBuscadosVM);
-
-            return View("CambiarPropietarioTarea", cambiarPropietarioVM);
+                return View("CambiarPropietarioTarea", cambiarPropietarioVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar buscar al usuario {nombreUsuario}.", nombreUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
         public IActionResult CambiarPropietarioTarea(int idTarea)

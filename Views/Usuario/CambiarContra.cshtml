@@ -22,9 +22,9 @@
 				<div class="mb-4 position-relative">
 					<label asp-for="PasswordActualInput" class="form-label">Contraseña actual</label>
 					<div class="input-group">
-						<input type="password" class="form-control" asp-for="PasswordActualInput" id="passwordInput">
-						<button class="btn btn-outline-primary" type="button" id="togglePassword">
-							<i class="bi bi-eye" id="eyeIcon"></i>
+						<input type="password" class="form-control" asp-for="PasswordActualInput" id="passwordActual">
+						<button class="btn btn-outline-primary" type="button" id="togglePasswordActual">
+							<i class="bi bi-eye" id="eyeIconActual"></i>
 						</button>
 					</div>
 					<span asp-validation-for="PasswordActualInput" class="text-danger"></span>
@@ -38,9 +38,9 @@
 				<div class="mb-3 position-relative">
 					<label asp-for="PasswordNueva" class="form-label">Nueva contraseña</label>
 					<div class="input-group">
-						<input type="password" class="form-control" asp-for="PasswordNueva" id="passwordInput">
-						<button class="btn btn-outline-primary" type="button" id="togglePassword">
-							<i class="bi bi-eye" id="eyeIcon"></i>
+						<input type="password" class="form-control" asp-for="PasswordNueva" id="passwordNueva">
+						<button class="btn btn-outline-primary" type="button" id="togglePasswordNueva">
+							<i class="bi bi-eye" id="eyeIconNueva"></i>
 						</button>
 					</div>
 					<span asp-validation-for="PasswordNueva" class="text-danger"></span>
@@ -66,3 +66,31 @@
 		</div>
 	</div>
 }
+
+
+<script>
+		document.addEventListener("DOMContentLoaded", function () {
+	function togglePasswordVisibility(passwordId, iconId) {
+		var passwordInput = document.getElementById(passwordId);
+		var eyeIcon = document.getElementById(iconId);
+
+		if (passwordInput.type === "password") {
+			passwordInput.type = "text";
+			eyeIcon.classList.remove("bi-eye");
+			eyeIcon.classList.add("bi-eye-slash");
+		} else {
+			passwordInput.type = "password";
+			eyeIcon.classList.remove("bi-eye-slash");
+			eyeIcon.classList.add("bi-eye");
+		}
+	}
+
+	document.getElementById("togglePasswordActual").addEventListener("click", function () {
+		togglePasswordVisibility("passwordActual", "eyeIconActual");
+	});
+
+	document.getElementById("togglePasswordNueva").addEventListener("click", function () {
+		togglePasswordVisibility("passwordNueva", "eyeIconNueva");
+	});
+});
+</script>

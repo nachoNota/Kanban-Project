@@ -9,7 +9,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
         void Logout();
         bool IsAuthenticated();
         void ChangeUserName(string nombreUsuario);
-        public void ChangeAccessLevel(RolUsuario rol);
         public RolUsuario GetAccessLevel();
         public int GetUserId();
 
@@ -50,11 +49,6 @@ namespace tl2_proyecto_2024_nachoNota.Services
         public void ChangeUserName(string nombreUsuario)
         {
             context.Session.SetString("User", nombreUsuario);
-        }
-
-        public void ChangeAccessLevel(RolUsuario rol)
-        {
-            context.Session.SetString("AccessLevel", rol.ToString());
         }
 
         public RolUsuario GetAccessLevel()

@@ -5,11 +5,6 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.TableroVM
 {
     public class CrearTableroViewModel
     {
-        private int idUsuario;
-        private string titulo;
-        private string color;
-        private string? descripcion;
-
         public int IdUsuario { get; set; }
         [Required(ErrorMessage = "Debes ingresar un titulo para el tablero.")]
         public string Titulo { get; set; }

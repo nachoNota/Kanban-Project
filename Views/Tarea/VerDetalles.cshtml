@@ -17,7 +17,12 @@
             <header class="d-flex align-items-center justify-content-between">
                 <div class="d-flex">
                     <h5 class="card-title me-2">Propietario:</h5>
-                    <p class="card-text mb-0">@Model.NombreUsuario</p>
+                    @if(string.IsNullOrEmpty(Model.NombreUsuario)){
+                        <p class="card-text mb-0">Sin propietario.</p>
+
+                    } else{
+                        <p class="card-text mb-0">@Model.NombreUsuario</p>
+                    }
                 </div>
 
                 @if (esPropietarioTablero)

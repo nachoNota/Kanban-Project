@@ -8,6 +8,12 @@
             Busca un usuario por su nombre para poder asignarlo como propietario de la tarea seleccionada.
         </p>
 
+        <form asp-action="CambiarPropietarioTarea" method="post" class="mb-2">
+            <input type="hidden" name="idTarea" value="@Model.IdTarea" />
+            <input type="hidden" name="idUsuario" value="0" />
+            <button type="submit" class="btn btn-outline-danger">Dejar sin propietario</button>
+        </form>
+
         <form asp-action="BuscarUsu" class="d-flex mb-2" role="search" style="max-width:30rem">
             <input type="hidden" name="idTarea" value="@Model.IdTarea"/>
             <input class="form-control me-2" type="search" name="nombreUsuario" placeholder="Busca por nombre de usuario" aria-label="Search" />

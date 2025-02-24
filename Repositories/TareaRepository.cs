@@ -32,7 +32,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     {
                         var tarea = new Tarea();
                         tarea.Id = reader.GetInt32("id_tarea");
-                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.IdUsuario = reader.IsDBNull(reader.GetOrdinal("id_usuario"))
+                                        ? 0 : reader.GetInt32(reader.GetOrdinal("id_usuario"));
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
@@ -68,7 +69,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     {
                         tarea = new Tarea();
                         tarea.Id = reader.GetInt32("id_tarea");
-                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.IdUsuario = reader.IsDBNull(reader.GetOrdinal("id_usuario")) 
+                                        ? 0 : reader.GetInt32(reader.GetOrdinal("id_usuario"));
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
@@ -108,7 +110,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     {
                         var tarea = new Tarea();
                         tarea.Id = reader.GetInt32("id_tarea");
-                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.IdUsuario = reader.IsDBNull(reader.GetOrdinal("id_usuario"))
+                                        ? 0 : reader.GetInt32(reader.GetOrdinal("id_usuario"));
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Titulo = reader.GetString("titulo");
@@ -219,7 +222,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                     {
                         var tarea = new Tarea();
                         tarea.Id = reader.GetInt32("id_tarea");
-                        tarea.IdUsuario = reader.GetInt32("id_usuario");
+                        tarea.IdUsuario = reader.IsDBNull(reader.GetOrdinal("id_usuario"))
+                                        ? 0 : reader.GetInt32(reader.GetOrdinal("id_usuario"));
                         tarea.IdTablero = reader.GetInt32("id_tablero");
                         tarea.Estado = (EstadoTarea)reader.GetInt32(reader.GetOrdinal("estado"));
                         tarea.Titulo = reader.GetString("titulo");

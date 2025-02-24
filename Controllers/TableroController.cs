@@ -181,16 +181,24 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [AccessLevel(RolUsuario.Admin)]
         public IActionResult BuscarUsu(string nombreUsuario)
         {
-            var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario);
-
-            if(!usuariosBuscados.Any())
+            try
             {
-                TempData["Mensaje"] = $"No hemos encontrado coincidencias para '{nombreUsuario}', escribilo de otra forma y volvé a intentar.";
+                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario);
+
+                if(!usuariosBuscados.Any())
+                {
+                    TempData["Mensaje"] = $"No hemos encontrado coincidencias para '{nombreUsuario}', escribilo de otra forma y volvé a intentar.";
+                }
+
+                var usuariosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
+
+                return View("MostrarBuscadorUsuarios", usuariosVM);
             }
-
-            var usuariosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
-
-            return View("MostrarBuscadorUsuarios", usuariosVM);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar buscar al usuario {nombreUsuario}.", nombreUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
+            }
         }
 
     }
