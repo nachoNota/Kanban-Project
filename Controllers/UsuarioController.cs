@@ -55,7 +55,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error inesperado al intentar registrarse.");
-                return View("ErrorInesperado", "Ocurrió un error inesperado al intentar registar su usuario. Por favor, intente de nuevo más tarde.");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar registar su usuario. Por favor, intente de nuevo más tarde." });
             }
 
         }
@@ -78,7 +78,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 			catch (Exception ex)
 			{
                 _logger.LogError(ex, "Error inesperado al intentar modificar al usuario {Id}.", idUsuario);
-                return View("ErrorInesperado", "Ocurrió un error inesperado al intentar acceder su usuario. Por favor, intente de nuevo más tarde.");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder su usuario. Por favor, intente de nuevo más tarde." });
             }
         }
 
@@ -103,7 +103,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 			catch (Exception ex)
 			{
                 _logger.LogError(ex, "Error inesperado al intentar modificar el usuario {Id}.", usuarioVM.Id);
-                return View("ErrorInesperado", "Ocurrió un error inesperado al intentar modificar su usuario. Por favor, intente de nuevo más tarde.");
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar modificar su usuario. Por favor, intente de nuevo más tarde." });
 			}
         }
 

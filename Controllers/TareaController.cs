@@ -58,7 +58,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 if (tarea.IdUsuario != 0) nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
 
                 int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
-            
                 var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
 
                 return View(tareaVM);
@@ -149,24 +148,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         }
 
-        [HttpPost]
-        public IActionResult BuscarUsu(string nombreUsuario, int idTarea)
-        {
-            try
-            {
-                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
-                var usuariosBuscadosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
-
-                var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, usuariosBuscadosVM);
-
-                return View("CambiarPropietarioTarea", cambiarPropietarioVM);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error inesperado al intentar buscar al usuario {nombreUsuario}.", nombreUsuario);
-                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
-            }
-        }
 
         public IActionResult CambiarPropietarioTarea(int idTarea)
         {
@@ -240,6 +221,30 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             {
                 _logger.LogError(ex, "Error inesperado al intentar acceder a la tarea {idTarea}.", tareaVM.Id);
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar modificar la tarea seleccionada. Por favor, intente de nuevo más tarde." });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult BuscarUsu(string nombreUsuario, int idTarea)
+        {
+            try
+            {
+                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+
+                if (!usuariosBuscados.Any())
+                {
+                    TempData["Mensaje"] = $"No hemos encontrado coincidencias para '{nombreUsuario}', escribilo de otra forma y volvé a intentar.";
+                }
+
+                var usuariosBuscadosVM = usuariosBuscados.Select(u => new UsuarioBuscadoViewModel(u.Id, u.NombreUsuario)).ToList();
+                var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, usuariosBuscadosVM);
+
+                return View("CambiarPropietarioTarea", cambiarPropietarioVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al intentar buscar al usuario {nombreUsuario}.", nombreUsuario);
+                return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
             }
         }
     }

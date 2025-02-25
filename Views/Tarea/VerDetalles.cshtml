@@ -1,11 +1,12 @@
 ﻿@model tl2_proyecto_2024_nachoNota.ViewModels.TareaVM.DetalleTareaViewModel
+@inject tl2_proyecto_2024_nachoNota.Services.IAuthenticationService AuthService
 
 @{
     ViewData["Title"] = "Ver Detalles de Tarea";
 }
 
 @{
-    bool esPropietarioTablero = Model.IdPropietarioTablero == Context.Session.GetInt32("IdUser");
+    bool esPropietarioTablero = Model.IdPropietarioTablero == AuthService.GetUserId();
 }
 
 <div class="container-md py-4">

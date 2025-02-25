@@ -35,12 +35,26 @@
     </div>
 </div>
 
+@if (TempData["Mensaje"] != null)
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast show bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-light">
+                @TempData["Mensaje"]
+            </div>
+        </div>
+    </div>
+}
 
 <script>
     function cambiarPropietario(idTarea, idUsuario) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '@Url.Action("CambiarPropietarioTarea", "Tarea")'; // Cambia "ControllerName" por el nombre de tu controlador
+        form.action = '@Url.Action("CambiarPropietarioTarea", "Tarea")';
 
         form.innerHTML = `
             <input type="hidden" name="idTarea" value="${idTarea}" />
