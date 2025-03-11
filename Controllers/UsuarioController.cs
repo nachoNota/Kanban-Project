@@ -66,16 +66,15 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             try
             {
 			    var usuario = _usuarioRepository.GetById(idUsuario);
-                
-                if(usuario is null)
-                {
-                    return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
-                }
-
                 var usuarioVM = new ModificarUsuarioViewModel(usuario);
+
                 return View(usuarioVM);
 			}
-			catch (Exception ex)
+            catch (KeyNotFoundException)
+            {
+                return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
+            }
+            catch (Exception ex)
 			{
                 _logger.LogError(ex, "Error inesperado al intentar modificar al usuario {Id}.", idUsuario);
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar acceder su usuario. Por favor, intente de nuevo más tarde." });

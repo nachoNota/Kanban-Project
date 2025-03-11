@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>tl2_proyecto_2024_nachoNota</RootNamespace>
+    <UserSecretsId>7736e91e-40bf-4994-9582-c21d6dfc50d5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

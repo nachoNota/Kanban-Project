@@ -10,11 +10,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
     {
         private readonly IAuthenticationService _authentication;
         private readonly ILogger<LoginController> _logger;
+        private readonly IEmailService _emailService;
 
-        public LoginController(IAuthenticationService authenticationService, ILogger<LoginController> logger)
+        public LoginController(IAuthenticationService authenticationService, ILogger<LoginController> logger, IEmailService emailService)
         {
             _authentication = authenticationService;
             _logger = logger;
+            _emailService = emailService;
         }
 
         public IActionResult Index()
@@ -48,6 +50,19 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 _logger.LogError(ex, "Error inesperado al intentar loguearse");
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar loguearse. Por favor, intente de nuevo más tarde." });
             }
+        }
+
+        public IActionResult RecuperarPassword()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> RecuperarPassword(RecuperarPassViewModel viewModel)
+        {
+            await _emailService.SendEmail(viewModel.Email, viewModel.Subject, viewModel.Body);
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult Logout()
