@@ -143,6 +143,36 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             return count > 0;
         }
 
+        public Usuario GetByEmail(string email)
+        {
+            Usuario? usuario = null;
+
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT * FROM usuario WHERE email = @email";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+                command.Parameters.AddWithValue("@email", email);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        int idUsuario = reader.GetInt32("id_usuario");
+                        string nombreUsuario = reader.GetString("nombre_usuario");
+                        string pass = reader.GetString("contrasenia");
+                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
+
+                        usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
+                    }
+                }
+                connection.Close();
+            }
+
+            if (usuario is null) throw new KeyNotFoundException($"No se encontró usuario con mail {email}");
+            return usuario;
+        }
+
         public IEnumerable<Usuario> SearchByName(string nombreUsuario)
         {
             var usuarios = new List<Usuario>();

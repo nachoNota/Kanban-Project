@@ -13,15 +13,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         private readonly IEmailService _emailService;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IPasswordResetRepository _passwordResetRepository;
+        private readonly IPasswordService _passwordService;
 
         public LoginController(IAuthenticationService authenticationService, ILogger<LoginController> logger, IEmailService emailService,
-            IUsuarioRepository usuarioRepository, IPasswordResetRepository passwordResetRepository)
+            IUsuarioRepository usuarioRepository, IPasswordResetRepository passwordResetRepository, IPasswordService passwordService)
         {
             _authentication = authenticationService;
             _logger = logger;
             _emailService = emailService;
             _usuarioRepository = usuarioRepository;
             _passwordResetRepository = passwordResetRepository;
+            _passwordService = passwordService;
         }
 
         public IActionResult Index()
@@ -85,7 +87,28 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         public IActionResult ResetPassword(string token)
         {
+            var passwordReset = new PasswordResetViewModel { Token = token };
+            return View(passwordReset);
+        }
 
+        [HttpPost]
+        public IActionResult ResetPassword(PasswordResetViewModel passwordResetVM)
+        {
+            if(passwordResetVM.PasswordNueva != passwordResetVM.ConfirmPassword)
+            {
+                passwordResetVM.ErrorMessage = "Las contraseñas no coinciden, asegúrese de escribir todo correctamente.";
+                return View(passwordResetVM);
+            }
+
+            var passwordReset = _passwordResetRepository.GetByToken(passwordResetVM.Token);
+            var usuario = _usuarioRepository.GetByEmail(passwordReset.Email);
+
+            string HashedPassword = _passwordService.HashPassword(passwordResetVM.PasswordNueva);
+            _usuarioRepository.ChangePassword(usuario.Id, HashedPassword);
+            _passwordResetRepository.Delete(passwordReset.Id);
+
+            TempData["Mensaje"] = "La contraseña se ha actualizado con éxito.";
+            return RedirectToAction("Index");
         }
 
 
