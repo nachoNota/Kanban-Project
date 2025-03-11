@@ -30,7 +30,8 @@ namespace tl2_proyecto_2024_nachoNota.Services
             smtpClient.Credentials = new NetworkCredential(emailEmisor, password);
 
             var mensaje = new MailMessage(emailEmisor!, emailReceptor, subject, body);
-        
+            mensaje.IsBodyHtml = true;
+
             await smtpClient.SendMailAsync(mensaje);
         }
     }

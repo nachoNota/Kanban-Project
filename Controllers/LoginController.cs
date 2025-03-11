@@ -11,12 +11,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         private readonly IAuthenticationService _authentication;
         private readonly ILogger<LoginController> _logger;
         private readonly IEmailService _emailService;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IPasswordResetRepository _passwordResetRepository;
 
-        public LoginController(IAuthenticationService authenticationService, ILogger<LoginController> logger, IEmailService emailService)
+        public LoginController(IAuthenticationService authenticationService, ILogger<LoginController> logger, IEmailService emailService,
+            IUsuarioRepository usuarioRepository, IPasswordResetRepository passwordResetRepository)
         {
             _authentication = authenticationService;
             _logger = logger;
             _emailService = emailService;
+            _usuarioRepository = usuarioRepository;
+            _passwordResetRepository = passwordResetRepository;
         }
 
         public IActionResult Index()
@@ -52,18 +57,37 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-        public IActionResult RecuperarPassword()
+        public IActionResult ForgotPassword()
         {
             return View();
         }
-        
-        [HttpPost]
-        public async Task<IActionResult> RecuperarPassword(RecuperarPassViewModel viewModel)
-        {
-            await _emailService.SendEmail(viewModel.Email, viewModel.Subject, viewModel.Body);
 
-            return RedirectToAction("Index");
+        [HttpPost]
+        public IActionResult ForgotPassword(string email)
+        {
+            if (!_usuarioRepository.ExistsByEmail(email))
+            {
+                TempData["Mensaje"] = "No se han encontrado coincidencias con el mail solicitado.";
+                return View();
+            }
+
+            var passwordReset = new PasswordReset(email);
+            _passwordResetRepository.Create(passwordReset);
+
+            string resetLink = Url.Action("ResetPassword", "Login", new { token = passwordReset.Token }, Request.Scheme);
+
+            _emailService.SendEmail(email, "Recuperar contraseña", $"Haga click en el siguiente enlace para reestablecer su contraseña: " +
+                                                                        $"<a href='{resetLink}'>Restablecer</a>");
+
+            TempData["Mensaje"] = "Hemos enviado un enlace para reestablecer tu contraseña a tu correo.";
+            return View();
         }
+
+        public IActionResult ResetPassword(string token)
+        {
+
+        }
+
 
         public IActionResult Logout()
         {

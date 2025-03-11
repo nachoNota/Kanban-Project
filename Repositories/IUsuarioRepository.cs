@@ -7,6 +7,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         IEnumerable<Usuario> GetAll();
         Usuario GetById(int id);
         Usuario GetByName(string nombreUsuario);
+        bool ExistsByEmail(string email);
         IEnumerable<Usuario> SearchByName(string nombreUsuario);
         bool Exists(int id);
         string GetNameById(int id);

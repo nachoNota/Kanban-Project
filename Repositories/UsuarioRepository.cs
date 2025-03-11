@@ -119,6 +119,26 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 command.Parameters.AddWithValue("@id", id);
 
                 count = Convert.ToInt32(command.ExecuteScalar());
+                
+                connection.Close();
+            }
+            return count > 0;
+        }
+
+        public bool ExistsByEmail(string email)
+        {
+            int count;
+            using (var connection = _connectionProvider.GetConnection())
+            {
+                connection.Open();
+                string commandText = "SELECT COUNT(1) FROM usuario WHERE email = @email";
+                var command = _commandFactory.CreateCommand(commandText, connection);
+            
+                command.Parameters.AddWithValue("@email", email);
+
+                count = Convert.ToInt32(command.ExecuteScalar());
+                
+                connection.Close();
             }
             return count > 0;
         }
@@ -291,5 +311,6 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
             return nombre;
         }
+
     }
 }
