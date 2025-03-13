@@ -1,57 +1,21 @@
-﻿using Org.BouncyCastle.Crypto.Generators;
-using tl2_proyecto_2024_nachoNota.ViewModels.UsuarioVM;
+﻿using System;
+using System.Collections.Generic;
 
-namespace tl2_proyecto_2024_nachoNota.Models
+namespace tl2_proyecto_2024_nachoNota.Models;
+
+public partial class Usuario
 {
-    public class Usuario
-    {
-        private int id;
-        private string nombreUsuario;
-        private string password;
-        private string email;
-        private RolUsuario rol;
+    public int Id { get; set; }
 
-        public int Id { get; set; }
-        public string NombreUsuario { get; set; }
-        public string Password { get; set; }
-        public string Email { get; set; }
-        public RolUsuario Rol { get; set; }
+    public string NombreUsuario { get; set; } = null!;
 
-        public Usuario()
-        {
+    public string Password { get; set; } = null!;
 
-        }
+    public string Email { get; set; } = null!;
 
-        public Usuario(ModificarUsuarioViewModel modificarUsuario)
-        {
-            Id = modificarUsuario.Id;
-            NombreUsuario = modificarUsuario.NombreUsuario;
-            Email = modificarUsuario.Email;
-        }
+    public RolUsuario Rol { get; set; }
 
-        public Usuario(int id, RolUsuario rol, string nombreUsuario, string password, string email)
-        {
-            Id = id;
-            Rol = rol;
-            NombreUsuario = nombreUsuario;
-            Password = password;
-            Email = email;
-        }
-        public Usuario(string nombreUsuario, string email, string password, RolUsuario rol)
-        {
-            Rol = rol;
-            NombreUsuario = nombreUsuario;
-            Password = password;
-            Email = email;
-        }
+    public virtual ICollection<Passwordreset> Passwordresets { get; set; } = new List<Passwordreset>();
 
-        public Usuario(RegistrarUsuarioViewModel usuarioVM)
-        {
-            Rol = RolUsuario.Operador;
-            NombreUsuario = usuarioVM.NombreUsuario;
-            Password = usuarioVM.Contrasenia;
-            Email = usuarioVM.Email;
-        }
-
-    }
+    public virtual ICollection<Tablero> Tableros { get; set; } = new List<Tablero>();
 }

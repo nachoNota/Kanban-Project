@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using tl2_proyecto_2024_nachoNota.Database;
 using tl2_proyecto_2024_nachoNota.Filters;
+using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.Services;
 
@@ -33,6 +35,10 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDbContext<KanbanContext>(options => 
+            options.UseMySQL(builder.Configuration.GetConnectionString("MySqlConnection") ?? 
+                            throw new Exception("Missing connection string")));    
 
 var app = builder.Build();
 
