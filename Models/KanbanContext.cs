@@ -94,7 +94,7 @@ public partial class KanbanContext : DbContext
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(200)
                 .HasColumnName("descripcion");
-            entity.Property(e => e.Estado).HasColumnName("estado");
+            entity.Property(e => ((int)e.Estado)).HasColumnName("estado");
             entity.Property(e => e.FechaModificacion)
                 .ValueGeneratedOnAddOrUpdate()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -132,7 +132,7 @@ public partial class KanbanContext : DbContext
             entity.Property(e => e.NombreUsuario)
                 .HasMaxLength(20)
                 .HasColumnName("nombre_usuario");
-            entity.Property(e => e.Rol).HasColumnName("rol");
+            entity.Property(e => ((int)e.Rol)).HasColumnName("rol");
         });
 
         OnModelCreatingPartial(modelBuilder);

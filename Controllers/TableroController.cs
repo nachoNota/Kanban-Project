@@ -21,7 +21,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository = usuarioRepository;
             _logger = logger;
         }
-        private List<ListarTablerosViewModel> ObtenerTablerosViewModel(int idUsuario)
+        /*private List<ListarTablerosViewModel> ObtenerTablerosViewModel(int idUsuario)
         {
             return _tableroRepository.GetAllByUser(idUsuario)
                 .Select(t => new ListarTablerosViewModel(
@@ -200,6 +200,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
             }
         }
-
+        */
     }
 }

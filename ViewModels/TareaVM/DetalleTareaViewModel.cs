@@ -5,7 +5,7 @@ namespace tl2_proyecto_2024_nachoNota.ViewModels.TareaVM
     public class DetalleTareaViewModel
     {
         public int Id { get; set; }
-        public int IdUsuario { get; set; }
+        public int? IdUsuario { get; set; }
         public int IdTablero { get; set; }
         public int IdPropietarioTablero { get; set; }
         public string NombreUsuario { get; set; }

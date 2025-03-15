@@ -37,13 +37,19 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public ActionResult Registrar(RegistrarUsuarioViewModel usuarioVM)
+        public async Task<IActionResult> Registrar(RegistrarUsuarioViewModel usuarioVM)
         {
             try
             {
-			    var usuario = new Usuario(usuarioVM.NombreUsuario, usuarioVM.Email, _passwordService.HashPassword(usuarioVM.Contrasenia), RolUsuario.Operador);
+                var usuario = new Usuario
+                {
+                    NombreUsuario = usuarioVM.NombreUsuario,
+                    Email = usuarioVM.Email,
+                    Password = _passwordService.HashPassword(usuarioVM.Contrasenia),
+                    Rol = RolUsuario.Operador
+                };
 
-                _usuarioRepository.Create(usuario);
+                await _usuarioRepository.Create(usuario);
                 TempData["Mensaje"] = "Usuario creado con éxito, prueba a iniciar sesión para confirmar los cambios.";
                 return RedirectToAction("Index", "Login");
 			}
@@ -61,12 +67,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult Modificar(int idUsuario)
+        public async Task<IActionResult> Modificar(int idUsuario)
         {
             try
             {
-			    var usuario = _usuarioRepository.GetById(idUsuario);
-                var usuarioVM = new ModificarUsuarioViewModel(usuario);
+			    var usuario = await _usuarioRepository.GetById(idUsuario);
+                var usuarioVM = new ModificarUsuarioViewModel
+                {
+                    NombreUsuario = usuario.NombreUsuario,
+                    Email = usuario.Email,
+                    Id = usuario.Id
+                };
 
                 return View(usuarioVM);
 			}
@@ -83,12 +94,18 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         [HttpPost]
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult Modificar(ModificarUsuarioViewModel usuarioVM)
+        public async Task<IActionResult> Modificar(ModificarUsuarioViewModel usuarioVM)
         {
             try
             {
-			    var usuario = new Usuario(usuarioVM);
-                _usuarioRepository.Update(usuario);
+                var usuario = new Usuario
+                {
+                    Email = usuarioVM.Email,
+                    Id = usuarioVM.Id,
+                    NombreUsuario = usuarioVM.NombreUsuario
+                };
+                
+                await _usuarioRepository.Update(usuario);
                 _authenticationService.ChangeUserName(usuario.NombreUsuario);
 
                 TempData["Mensaje"] = "El usuario fue modificado con éxito.";
@@ -107,11 +124,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
 
-        public IActionResult EliminarPropio(int idUsuario)
+        public async Task<IActionResult> EliminarPropio(int idUsuario)
         {
             try
             {
-                var usuario = _usuarioRepository.GetById(idUsuario);
+                var usuario = await _usuarioRepository.GetById(idUsuario);
                 var usuarioVM = new EliminarUsuarioViewModel(idUsuario);
 
                 return View(usuarioVM);
@@ -128,15 +145,16 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult EliminarPropio(EliminarUsuarioViewModel usuarioVM)
+        public async Task<IActionResult> EliminarPropio(EliminarUsuarioViewModel usuarioVM)
         {
             try
             {
-                var sonIguales = VerificarContrasenia(_usuarioRepository.GetPasswordById(usuarioVM.Id), usuarioVM.ContraseniaIngresada);
+                string passwordActual = await _usuarioRepository.GetPasswordById(usuarioVM.Id);
+                var sonIguales = VerificarContrasenia(passwordActual, usuarioVM.ContraseniaIngresada);
 
                 if (sonIguales)
                 {
-                    _usuarioRepository.Delete(usuarioVM.Id);
+                    await _usuarioRepository.Delete(usuarioVM.Id);
                     TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
                     return RedirectToAction("Logout", "Login");
                 }
@@ -157,11 +175,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [AccessLevel(RolUsuario.Admin)]
-		public IActionResult EliminarParaAdmin(int idUsuario)
+		public async Task<IActionResult> EliminarParaAdmin(int idUsuario)
 		{
             try
             {
-			    _usuarioRepository.Delete(idUsuario);
+			    await _usuarioRepository.Delete(idUsuario);
                 TempData["Mensaje"] = "El usuario fue eliminado correctamente.";
 		    }
 			catch (MySqlException ex) when (ex.Number == 1451) //error de restriccion de FK
@@ -178,11 +196,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 	    
 		[AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult CambiarContra(int idUsuario)
+        public async Task<IActionResult> CambiarContra(int idUsuario)
         {
             try
             {
-                var usuario = _usuarioRepository.GetById(idUsuario);
+                var usuario = await _usuarioRepository.GetById(idUsuario);
                 var usuarioVM = new CambiarContraViewModel(idUsuario);
 
                 return View(usuarioVM);
@@ -200,14 +218,15 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         [HttpPost]
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult CambiarContra(CambiarContraViewModel usuarioVM)
+        public async Task<IActionResult> CambiarContra(CambiarContraViewModel usuarioVM)
         {
             try
             {
-                bool sonIguales = VerificarContrasenia(_usuarioRepository.GetPasswordById(usuarioVM.IdUsuario), usuarioVM.PasswordActualInput);
+                string passwordActual = await _usuarioRepository.GetPasswordById(usuarioVM.IdUsuario);
+                bool sonIguales = VerificarContrasenia(passwordActual, usuarioVM.PasswordActualInput);
 			    if (sonIguales)
 			    {
-				    _usuarioRepository.ChangePassword(usuarioVM.IdUsuario, _passwordService.HashPassword(usuarioVM.PasswordNueva));
+				    await _usuarioRepository.ChangePassword(usuarioVM.IdUsuario, _passwordService.HashPassword(usuarioVM.PasswordNueva));
 
                     TempData["Mensaje"] = "La nueva contraseña ha sido guardada con éxito. Por favor, inicie sesión de vuelta.";
                     return RedirectToAction("Logout", "Login");
@@ -231,13 +250,19 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         [HttpPost]
         [AccessLevel(RolUsuario.Admin)]
-        public IActionResult Crear(CrearUsuarioViewModel usuarioVM)
+        public async Task<IActionResult> Crear(CrearUsuarioViewModel usuarioVM)
         {
             try
             {
-                var usuario = new Usuario(usuarioVM.NombreUsuario, usuarioVM.Email, _passwordService.HashPassword(usuarioVM.Contrasenia), usuarioVM.Rol);
+                var usuario = new Usuario
+                {
+                    NombreUsuario = usuarioVM.NombreUsuario,
+                    Email = usuarioVM.Email,
+                    Password = _passwordService.HashPassword(usuarioVM.Contrasenia),
+                    Rol = usuarioVM.Rol
+                };
 
-			    _usuarioRepository.Create(usuario);
+			    await _usuarioRepository.Create(usuario);
                 TempData["Mensaje"] = "El nuevo usuario fue creado con éxito.";
                 return RedirectToAction("Crear");
 			}
@@ -261,11 +286,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [AccessLevel(RolUsuario.Admin)]
-        public IActionResult CambiarRol(int idUsuario)
+        public async Task<IActionResult> CambiarRol(int idUsuario)
         {
             try
             {
-                var usuario = _usuarioRepository.GetById(idUsuario);
+                var usuario = await _usuarioRepository.GetById(idUsuario);
                 var usuarioVM = new CambiarRolViewModel(usuario.NombreUsuario, idUsuario);
 
                 return View(usuarioVM);
@@ -283,16 +308,16 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
 
         [HttpPost]
         [AccessLevel(RolUsuario.Admin)]
-        public IActionResult CambiarRol(CambiarRolViewModel usuarioVM)
+        public async Task<IActionResult> CambiarRol(CambiarRolViewModel usuarioVM)
         {
             try
             {
-                string contraseniaActual = _usuarioRepository.GetPasswordById(_authenticationService.GetUserId());
-			    bool sonIguales = VerificarContrasenia(contraseniaActual, usuarioVM.ContraseniaIngresada);
+                string passwordActual = await _usuarioRepository.GetPasswordById(_authenticationService.GetUserId());
+			    bool sonIguales = VerificarContrasenia(passwordActual, usuarioVM.ContraseniaIngresada);
 
 			    if (sonIguales)
 			    {
-				    _usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
+				    await _usuarioRepository.ChangeRol(usuarioVM.Id, usuarioVM.Rol);
 
                     TempData["Mensaje"] = "El cambio de rol se ha producido de manera exitosa.";
                     return RedirectToAction("Editar");
@@ -309,11 +334,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [AccessLevel(RolUsuario.Admin, RolUsuario.Operador)]
-        public IActionResult Buscar(string nombreUsuario)
+        public async Task<IActionResult> Buscar(string nombreUsuario)
         {
             try
             {
-                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+                var usuariosBuscados = await _usuarioRepository.SearchByName(nombreUsuario);
 			
                 if (!usuariosBuscados.Any())
 			    {

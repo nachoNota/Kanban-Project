@@ -5,7 +5,7 @@ namespace tl2_proyecto_2024_nachoNota.Services
 {
     public interface IAuthenticationService
     {
-        bool Login(string nombreUsuario, string contrasenia);
+        Task<bool> Login(string nombreUsuario, string contrasenia);
         void Logout();
         bool IsAuthenticated();
         void ChangeUserName(string nombreUsuario);
@@ -28,9 +28,9 @@ namespace tl2_proyecto_2024_nachoNota.Services
             context = _contextAccessor.HttpContext;
             _passwordService = passwordService;
         }
-        public bool Login(string nombreUsuario, string contrasenia)
+        public async Task<bool> Login(string nombreUsuario, string contrasenia)
         {
-            Usuario usuario = _usuarioRepository.GetByName(nombreUsuario);
+            Usuario usuario = await _usuarioRepository.GetByName(nombreUsuario);
 
             if (usuario is null) return false;
 

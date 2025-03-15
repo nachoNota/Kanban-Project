@@ -37,11 +37,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
 		[HttpPost]
-        public IActionResult Login(LoginViewModel loginVM)
+        public async Task<IActionResult> Login(LoginViewModel loginVM)
         {
             try
             {
-                bool loginExitoso = _authentication.Login(loginVM.NombreUsuario, loginVM.Contrasenia);
+                bool loginExitoso = await _authentication.Login(loginVM.NombreUsuario, loginVM.Contrasenia);
                 if (loginExitoso)
                 {
                     return RedirectToAction("Listar", "Tablero", new { idUsuario = _authentication.GetUserId()});
@@ -65,15 +65,15 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(string email)
         {
-            if (!_usuarioRepository.ExistsByEmail(email))
+            if (!await _usuarioRepository.ExistsByEmail(email))
             {
                 TempData["Mensaje"] = "No se han encontrado coincidencias con el mail solicitado.";
                 return View();
             }
 
-            var passwordReset = new PasswordReset(email);
+            var passwordReset = new Passwordreset { Email = email };
             _passwordResetRepository.Create(passwordReset);
 
             string resetLink = Url.Action("ResetPassword", "Login", new { token = passwordReset.Token }, Request.Scheme);

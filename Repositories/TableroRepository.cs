@@ -3,7 +3,7 @@ using tl2_proyecto_2024_nachoNota.Models;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
-    public class TableroRepository : ITableroRepository
+    /*public class TableroRepository : ITableroRepository
     {
         private readonly IConnectionProvider _connectionProvider;
         private readonly ICommandFactory _commandFactory;
@@ -264,5 +264,5 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
             return idUsuario;
         }
-    }
+    }*/
 }

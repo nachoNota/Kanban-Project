@@ -24,7 +24,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository = usuarioRepository;
             _logger = logger;
         }
-
+        /*
         public IActionResult Listar(int idTablero)
         {
             try
@@ -246,6 +246,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 _logger.LogError(ex, "Error inesperado al intentar buscar al usuario {nombreUsuario}.", nombreUsuario);
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
             }
-        }
+        }*/
     }
 }

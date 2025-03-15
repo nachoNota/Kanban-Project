@@ -1,346 +1,102 @@
 ﻿using tl2_proyecto_2024_nachoNota.Models;
-using tl2_proyecto_2024_nachoNota.Database;
-using MySql.Data.MySqlClient;
+
+using Microsoft.EntityFrameworkCore;
+using ZstdSharp.Unsafe;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
     public class UsuarioRepository : IUsuarioRepository
     {
-        private readonly IConnectionProvider _connectionProvider;
-        private readonly ICommandFactory _commandFactory;
+        private readonly KanbanContext _context;
 
-        public UsuarioRepository(IConnectionProvider connectionProv, ICommandFactory commandFact)
+        public UsuarioRepository(KanbanContext context)
         {
-            _connectionProvider = connectionProv;
-            _commandFactory = commandFact;
+            _context = context;
         }
 
-        public IEnumerable<Usuario> GetAll()
+        public async Task<IEnumerable<Usuario>> GetAll() =>
+            await _context.Usuarios.ToListAsync();
+         
+
+		public async Task<Usuario?> GetByName(string nombreUsuario) =>
+            await _context.Usuarios.SingleOrDefaultAsync(u => u.NombreUsuario == nombreUsuario); //singleOrDefault tira una excepcion si encuentra mas de uno
+		
+
+		public async Task<Usuario?> GetById(int id) =>
+            await _context.Usuarios.FindAsync(id); 
+        
+
+        public async Task<bool> Exists(int id) =>
+            await _context.Usuarios.AnyAsync(u => u.Id == id);
+
+        public async Task<bool> ExistsByEmail(string email) =>
+            await _context.Usuarios.AnyAsync(u => u.Email == email);
+
+        public async Task<Usuario?> GetByEmail(string email) =>
+            await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+
+        public async Task<IEnumerable<Usuario>> SearchByName(string nombreUsuario) =>
+            await _context.Usuarios
+            .Where(u => u.NombreUsuario.Contains(nombreUsuario))
+            .ToListAsync();
+
+        public async Task<string?> GetPasswordById(int id) =>
+            await _context.Usuarios
+                .Where(u => u.Id == id)
+                .Select(u => u.Password)
+                .FirstOrDefaultAsync();
+
+        public async Task ChangeRol(int idUsuario, RolUsuario rol)
         {
-            var usuarios = new List<Usuario>();
+            var usuario = await _context.Usuarios.FindAsync(idUsuario);
             
-            using (var connection = _connectionProvider.GetConnection())
+            if(usuario != null)
             {
-
-                connection.Open();
-
-                string commandText = @"SELECT * FROM usuario";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        int idUsuario = reader.GetInt32("id_usuario");
-                        string nombreUsuario = reader.GetString("nombre_usuario");
-                        string pass = reader.GetString("contrasenia");
-                        string email = reader.GetString("email");
-                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
-
-                        var usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
-                        
-                        usuarios.Add(usuario);
-                    }
-                }
-
-                connection.Close();
+                usuario.Rol = rol;
+                await _context.SaveChangesAsync();
             }
-            return usuarios; 
         }
 
-		public Usuario GetByName(string nombreUsuario)
+        public async Task ChangePassword(int idUsuario, string pass)
         {
-			Usuario? usuario = null;
-
-			using (var connection = _connectionProvider.GetConnection())
-			{
-				connection.Open();
-				string commandText = "SELECT * FROM usuario WHERE nombre_usuario = @nombre";
-				var command = _commandFactory.CreateCommand(commandText, connection);
-				command.Parameters.AddWithValue("@nombre", nombreUsuario);
-
-				using (var reader = command.ExecuteReader())
-				{
-					if (reader.Read())
-					{
-						int idUsuario = reader.GetInt32("id_usuario");
-						string pass = reader.GetString("contrasenia");
-						string email = reader.GetString("email");
-						RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
-
-						usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
-					}
-				}
-				connection.Close();
-			}
-
-			return usuario;
-		}
-
-		public Usuario GetById(int id)
-        {
-            Usuario? usuario = null;
-
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT * FROM usuario WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@id", id);
-                
-                using(var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        int idUsuario = reader.GetInt32("id_usuario");
-                        string nombreUsuario = reader.GetString("nombre_usuario");
-                        string pass = reader.GetString("contrasenia");
-                        string email = reader.GetString("email");
-                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
-
-                        usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
-                    }
-                }
-                connection.Close();
-            }
-
-            if (usuario is null) throw new KeyNotFoundException($"No se encontró usuario con id {id}");
-            return usuario;
-        }
-
-        public bool Exists(int id)
-        {
-            int count;
-            using (var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT COUNT(1) FROM usuario WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@id", id);
-
-                count = Convert.ToInt32(command.ExecuteScalar());
-                
-                connection.Close();
-            }
-            return count > 0;
-        }
-
-        public bool ExistsByEmail(string email)
-        {
-            int count;
-            using (var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT COUNT(1) FROM usuario WHERE email = @email";
-                var command = _commandFactory.CreateCommand(commandText, connection);
+            var usuario = await _context.Usuarios.FindAsync(idUsuario);
             
-                command.Parameters.AddWithValue("@email", email);
-
-                count = Convert.ToInt32(command.ExecuteScalar());
-                
-                connection.Close();
-            }
-            return count > 0;
-        }
-
-        public Usuario GetByEmail(string email)
-        {
-            Usuario? usuario = null;
-
-            using (var connection = _connectionProvider.GetConnection())
+            if(usuario != null)
             {
-                connection.Open();
-                string commandText = "SELECT * FROM usuario WHERE email = @email";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@email", email);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        int idUsuario = reader.GetInt32("id_usuario");
-                        string nombreUsuario = reader.GetString("nombre_usuario");
-                        string pass = reader.GetString("contrasenia");
-                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
-
-                        usuario = new Usuario(idUsuario, rol, nombreUsuario, pass, email);
-                    }
-                }
-                connection.Close();
+                usuario.Password = pass;
+                await _context.SaveChangesAsync();
             }
-
-            if (usuario is null) throw new KeyNotFoundException($"No se encontró usuario con mail {email}");
-            return usuario;
         }
 
-        public IEnumerable<Usuario> SearchByName(string nombreUsuario)
+        public async Task Create(Usuario usuario)
         {
-            var usuarios = new List<Usuario>();
-            
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT * FROM usuario WHERE nombre_usuario LIKE CONCAT('%', @nombre, '%')";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@nombre", nombreUsuario);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        int idUsuario = reader.GetInt32("id_usuario");
-                        string pass = reader.GetString("contrasenia");
-                        string email = reader.GetString("email");
-                        string nombre = reader.GetString("nombre_usuario");
-                        RolUsuario rol = (RolUsuario)reader.GetInt32(reader.GetOrdinal("rol"));
-
-                        var usuario = new Usuario(idUsuario, rol, nombre, pass, email);
-                        usuarios.Add(usuario);
-                    }
-                }
-                connection.Close();
-            }
-
-            return usuarios;
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public string GetPasswordById(int id)
+        public async Task Update(Usuario usuario)
         {
-            string password = string.Empty;
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT contrasenia FROM usuario WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@id", id);
 
-                using(var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        password = reader.GetString("contrasenia");
-                    }
-                }
-                connection.Close();
-            }
-            return password;
+            var usuarioEncontrado = await _context.Usuarios.FindAsync(usuario.Id);
+            if (usuarioEncontrado is null) throw new KeyNotFoundException("Usuario no encontrado");
+
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public void ChangeRol(int idUsuario, RolUsuario rol)
+        public async Task Delete(int id)
         {
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "UPDATE usuario SET rol = @idRol WHERE id_usuario = @idUsuario";
-                var command = _commandFactory.CreateCommand(commandText, connection);
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario is null) throw new KeyNotFoundException("Usuario no encontrado");
 
-                command.Parameters.AddWithValue("@idRol", ((int)rol));
-                command.Parameters.AddWithValue("@idUsuario", idUsuario);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
+            _context.Usuarios.Remove(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public void ChangePassword(int id, string pass)
-        {
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-
-                string commandText = "UPDATE usuario SET contrasenia = @pass WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@pass", pass);
-                command.Parameters.AddWithValue("@id", id);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-
-        public void Create(Usuario usuario)
-        {
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-
-                string commandText = "INSERT INTO usuario(nombre_usuario, contrasenia, rol, email)" +
-                                        " VALUES (@nombre, @contra, @rol, @email)";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@nombre", usuario.NombreUsuario);
-                command.Parameters.AddWithValue("@contra", usuario.Password);
-                command.Parameters.AddWithValue("@rol", ((int)usuario.Rol));
-                command.Parameters.AddWithValue("@email", usuario.Email);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-
-        public void Update(Usuario usuario)
-        {
-            using (var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-
-                string commandText = "UPDATE usuario SET nombre_usuario = @nombre, " +
-                                        "email = @email " +
-                                        "WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", usuario.Id);
-                command.Parameters.AddWithValue("@nombre", usuario.NombreUsuario);
-                command.Parameters.AddWithValue("@email", usuario.Email);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-
-        public void Delete(int id)
-        {
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-
-                string commandText = "DELETE FROM usuario WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", id);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
-        }
-
-        public string GetNameById(int id)
-        {
-            var nombre = string.Empty;
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT nombre_usuario FROM usuario WHERE id_usuario = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@id", id);
-
-                using(var reader = command.ExecuteReader())
-                {
-                    if(reader.Read())
-                    {
-                        nombre = reader.GetString("nombre_usuario");
-                    }
-                }
-                connection.Close();
-            }
-            return nombre;
-        }
-
+        public async Task<string?> GetNameById(int id) =>
+            await _context.Usuarios
+                .Where(u => u.Id == id)
+                .Select(u => u.NombreUsuario)
+                .FirstOrDefaultAsync();
     }
 }

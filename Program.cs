@@ -25,8 +25,8 @@ builder.Services.AddSingleton<string>(cadenaConexion);
 builder.Services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
 builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
 
-builder.Services.AddScoped<ITableroRepository, TableroRepository>();
-builder.Services.AddScoped<ITareaRepository, TareaRepository>();
+//builder.Services.AddScoped<ITableroRepository, TableroRepository>();
+//builder.Services.AddScoped<ITareaRepository, TareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();

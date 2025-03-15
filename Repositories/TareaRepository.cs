@@ -3,7 +3,7 @@ using tl2_proyecto_2024_nachoNota.Models;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
-    public class TareaRepository : ITareaRepository
+   /* public class TareaRepository : ITareaRepository
     {
         private readonly IConnectionProvider _connectionProvider;
         private readonly ICommandFactory _commandFactory;
@@ -256,5 +256,5 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 connection.Close();
             }
         }
-    }
+    }*/
 }

@@ -4,20 +4,20 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 {
     public interface IUsuarioRepository
     {
-        IEnumerable<Usuario> GetAll();
-        Usuario GetById(int id);
-        Usuario GetByName(string nombreUsuario);
-        bool ExistsByEmail(string email);
-        Usuario GetByEmail(string email);
-        IEnumerable<Usuario> SearchByName(string nombreUsuario);
-        bool Exists(int id);
-        string GetNameById(int id);
-        string GetPasswordById(int id);
-        void Create(Usuario usuario);
-        void Update(Usuario usuario);
-        void Delete(int id);
-        void ChangeRol(int idUsuario, RolUsuario rol);
-        void ChangePassword(int id, string pass);
+        Task<IEnumerable<Usuario>> GetAll();
+        Task<Usuario?> GetById(int id);
+        Task<Usuario?> GetByName(string nombreUsuario);
+        Task<bool> ExistsByEmail(string email);
+        Task<Usuario?> GetByEmail(string email);
+        Task<IEnumerable<Usuario>> SearchByName(string nombreUsuario);
+        Task<bool> Exists(int id);
+        Task<string?> GetNameById(int id);
+        Task<string?> GetPasswordById(int id);
+        Task Create(Usuario usuario);
+        Task Update(Usuario usuario);
+        Task Delete(int id);
+        Task ChangeRol(int idUsuario, RolUsuario rol);
+        Task ChangePassword(int id, string pass);
     }
 
 }

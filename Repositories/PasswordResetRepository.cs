@@ -14,7 +14,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             _commandFactory = commandFact;
         }
 
-        public void Create(PasswordReset passwordReset)
+        public void Create(Passwordreset passwordReset)
         {
             using(var connection = _connectionProvider.GetConnection())
             {
@@ -32,9 +32,9 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             }
         }
 
-        public PasswordReset GetByToken(string token)
+        public Passwordreset GetByToken(string token)
         {
-            PasswordReset? passwordReset = null;
+            Passwordreset? passwordReset = null;
             using(var connection = _connectionProvider.GetConnection())
             {
                 connection.Open();
@@ -46,7 +46,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
                 {
                     if (reader.Read())
                     {
-                        passwordReset = new PasswordReset
+                        passwordReset = new Passwordreset
                         {
                             Id = reader.GetInt32("id"),
                             Email = reader.GetString("email"),
