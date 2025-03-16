@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using tl2_proyecto_2024_nachoNota.Database;
-using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
 using tl2_proyecto_2024_nachoNota.Services;
@@ -22,11 +20,8 @@ string cadenaConexion = builder.Configuration.GetConnectionString("MySqlConnecti
 
 builder.Services.AddSingleton<string>(cadenaConexion);
 
-builder.Services.AddSingleton<IConnectionProvider, MySqlConnectionProvider>();
-builder.Services.AddSingleton<ICommandFactory, MySqlCommandFactory>();
-
-//builder.Services.AddScoped<ITableroRepository, TableroRepository>();
-//builder.Services.AddScoped<ITareaRepository, TareaRepository>();
+builder.Services.AddScoped<ITableroRepository, TableroRepository>();
+builder.Services.AddScoped<ITareaRepository, TareaRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();

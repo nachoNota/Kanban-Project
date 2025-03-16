@@ -4,14 +4,13 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 {
     public interface ITableroRepository
     {
-        IEnumerable<Tablero> GetAll();
-        IEnumerable<Tablero> GetAllByUser(int idUsuario);
-        IEnumerable<Tablero> GetTablerosConTareasAsignadas(int idUsuario);
-        Tablero GetById(int id);
-        int GetPropietario(int idTablero);
-        IEnumerable<Tablero> GetByUser(int idUsuario);
-        void Create(Tablero tablero);
-        void Update(Tablero tablero);
-        void Delete(int id);
+        Task<IEnumerable<Tablero>> GetAll();
+        Task<IEnumerable<Tablero>> GetAllByUser(int idUsuario);
+        Task<IEnumerable<Tablero>> GetTablerosConTareasAsignadas(int idUsuario);
+        Task<Tablero?> GetById(int id);
+        Task<int> GetPropietario(int idTablero);
+        Task Create(Tablero tablero);
+        Task Update(Tablero tablero);
+        Task Delete(int id);
     }
 }

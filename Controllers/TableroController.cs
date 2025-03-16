@@ -21,10 +21,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository = usuarioRepository;
             _logger = logger;
         }
-        /*private List<ListarTablerosViewModel> ObtenerTablerosViewModel(int idUsuario)
+        private async Task<List<ListarTablerosViewModel>> ObtenerTablerosViewModel(int idUsuario)
         {
-            return _tableroRepository.GetAllByUser(idUsuario)
-                .Select(t => new ListarTablerosViewModel(
+            var tableros = await _tableroRepository.GetAllByUser(idUsuario);
+
+            return tableros.Select(t => new ListarTablerosViewModel(
                     t.Id,
                     t.IdUsuario,
                     t.Titulo,
@@ -33,16 +34,16 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 )).ToList();
         }
 
-        public IActionResult Listar(int idUsuario)
+        public async Task<IActionResult> Listar(int idUsuario)
         {
             try
             {
-                if (!_usuarioRepository.Exists(idUsuario))
+                if (!await _usuarioRepository.Exists(idUsuario))
                 {
                     return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
                 }
             
-                List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
+                List<ListarTablerosViewModel> tablerosVM = await ObtenerTablerosViewModel(idUsuario);
                 return View(tablerosVM);
             }
             catch (Exception ex)
@@ -53,17 +54,17 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [AccessLevel(RolUsuario.Admin)]
-        public IActionResult ListarBuscados(int idUsuario)
+        public async Task<IActionResult> ListarBuscados(int idUsuario)
         {
             try
             {
-                if (!_usuarioRepository.Exists(idUsuario))
+                if (!await _usuarioRepository.Exists(idUsuario))
                 {
                     return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
                 }
 
-                List<ListarTablerosViewModel> tablerosVM = ObtenerTablerosViewModel(idUsuario);
-                string nombreUsuario = _usuarioRepository.GetNameById(idUsuario);
+                List<ListarTablerosViewModel> tablerosVM = await ObtenerTablerosViewModel(idUsuario);
+                string nombreUsuario = await _usuarioRepository.GetNameById(idUsuario);
 
                 var datosTableros = new ListarTablerosBuscadosViewModel(nombreUsuario, tablerosVM);
 
@@ -76,21 +77,23 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-        public IActionResult ListarConTareasAsignadas(int idUsuario)
+        public async Task<IActionResult> ListarConTareasAsignadas(int idUsuario)
         {
             try
             {
-                if (!_usuarioRepository.Exists(idUsuario))
+                if (!await _usuarioRepository.Exists(idUsuario))
                 {
                     return RedirectToAction("NoEncontrado", "Error", new { mensaje = "El usuario solicitado no existe en nuestra base de datos." });
                 }
 
-                var tableros = _tableroRepository.GetTablerosConTareasAsignadas(idUsuario).ToList(); 
-                var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel(
-                    t.Id,
-                    t.Titulo,
-                    t.Color,
-                    _usuarioRepository.GetNameById(t.IdUsuario))).ToList();
+                var tableros = await _tableroRepository.GetTablerosConTareasAsignadas(idUsuario);
+                var tablerosVM = tableros.Select(t => new ListarTablerosAjenosViewModel
+                {
+                    IdTablero = t.Id,
+                    Titulo = t.Titulo,
+                    Color = t.Color,
+                    NombrePropietario = t.IdUsuarioNavigation.NombreUsuario.ToString()
+                }).ToList();
 
                 return View(tablerosVM);
             }
@@ -102,13 +105,19 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Crear(CrearTableroViewModel tableroVM)
+        public async Task<IActionResult> Crear(CrearTableroViewModel tableroVM)
         {
             try
             {
-                var tablero = new Tablero(tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion, tableroVM.IdUsuario);
+                var tablero = new Tablero
+                {
+                    Titulo = tableroVM.Titulo,
+                    Color = tableroVM.Color,
+                    Descripcion = tableroVM.Descripcion,
+                    IdUsuario = tableroVM.IdUsuario
+                };
 
-                _tableroRepository.Create(tablero);
+                await _tableroRepository.Create(tablero);
                 TempData["Mensaje"] = "El tablero fue creado con éxito.";
                 return RedirectToAction("Listar", new { tableroVM.IdUsuario });   
             }
@@ -120,13 +129,20 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Modificar(ModificarTableroViewModel tableroVM)
+        public async Task<IActionResult> Modificar(ModificarTableroViewModel tableroVM)
         {
             try
             {
-                var tablero = new Tablero(tableroVM.Id, tableroVM.Titulo, tableroVM.Color, tableroVM.Descripcion);
+                var tablero = new Tablero 
+                { 
+                    Id = tableroVM.Id,
+                    IdUsuario = tableroVM.IdUsuario,
+                    Titulo = tableroVM.Titulo,
+                    Color = tableroVM.Color,
+                    Descripcion = tableroVM.Descripcion 
+                };
 
-                _tableroRepository.Update(tablero);
+                await _tableroRepository.Update(tablero);
                 TempData["Mensaje"] = "El tablero fue modificado con éxito.";
 
                 bool esUrlValida = !string.IsNullOrEmpty(tableroVM.ReturnUrl) && Url.IsLocalUrl(tableroVM.ReturnUrl);
@@ -144,11 +160,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Eliminar(EliminarTableroViewModel tableroVM)
+        public async Task<IActionResult> Eliminar(EliminarTableroViewModel tableroVM)
         {
             try
             {
-                _tableroRepository.Delete(tableroVM.IdTablero);
+                await _tableroRepository.Delete(tableroVM.IdTablero);
                 TempData["Mensaje"] = "El tablero fue eliminado con éxito";
 
                 bool esUrlValida = !string.IsNullOrEmpty(tableroVM.ReturnUrl) && Url.IsLocalUrl(tableroVM.ReturnUrl);
@@ -179,11 +195,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [AccessLevel(RolUsuario.Admin)]
-        public IActionResult BuscarUsu(string nombreUsuario)
+        public async Task<IActionResult> BuscarUsu(string nombreUsuario)
         {
             try
             {
-                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario);
+                var usuariosBuscados = await _usuarioRepository.SearchByName(nombreUsuario);
 
                 if(!usuariosBuscados.Any())
                 {
@@ -200,6 +216,5 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
             }
         }
-        */
     }
 }

@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using tl2_proyecto_2024_nachoNota.Models;
 
 namespace tl2_proyecto_2024_nachoNota.Controllers
 {

@@ -4,8 +4,8 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
 {
     public interface IPasswordResetRepository
     {
-        void Create(Passwordreset passwordReset);
-        Passwordreset GetByToken(string token);
-        void Delete(int id);
+        Task Create(Passwordreset passwordReset);
+        Task<Passwordreset> GetByToken(string token);
+        Task Delete(int id);
     }
 }

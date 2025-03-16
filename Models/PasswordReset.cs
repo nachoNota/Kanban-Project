@@ -7,11 +7,11 @@ public partial class Passwordreset
 {
     public int Id { get; set; }
 
-    public string Email { get; set; } = null!;
-
     public string Token { get; set; } = null!;
 
     public DateTime Expiration { get; set; }
 
-    public virtual Usuario EmailNavigation { get; set; } = null!;
+    public int IdUsuario { get; set; }
+
+    public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
 }

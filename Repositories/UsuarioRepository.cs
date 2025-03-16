@@ -78,9 +78,15 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         {
 
             var usuarioEncontrado = await _context.Usuarios.FindAsync(usuario.Id);
+            
             if (usuarioEncontrado is null) throw new KeyNotFoundException("Usuario no encontrado");
 
-            _context.Usuarios.Update(usuario);
+            usuarioEncontrado.NombreUsuario = usuario.NombreUsuario;
+            usuarioEncontrado.Email = usuario.Email;
+
+            _context.Entry(usuarioEncontrado).Property(u => u.NombreUsuario).IsModified = true;
+            _context.Entry(usuarioEncontrado).Property(u => u.Email).IsModified = true;
+
             await _context.SaveChangesAsync();
         }
 
@@ -93,10 +99,15 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<string?> GetNameById(int id) =>
-            await _context.Usuarios
+        public async Task<string?> GetNameById(int? id)
+        {
+            if (id == 0) return string.Empty;
+
+            return await _context.Usuarios
                 .Where(u => u.Id == id)
                 .Select(u => u.NombreUsuario)
                 .FirstOrDefaultAsync();
+
+        }
     }
 }

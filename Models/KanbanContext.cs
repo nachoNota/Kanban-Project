@@ -32,23 +32,20 @@ public partial class KanbanContext : DbContext
 
             entity.ToTable("passwordreset");
 
-            entity.HasIndex(e => e.Email, "FK_email_idx");
+            entity.HasIndex(e => e.IdUsuario, "FK_id_usuario_idx");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Email)
-                .HasMaxLength(150)
-                .HasColumnName("email");
             entity.Property(e => e.Expiration)
                 .HasColumnType("datetime")
                 .HasColumnName("expiration");
+            entity.Property(e => e.IdUsuario).HasColumnName("id_usuario");
             entity.Property(e => e.Token)
                 .HasMaxLength(255)
                 .HasColumnName("token");
 
-            entity.HasOne(d => d.EmailNavigation).WithMany(p => p.Passwordresets)
-                .HasPrincipalKey(p => p.Email)
-                .HasForeignKey(d => d.Email)
-                .HasConstraintName("FK_email");
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Passwordresets)
+                .HasForeignKey(d => d.IdUsuario)
+                .HasConstraintName("FK_id_usuario");
         });
 
         modelBuilder.Entity<Tablero>(entity =>

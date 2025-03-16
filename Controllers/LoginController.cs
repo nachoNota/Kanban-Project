@@ -67,18 +67,25 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(string email)
         {
-            if (!await _usuarioRepository.ExistsByEmail(email))
+            var usuario = await _usuarioRepository.GetByEmail(email);
+            if (usuario is null)
             {
                 TempData["Mensaje"] = "No se han encontrado coincidencias con el mail solicitado.";
                 return View();
             }
 
-            var passwordReset = new Passwordreset { Email = email };
-            _passwordResetRepository.Create(passwordReset);
+            var passwordReset = new Passwordreset
+            {
+                IdUsuario = usuario.Id,
+                Token = Guid.NewGuid().ToString(),
+                Expiration = DateTime.Now.AddMinutes(5)
+            };
+
+            await _passwordResetRepository.Create(passwordReset);
 
             string resetLink = Url.Action("ResetPassword", "Login", new { token = passwordReset.Token }, Request.Scheme);
 
-            _emailService.SendEmail(email, "Recuperar contraseña", $"Haga click en el siguiente enlace para reestablecer su contraseña: " +
+            await _emailService.SendEmail(email, "Recuperar contraseña", $"Haga click en el siguiente enlace para reestablecer su contraseña: " +
                                                                         $"<a href='{resetLink}'>Restablecer</a>");
 
             TempData["Mensaje"] = "Hemos enviado un enlace para reestablecer tu contraseña a tu correo.";
@@ -92,7 +99,7 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult ResetPassword(PasswordResetViewModel passwordResetVM)
+        public async Task<IActionResult> ResetPassword(PasswordResetViewModel passwordResetVM)
         {
             if(passwordResetVM.PasswordNueva != passwordResetVM.ConfirmPassword)
             {
@@ -100,12 +107,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 return View(passwordResetVM);
             }
 
-            var passwordReset = _passwordResetRepository.GetByToken(passwordResetVM.Token);
-            var usuario = _usuarioRepository.GetByEmail(passwordReset.Email);
-
+            var passwordReset = await _passwordResetRepository.GetByToken(passwordResetVM.Token);
+            
             string HashedPassword = _passwordService.HashPassword(passwordResetVM.PasswordNueva);
-            _usuarioRepository.ChangePassword(usuario.Id, HashedPassword);
-            _passwordResetRepository.Delete(passwordReset.Id);
+            await _usuarioRepository.ChangePassword(passwordReset.IdUsuario, HashedPassword);
+            await _passwordResetRepository.Delete(passwordReset.Id);
 
             TempData["Mensaje"] = "La contraseña se ha actualizado con éxito.";
             return RedirectToAction("Index");

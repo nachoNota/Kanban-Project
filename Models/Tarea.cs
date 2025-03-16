@@ -21,5 +21,5 @@ public partial class Tarea
 
     public EstadoTarea Estado { get; set; }
 
-    public virtual Tablero? IdTableroNavigation { get; set; }
+    public virtual Tablero IdTableroNavigation { get; set; } = null!;
 }

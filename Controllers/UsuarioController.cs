@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;

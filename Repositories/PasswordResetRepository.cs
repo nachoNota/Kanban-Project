@@ -1,79 +1,36 @@
-﻿using tl2_proyecto_2024_nachoNota.Database;
+﻿using Microsoft.EntityFrameworkCore;
 using tl2_proyecto_2024_nachoNota.Models;
 
 namespace tl2_proyecto_2024_nachoNota.Repositories
 {
     public class PasswordResetRepository : IPasswordResetRepository
     {
-        private readonly IConnectionProvider _connectionProvider;
-        private readonly ICommandFactory _commandFactory;
+        private readonly KanbanContext _context;
 
-        public PasswordResetRepository(IConnectionProvider connectionProv, ICommandFactory commandFact)
+        public PasswordResetRepository(KanbanContext context)
         {
-            _connectionProvider = connectionProv;
-            _commandFactory = commandFact;
+            _context = context;
         }
 
-        public void Create(Passwordreset passwordReset)
+        public async Task Create(Passwordreset passwordReset)
         {
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "INSERT INTO passwordreset(email, token, expiration) VALUES (@email, @token, @exp)";
-
-                var command =  _commandFactory.CreateCommand(commandText, connection);
-                command.Parameters.AddWithValue("@email", passwordReset.Email);
-                command.Parameters.AddWithValue("@token", passwordReset.Token);
-                command.Parameters.AddWithValue("@exp", passwordReset.Expiration);
-
-                command.ExecuteNonQuery();
-
-                connection.Close();
-            }
+            _context.Passwordresets.Add(passwordReset);
+            await _context.SaveChangesAsync();
         }
 
-        public Passwordreset GetByToken(string token)
+        public async Task<Passwordreset?> GetByToken(string token) =>
+            await _context.Passwordresets
+            .Where(x => x.Token == token)
+            .FirstOrDefaultAsync();
+
+        public async Task Delete(int id)
         {
-            Passwordreset? passwordReset = null;
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "SELECT id, email, expiration FROM passwordreset WHERE token = @token";
-                var command = _commandFactory.CreateCommand(commandText, connection);
+            var passwordReset = await _context.Passwordresets.FindAsync(id);
 
-                command.Parameters.AddWithValue("@token", token);
-                using(var reader =  command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        passwordReset = new Passwordreset
-                        {
-                            Id = reader.GetInt32("id"),
-                            Email = reader.GetString("email"),
-                            Token = token,
-                            Expiration = reader.GetDateTime("expiration")
-                        };
-                    }
-                }
-                connection.Close();
-            }
-            return passwordReset;
-        }
+            if (passwordReset is null) throw new KeyNotFoundException("Objeto no encontrado.");
 
-        public void Delete(int id)
-        {
-            using(var connection = _connectionProvider.GetConnection())
-            {
-                connection.Open();
-                string commandText = "DELETE FROM passwordreset WHERE id = @id";
-                var command = _commandFactory.CreateCommand(commandText, connection);
-
-                command.Parameters.AddWithValue("@id", id);
-
-                command.ExecuteNonQuery();
-                
-                connection.Close();
-            }
+            _context.Passwordresets.Remove(passwordReset);
+            await _context.SaveChangesAsync();
         }
     }
 }

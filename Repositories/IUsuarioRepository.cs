@@ -11,7 +11,7 @@ namespace tl2_proyecto_2024_nachoNota.Repositories
         Task<Usuario?> GetByEmail(string email);
         Task<IEnumerable<Usuario>> SearchByName(string nombreUsuario);
         Task<bool> Exists(int id);
-        Task<string?> GetNameById(int id);
+        Task<string?> GetNameById(int? id);
         Task<string?> GetPasswordById(int id);
         Task Create(Usuario usuario);
         Task Update(Usuario usuario);

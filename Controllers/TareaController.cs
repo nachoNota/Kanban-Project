@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Relational;
 using tl2_proyecto_2024_nachoNota.Filters;
 using tl2_proyecto_2024_nachoNota.Models;
 using tl2_proyecto_2024_nachoNota.Repositories;
@@ -24,13 +22,13 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             _usuarioRepository = usuarioRepository;
             _logger = logger;
         }
-        /*
-        public IActionResult Listar(int idTablero)
+        
+        public async Task<IActionResult> Listar(int idTablero)
         {
             try
             {
-                var tablero = _tableroRepository.GetById(idTablero);
-                var tareas = _tareaRepository.GetByTablero(idTablero);
+                var tablero = await _tableroRepository.GetById(idTablero);
+                var tareas = await _tareaRepository.GetByTablero(idTablero);
                 var tareasVM = tareas.Select(t => new ListarTareasViewModel(t)).ToList();
 
                 var tareasEnTableroVM = new ListarTareasDeTableroViewModel(tablero, tareasVM);
@@ -48,16 +46,16 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-        public IActionResult VerDetalles(int idTarea)
+        public async Task<IActionResult> VerDetalles(int idTarea)
         {
             try
             {
-                var tarea = _tareaRepository.GetById(idTarea);
+                var tarea = await _tareaRepository.GetById(idTarea);
                 var nombreUsuario = string.Empty;
 
-                if (tarea.IdUsuario != 0) nombreUsuario = _usuarioRepository.GetNameById(tarea.IdUsuario);
+                nombreUsuario = await _usuarioRepository.GetNameById(tarea.IdUsuario);
 
-                int idPropietarioTablero = _tableroRepository.GetPropietario(tarea.IdTablero);
+                int idPropietarioTablero = await _tableroRepository.GetPropietario(tarea.IdTablero);
                 var tareaVM = new DetalleTareaViewModel(tarea, nombreUsuario, idPropietarioTablero);
 
                 return View(tareaVM);
@@ -73,12 +71,12 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-        public IActionResult CambiarEstado(int idTarea, EstadoTarea estado)
+        public async Task<IActionResult> CambiarEstado(int idTarea, EstadoTarea estado)
         {
             try
             {
-                var tarea = _tareaRepository.GetById(idTarea);
-                _tareaRepository.CambiarEstado(idTarea, estado);
+                var tarea = await _tareaRepository.GetById(idTarea);
+                await _tareaRepository.CambiarEstado(idTarea, estado);
                 
                 return RedirectToAction("VerDetalles", new { idTarea } );
             }
@@ -93,11 +91,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-        public IActionResult Crear(int idTablero)
+        public async Task<IActionResult> Crear(int idTablero)
         {
             try
             {
-                var tablero = _tableroRepository.GetById(idTablero);
+                var tablero = await _tableroRepository.GetById(idTablero);
             
                 return View(new CrearTareaViewModel(idTablero));
             }
@@ -113,12 +111,21 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Crear(CrearTareaViewModel tareaVM)
+        public async Task<IActionResult> Crear(CrearTareaViewModel tareaVM)
         {
             try
             {
-                var tarea = new Tarea(tareaVM.IdUsuario, tareaVM.IdTablero, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
-                _tareaRepository.Create(tarea);
+                var tarea = new Tarea
+                {
+                    IdUsuario = tareaVM.IdUsuario,
+                    IdTablero = tareaVM.IdTablero,
+                    Titulo = tareaVM.Titulo,
+                    Descripcion = tareaVM.Descripcion,
+                    Color = tareaVM.Color,
+                    Estado = EstadoTarea.Ideas
+                };
+
+                await _tareaRepository.Create(tarea);
                 TempData["Mensaje"] = "La tarea fue creada con éxito";
     
                 return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
@@ -131,11 +138,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Eliminar(EliminarTareaViewModel tareaVM)
+        public async Task<IActionResult> Eliminar(EliminarTareaViewModel tareaVM)
         {
             try
             {
-                _tareaRepository.Delete(tareaVM.IdTarea);
+                await _tareaRepository.Delete(tareaVM.IdTarea);
                 TempData["Mensaje"] = "La tarea fue eliminada con éxito.";
 
                 return RedirectToAction("Listar", new { idTablero = tareaVM.IdTablero });
@@ -149,11 +156,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
 
-        public IActionResult CambiarPropietarioTarea(int idTarea)
+        public async Task<IActionResult> CambiarPropietarioTarea(int idTarea)
         {
             try
             {
-                var tarea = _tareaRepository.GetById(idTarea);
+                var tarea = await _tareaRepository.GetById(idTarea);
                 var cambiarPropietarioVM = new CambiarPropietarioTareaViewModel(idTarea, new List<UsuarioBuscadoViewModel>());
 
                 return View(cambiarPropietarioVM);
@@ -170,11 +177,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult CambiarPropietarioTarea(int idTarea, int idUsuario)
+        public async Task<IActionResult> CambiarPropietarioTarea(int idTarea, int idUsuario)
         {
             try
             {
-                _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
+                await _tareaRepository.AsignarUsuarioATarea(idUsuario, idTarea);
                 TempData["Mensaje"] = "El usuario fue asignado a la tarea.";
 
                 return RedirectToAction("VerDetalles", new { idTarea });
@@ -186,11 +193,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
             }
         }
 
-        public IActionResult Modificar(int idTarea)
+        public async Task<IActionResult> Modificar(int idTarea)
         {
             try
             {
-                var tarea = _tareaRepository.GetById(idTarea);
+                var tarea = await _tareaRepository.GetById(idTarea);
                 var tareaVM = new ModificarTareaViewModel(tarea.Id, tarea.Titulo, tarea.Descripcion, tarea.Color);
             
                 return View(tareaVM);
@@ -207,13 +214,19 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult Modificar(ModificarTareaViewModel tareaVM)
+        public async Task<IActionResult> Modificar(ModificarTareaViewModel tareaVM)
         {
             try
             {
-                var tarea = new Tarea(tareaVM.Id, tareaVM.Titulo, tareaVM.Descripcion, tareaVM.Color);
-                _tareaRepository.Update(tarea);
-
+                var tarea = new Tarea
+                {
+                    Id = tareaVM.Id,
+                    Titulo = tareaVM.Titulo,
+                    Descripcion = tareaVM.Descripcion,
+                    Color = tareaVM.Color
+                };
+                
+                await _tareaRepository.Update(tarea);
                 TempData["Mensaje"] = "La tarea fue modificada con éxito.";
                 return RedirectToAction("VerDetalles", new { idTarea = tareaVM.Id } );
             }
@@ -225,11 +238,11 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
         }
 
         [HttpPost]
-        public IActionResult BuscarUsu(string nombreUsuario, int idTarea)
+        public async Task<IActionResult> BuscarUsu(string nombreUsuario, int idTarea)
         {
             try
             {
-                var usuariosBuscados = _usuarioRepository.SearchByName(nombreUsuario).ToList();
+                var usuariosBuscados = await _usuarioRepository.SearchByName(nombreUsuario);
 
                 if (!usuariosBuscados.Any())
                 {
@@ -246,6 +259,6 @@ namespace tl2_proyecto_2024_nachoNota.Controllers
                 _logger.LogError(ex, "Error inesperado al intentar buscar al usuario {nombreUsuario}.", nombreUsuario);
                 return RedirectToAction("ErrorInesperado", "Error", new { mensaje = "Ocurrió un error inesperado al intentar buscar al usuario seleccionado. Por favor, intente de nuevo más tarde." });
             }
-        }*/
+        }
     }
 }
